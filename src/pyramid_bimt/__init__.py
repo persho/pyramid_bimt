@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Initializer."""
 
-from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-
+from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid_bimt.hooks import get_authenticated_user
 
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Define models."""
 
-
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
