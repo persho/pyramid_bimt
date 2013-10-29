@@ -84,3 +84,48 @@ def forbidden_redirect(context, request):
     """
     location = request.route_url('login', _query={'came_from': request.url})
     return HTTPFound(location=location)
+
+
+@view_config(
+    route_name='users',
+    permission='admin',
+    renderer='templates/users.pt',
+    layout='default',
+)
+def users(request):
+    return {
+        'users': User.get_all(),
+    }
+
+
+@view_config(
+    route_name='user',
+    permission='admin',
+    renderer='templates/user.pt',
+    layout='default',
+)
+def user(request):
+    user_ = request.context
+    fields = []
+    skip = ['profile', 'get', 'get_all', 'get_by_id', 'password', 'user']
+
+    for attr in [attr for attr in user_.__class__.__dict__ if not attr.startswith('_')]:  # noqa
+        if attr in skip:
+            continue
+        elif attr == 'groups':
+            fields.append(
+                {'key': 'user_{}'.format(attr), 'value': ', '.join([g.name for g in user_.groups])})  # noqa
+        else:
+            fields.append(
+                {'key': 'user_{}'.format(attr), 'value': getattr(user_, attr)})
+
+    for attr in [attr for attr in user_.profile.__class__.__dict__ if not attr.startswith('_')]:  # noqa
+        if attr in skip:
+            continue
+        fields.append(
+            {'key': 'profile_{}'.format(attr), 'value': getattr(user_.profile, attr)})  # noqa
+
+    return {
+        'user': user_,
+        'fields': fields,
+    }

@@ -1,0 +1,15 @@
+<metal:block use-macro="main_template">
+
+    <div metal:fill-slot="content" id="content">
+
+      <a href="${request.route_url('users')}">Back to Users overview</a>
+      <h1>${user.email}</h1>
+      <table class="table">
+        <tr tal:repeat="field fields">
+            <th>${field.key}</th><td>${field.value}</td>
+        </tr>
+      </table>
+
+    </div/>
+
+</metal:block>

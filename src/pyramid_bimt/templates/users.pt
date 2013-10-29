@@ -1,0 +1,14 @@
+<metal:block use-macro="main_template">
+
+    <div metal:fill-slot="content" id="content">
+
+      <h1>Users</h1>
+      <table class="table">
+        <tr tal:repeat="user users">
+            <td>${user.id}</td>
+            <td><a href="${request.route_url('user', user_id=user.email)}">${user.email}</td>
+        </tr>
+      </table>
+    </div>
+
+</metal:block>

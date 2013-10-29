@@ -4,6 +4,8 @@
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from pyramid_bimt.acl import UserFactory
+from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
 
 
@@ -22,7 +24,10 @@ def includeme(config):
     session_factory = UnencryptedCookieSessionFactoryConfig(
         settings.get('session.secret', 'secret'))
     authentication_policy = AuthTktAuthenticationPolicy(
-        secret=settings.get('authtkt.secret', 'secret'), hashalg='sha512')
+        secret=settings.get('authtkt.secret', 'secret'),
+        hashalg='sha512',
+        callback=groupfinder,
+    )
     authorization_policy = ACLAuthorizationPolicy()
 
     config.set_authentication_policy(authentication_policy)
@@ -32,6 +37,9 @@ def includeme(config):
     # configure routes
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+    config.add_route('users', '/users', factory=UserFactory)
+    config.add_route(
+        'user', '/users/{user_id}', factory=UserFactory, traverse='/{user_id}')
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_simpleauth.tests')
