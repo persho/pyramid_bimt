@@ -4,21 +4,17 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
-from pyramid_bimt.hooks import get_authenticated_user, get_is_authenticated
-# from .hooks import get_roles, get_user_json
-# from .hooks import get_is_post_login, get_is_post_signup
-# from .tree import AuthRoot
+from pyramid_bimt.hooks import get_authenticated_user
 
 
 def includeme(config):
-    """Allow developers to use ``config.include('pyramid_simpleauth')``.
+    """Allow developers to use ``config.include('pyramid_bimt')``."""
 
-    """
+    # Setup the DB session and such
+    config.include('pyramid_basemodel')
 
     # Add helpful properties to the request object
     settings = config.registry.settings
-    config.set_request_property(
-        get_is_authenticated, 'is_authenticated', reify=True)
     config.set_request_property(
         get_authenticated_user, 'user', reify=True)
 
@@ -32,6 +28,10 @@ def includeme(config):
     config.set_authentication_policy(authentication_policy)
     config.set_authorization_policy(authorization_policy)
     config.set_session_factory(session_factory)
+
+    # configure routes
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_simpleauth.tests')

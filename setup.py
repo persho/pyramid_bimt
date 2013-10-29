@@ -1,20 +1,58 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Installer for the pyramid_bimt package."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
+import os
+
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
+
+long_description = \
+    read('README.rst') + \
+    read('docs', 'CHANGELOG.rst') + \
+    read('docs', 'LICENSE.rst')
 
 setup(
     name='pyramid_bimt',
     version='0.1',
-    description='TOOD',
-    packages=find_packages('src'),
+    description='Base package for BIMT apps.',
+    long_description=long_description,
+    classifiers=[
+        "Programming Language :: Python",
+        "Framework :: Pyramid",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    ],
+    author='NiteoWeb Ltd.',
+    author_email='info@niteoweb.com',
+    keywords='python pyramid sqlalchemy',
+    packages=find_packages('src', exclude=['ez_setup']),
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
+    paster_plugins=['pyramid'],
     install_requires=[
         'pyramid',
+        'pyramid_basemodel',
         'SQLAlchemy',
         'passlib',
-    ]
+    ],
+    extras_require={
+        'test': [
+            'coverage',
+            'flake8',
+            'nose',
+            'nose-selecttests',
+            'unittest2',
+            'webtest',
+        ],
+    },
+    entry_points="""\
+    [paste.app_factory]
+    main = bms:main
+    """,
 )

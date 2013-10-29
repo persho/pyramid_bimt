@@ -1,0 +1,22 @@
+<metal:block use-macro="main_template">
+  <div metal:fill-slot="content" class="login-form" >
+
+    <h1>Login</h1>
+
+    <form class="login" action="${url}" method="post" role="form">
+      <div class="form-group">
+        <label for="form-login">Email</label>
+        <input type="email" class="form-control" name="email" id="form-login"
+               placeholder="Enter email" value="${email}" />
+      </div>
+      <div class="form-group">
+        <label class="control-label" for="form-password">Password</label>
+        <input type="password" class="form-control" name="password" id="form-password"
+               placeholder="Enter password" value="${password}" />
+      </div>
+      <input type="hidden" name="came_from" value="${came_from}" />
+      <button type="submit" name="submit" class="btn btn-primary">Log in</button>
+    </form>
+
+  </div>
+</metal:block>

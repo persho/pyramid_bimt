@@ -1,0 +1,23 @@
+<metal:block use-macro="main_template">
+
+    <metal:block fill-slot="css">
+      <tal:block repeat="css_link css_links|[]">
+        <link rel="stylesheet"
+              href="${request.static_url(css_link)}"
+              type="text/css" />
+      </tal:block>
+    </metal:block>
+
+    <div metal:fill-slot="content" id="content">
+
+      <h1>${title}</h1>
+      <form tal:replace="structure form" />
+
+    </div>
+
+    <metal:block fill-slot="js">
+      <script type="text/javascript"
+              src="${request.static_url('deform:static/scripts/deform.js')}"></script>
+    </metal:block fill-slot="js">
+
+</metal:block>
