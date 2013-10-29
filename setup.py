@@ -51,8 +51,4 @@ setup(
             'webtest',
         ],
     },
-    entry_points="""\
-    [paste.app_factory]
-    main = bms:main
-    """,
 )
