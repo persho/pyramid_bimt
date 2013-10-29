@@ -13,14 +13,14 @@ logger = logging.getLogger(__name__)
 def groupfinder(userid, request):
     user = User.get(userid)
     if user and user.groups:
-        return ['g:%s' % g.name for g in user.groups]
+        return ['g:{}'.format(g.name) for g in user.groups]
     else:
         return []
 
 
 class UserFactory(object):
     __acl__ = [
-        (Allow, u'g:admins', ALL_PERMISSIONS),
+        (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
     def __init__(self, request):
