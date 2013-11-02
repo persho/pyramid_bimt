@@ -9,6 +9,7 @@
         <th>Event Type</th>
         <th>User</th>
         <th>Comment</th>
+        <th><a class="btn btn-xs btn-success" href="${request.route_url('audit_log_add')}">Add</a></th>
       </tr>
       <tr tal:repeat="entry entries">
         <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
@@ -19,6 +20,7 @@
         </td>
         <td><a href="${request.route_url('user', user_id=entry.user.email)}">${entry.user.email}</a></td>
         <td>${entry.comment}</td>
+        <td><a class="btn btn-xs btn-danger" href="${request.route_url('audit_log_delete', entry_id=entry.id)}">delete</a></td>
       </tr>
     </table>
   </div>

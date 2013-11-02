@@ -4,6 +4,7 @@
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import Authenticated
+from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import User
 
 import logging
@@ -44,5 +45,23 @@ class UserFactory(object):
             user.__parent__ = self
             user.__name__ = key
             return user
+        else:
+            raise KeyError
+
+
+class AuditLogFactory(object):
+    __acl__ = [
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+    ]
+
+    def __init__(self, request):
+        self.request = request
+
+    def __getitem__(self, key):
+        entry = AuditLogEntry.get(key)
+        if entry:
+            entry.__parent__ = self
+            entry.__name__ = key
+            return entry
         else:
             raise KeyError
