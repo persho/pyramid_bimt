@@ -15,6 +15,8 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
+import deform
+
 
 user_group_table = Table(
     'user_group',
@@ -85,10 +87,15 @@ class User(Base, BaseMixin):
         String,
         unique=True,
         nullable=False,
+        info={'colanderalchemy': dict(
+            widget=deform.widget.PasswordWidget(size=128),
+            title='Email'
+        )}
     )
     password = Column(
         Unicode(120),
         nullable=False,
+        info={'colanderalchemy': dict(title='Password')}
     )
     settings = relationship(
         "UserSettings",

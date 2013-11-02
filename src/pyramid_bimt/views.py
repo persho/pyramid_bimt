@@ -16,21 +16,10 @@ from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import User
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
+from colanderalchemy import SQLAlchemySchemaNode
 
 import deform
 import colander
-
-
-class LoginSchema(colander.MappingSchema):
-    email = colander.SchemaNode(
-        colander.String(),
-        title='Email',
-    )
-    password = colander.SchemaNode(
-        colander.String(),
-        widget=deform.widget.PasswordWidget(size=128),
-        title='Password',
-    )
 
 
 @view_config(
@@ -39,7 +28,7 @@ class LoginSchema(colander.MappingSchema):
     layout='default',
 )
 class LoginForm(FormView):
-    schema = LoginSchema()
+    schema = SQLAlchemySchemaNode(User, includes=["username", "password"])
     buttons = ('login', )
     title = 'Login'
     form_options = (('formid', 'login'), ('method', 'POST'))
