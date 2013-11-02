@@ -6,12 +6,14 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
-from pyramid_bimt.models import User
-from pyramid_bimt.models import AuditLogEntry
-from pyramid_bimt.security import verify
-from pyramid_deform import FormView
+from pyramid_bimt.events import UserDisabled
+from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
+from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import User
+from pyramid_bimt.security import verify
+from pyramid_deform import FormView
 
 import deform
 import colander
@@ -56,6 +58,11 @@ class LoginForm(FormView):
             headers = remember(self.request, user.email)
             self.request.registry.notify(UserLoggedIn(self.request, user))
             self.request.session.flash(u"Login successful.")
+
+            if not user.enabled:
+                self.request.session.flash(
+                    u"Your account is disabled.", 'warning')
+
             return HTTPFound(location=came_from, headers=headers)
         self.request.session.flash(u"Login failed.", 'error')
 
@@ -134,6 +141,30 @@ def user(request):
         'user': user_,
         'fields': fields,
     }
+
+
+@view_config(route_name='user_enable', permission='admin')
+def user_enable(request):
+    user = request.context
+    if user.enable():
+        request.registry.notify(UserEnabled(request, user))
+        request.session.flash('User {} enabled.'.format(user.email))
+    else:
+        request.session.flash(
+            'User {} already enabled, skipping.'.format(user.email))
+    return HTTPFound(location=request.route_path('user', user_id=user.email))
+
+
+@view_config(route_name='user_disable', permission='admin')
+def user_disable(request):
+    user = request.context
+    if user.disable():
+        request.registry.notify(UserDisabled(request, user))
+        request.session.flash('User {} disabled.'.format(user.email))
+    else:
+        request.session.flash(
+            'User {} already disabled, skipping.'.format(user.email))
+    return HTTPFound(location=request.route_path('user', user_id=user.email))
 
 
 @view_config(

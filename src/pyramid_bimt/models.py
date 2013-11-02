@@ -72,6 +72,42 @@ class User(Base, BaseMixin):
         nullable=False,
     )
 
+    @property
+    def admin(self):
+        """True if User is in 'admins' group, False otherwise."""
+        return 'admins' in [g.name for g in self.groups]
+
+    @property
+    def enabled(self):
+        """True if User is in 'users' group, False otherwise."""
+        return 'users' in [g.name for g in self.groups]
+
+    def enable(self):
+        """Enable User by putting it in the 'users' group.
+
+        :return: True if user was enabled, False if nothing changed.
+        :rtype: bool
+        """
+        if not self.enabled:
+            users = Group.get('users')
+            self.groups.append(users)
+            return True
+        else:
+            return False
+
+    def disable(self):
+        """Disable User by removing it from the 'users' group.
+
+        :return: True if user was disabled, False if nothing changed.
+        :rtype: bool
+        """
+        if self.enabled:
+            users = Group.get('users')
+            self.groups.remove(users)
+            return True
+        else:
+            return False
+
     @classmethod
     def get(self, email):
         """Get a User by email."""

@@ -3,6 +3,7 @@
 
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
+from pyramid.security import Authenticated
 from pyramid_bimt.models import User
 
 import logging
@@ -16,6 +17,17 @@ def groupfinder(userid, request):
         return ['g:{}'.format(g.name) for g in user.groups]
     else:
         return []
+
+
+class RootFactory(object):
+    __acl__ = [
+        (Allow, Authenticated, 'personal'),
+        (Allow, 'g:users', 'user'),
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+    ]
+
+    def __init__(self, request):
+        self.request = request
 
 
 class UserFactory(object):

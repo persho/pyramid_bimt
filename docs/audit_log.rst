@@ -18,6 +18,8 @@ Audit log event types, provided by default by this package are:
 * UserLoggedIn
 * UserLoggedOut
 * UserChangedPassword
+* UserEnabled
+* UserDisabled
 
 Event types are stored in the ``audit_log_event_type`` table, so every app
 can add its specific event types. A single Audit log event type needs to have

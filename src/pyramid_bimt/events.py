@@ -35,6 +35,22 @@ class IUserChangedPassword(Interface):
     user = Attribute('The user who changes its password.')
 
 
+class IUserEnabled(Interface):
+    """An event type that is emitted whenever a user is enabled, meaning
+    it is put in the 'users' group and can access app views."""
+
+    request = Attribute('The request object')
+    user = Attribute('The user who was enabled.')
+
+
+class IUserDisabled(Interface):
+    """An event type that is emitted whenever a user is disabled, meaning
+    it is removed from the 'users' group and can no longer access app views."""
+
+    request = Attribute('The request object')
+    user = Attribute('The user who was disabled.')
+
+
 class IUserDeleted(Interface):
     """An event type that is emitted whenever a user confirms an email
     address, typically by clicking on a link received by email."""
@@ -93,6 +109,28 @@ class UserLoggedOut(PyramidBIMTEvent):
 @implementer(IUserChangedPassword)
 class UserChangedPassword(PyramidBIMTEvent):
     """Emitted whenever a user changes its password."""
+
+    def __init__(self, request, user, data=None):
+        self.request = request
+        self.user = user
+        self.data = data
+        self.log_event()
+
+
+@implementer(IUserEnabled)
+class UserEnabled(PyramidBIMTEvent):
+    """Emitted whenever a user is enabled."""
+
+    def __init__(self, request, user, data=None):
+        self.request = request
+        self.user = user
+        self.data = data
+        self.log_event()
+
+
+@implementer(IUserDisabled)
+class UserDisabled(PyramidBIMTEvent):
+    """Emitted whenever a user is disabled."""
 
     def __init__(self, request, user, data=None):
         self.request = request

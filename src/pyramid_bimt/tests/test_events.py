@@ -47,7 +47,7 @@ class TestUserSignedUpEvent(unittest.TestCase):
 
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].user_id, 1)
-        self.assertEqual(entries[0].event_type_id, 5)
+        self.assertEqual(entries[0].event_type_id, 7)
 
 
 class TestUserLoggedInEvent(unittest.TestCase):
@@ -82,7 +82,7 @@ class TestUserLoggedInEvent(unittest.TestCase):
 
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].user_id, 1)
-        self.assertEqual(entries[0].event_type_id, 3)
+        self.assertEqual(entries[0].event_type_id, 5)
 
 
 class TestUserLoggedOutEvent(unittest.TestCase):
@@ -117,7 +117,7 @@ class TestUserLoggedOutEvent(unittest.TestCase):
 
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].user_id, 1)
-        self.assertEqual(entries[0].event_type_id, 4)
+        self.assertEqual(entries[0].event_type_id, 6)
 
 
 class TestUserChangedPasswordEvent(unittest.TestCase):
@@ -153,3 +153,73 @@ class TestUserChangedPasswordEvent(unittest.TestCase):
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].user_id, 1)
         self.assertEqual(entries[0].event_type_id, 1)
+
+
+class TestUserEnabledEvent(unittest.TestCase):
+
+    def setUp(self):
+        testing.setUp()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test___init__(self):
+        """Test the __init__ method."""
+        from pyramid_bimt.events import UserEnabled
+        request = testing.DummyRequest()
+        user = _make_user()
+        event = UserEnabled(request, user, data={'foo'})
+        self.assertEqual(event.request, request)
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.data, {'foo'})
+
+    def test_logged_to_audit_log(self):
+        """Test that the event is logged to the Audit log."""
+        from pyramid_bimt.events import UserEnabled
+        from pyramid_bimt.models import AuditLogEntry
+        request = testing.DummyRequest()
+        user = _make_user()
+
+        request.registry.notify(UserEnabled(request, user))
+        entries = list(AuditLogEntry.get_all())
+
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].user_id, 1)
+        self.assertEqual(entries[0].event_type_id, 4)
+
+
+class TestUserDisabledEvent(unittest.TestCase):
+
+    def setUp(self):
+        testing.setUp()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test___init__(self):
+        """Test the __init__ method."""
+        from pyramid_bimt.events import UserDisabled
+        request = testing.DummyRequest()
+        user = _make_user()
+        event = UserDisabled(request, user, data={'foo'})
+        self.assertEqual(event.request, request)
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.data, {'foo'})
+
+    def test_logged_to_audit_log(self):
+        """Test that the event is logged to the Audit log."""
+        from pyramid_bimt.events import UserDisabled
+        from pyramid_bimt.models import AuditLogEntry
+        request = testing.DummyRequest()
+        user = _make_user()
+
+        request.registry.notify(UserDisabled(request, user))
+        entries = list(AuditLogEntry.get_all())
+
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].user_id, 1)
+        self.assertEqual(entries[0].event_type_id, 3)

@@ -45,9 +45,14 @@ def add_default_content():
             Session.add(type_)
         Session.flush()
 
-        # Init the admin group
+        # Init the admins group
         admins = Group(name='admins')
         Session.add(admins)
+        Session.flush()
+
+        # Init the users group
+        users = Group(name='users')
+        Session.add(users)
         Session.flush()
 
         # Init the admin user account
@@ -56,4 +61,5 @@ def add_default_content():
             password=encrypt('secret'),
         )
         admin.groups.append(admins)
+        admin.groups.append(users)
         Session.add(admin)
