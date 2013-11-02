@@ -27,14 +27,22 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(types[1].title, 'User Deleted')
         self.assertEqual(types[1].description, 'Emitted whenever a user is deleted.')  # noqa
 
-        self.assertEqual(types[2].name, 'UserLoggedIn')
-        self.assertEqual(types[2].title, 'User Logged In')
-        self.assertEqual(types[2].description, 'Emitted whenever a user logs in.')  # noqa
+        self.assertEqual(types[2].name, 'UserDisabled')
+        self.assertEqual(types[2].title, 'User Disabled')
+        self.assertEqual(types[2].description, 'Emitted whenever a user is disabled.')  # noqa
 
-        self.assertEqual(types[3].name, 'UserLoggedOut')
-        self.assertEqual(types[3].title, 'User Logged Out')
-        self.assertEqual(types[3].description, 'Emitted whenever a user logs out.')  # noqa
+        self.assertEqual(types[3].name, 'UserEnabled')
+        self.assertEqual(types[3].title, 'User Enabled')
+        self.assertEqual(types[3].description, 'Emitted whenever a user is enabled.')  # noqa
 
-        self.assertEqual(types[4].name, 'UserSignedUp')
-        self.assertEqual(types[4].title, 'User Signed Up')
-        self.assertEqual(types[4].description, 'Emitted whenever a new user is created.')  # noqa
+        self.assertEqual(types[4].name, 'UserLoggedIn')
+        self.assertEqual(types[4].title, 'User Logged In')
+        self.assertEqual(types[4].description, 'Emitted whenever a user logs in.')  # noqa
+
+        self.assertEqual(types[5].name, 'UserLoggedOut')
+        self.assertEqual(types[5].title, 'User Logged Out')
+        self.assertEqual(types[5].description, 'Emitted whenever a user logs out.')  # noqa
+
+        self.assertEqual(types[6].name, 'UserSignedUp')
+        self.assertEqual(types[6].title, 'User Signed Up')
+        self.assertEqual(types[6].description, 'Emitted whenever a new user is created.')  # noqa

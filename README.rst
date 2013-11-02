@@ -21,4 +21,4 @@ TODO
 
 * forgot password form & email
 * integration with JVZoo IPN
-* user enable/disable
+* manual entries to audit log

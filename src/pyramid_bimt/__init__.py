@@ -41,6 +41,18 @@ def includeme(config):
     config.add_route('users', '/users', factory=UserFactory)
     config.add_route(
         'user', '/users/{user_id}', factory=UserFactory, traverse='/{user_id}')
+    config.add_route(
+        'user_enable',
+        '/users/{user_id}/enable',
+        factory=UserFactory,
+        traverse='/{user_id}',
+    )
+    config.add_route(
+        'user_disable',
+        '/users/{user_id}/disable',
+        factory=UserFactory,
+        traverse='/{user_id}',
+    )
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_simpleauth.tests')
