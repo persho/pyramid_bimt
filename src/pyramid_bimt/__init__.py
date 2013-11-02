@@ -16,6 +16,9 @@ def includeme(config):
     # Setup the DB session and such
     config.include('pyramid_basemodel')
 
+    # Include pyramid layout
+    config.include('pyramid_layout')
+
     # Add helpful properties to the request object
     settings = config.registry.settings
     config.set_request_property(

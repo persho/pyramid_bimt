@@ -38,6 +38,7 @@ setup(
     install_requires=[
         'pyramid',
         'pyramid_basemodel',
+        'pyramid_layout',
         'SQLAlchemy',
         'passlib',
     ],
