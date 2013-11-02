@@ -175,38 +175,6 @@ def audit_log_delete(request):
     return HTTPFound(location=request.route_path('audit_log'))
 
 
-def users_ids():
-    users = User.get_all()
-    return [(user.id, user.email) for user in users]
-
-
-def event_types_ids():
-    types = AuditLogEventType.get_all()
-    return [(type_.id, type_.name) for type_ in types]
-
-
-class AuditLogAddEntrySchema(colander.Schema):
-    timestamp = colander.SchemaNode(
-        colander.DateTime(),
-        title='Timestamp',
-    )
-    user_id = colander.SchemaNode(
-        colander.Integer(),
-        title='User ID',
-        widget=deform.widget.SelectWidget(values=users_ids())
-    )
-    event_type_id = colander.SchemaNode(
-        colander.Integer(),
-        title='Event Type ID',
-        widget=deform.widget.SelectWidget(values=event_types_ids())
-    )
-    comment = colander.SchemaNode(
-        colander.String(),
-        title='Comment',
-        missing=u'Manual audit log entry',
-    )
-
-
 @view_config(
     route_name='audit_log_add',
     renderer='templates/form.pt',
@@ -214,7 +182,10 @@ class AuditLogAddEntrySchema(colander.Schema):
     permission='admin',
 )
 class AuditLogAddEntryForm(FormView):
-    schema = AuditLogAddEntrySchema()
+    schema = SQLAlchemySchemaNode(
+        AuditLogEntry,
+        includes=['timestamp', 'user_id', 'event_type_id', 'comment']
+    )
     buttons = ('submit', )
     title = 'Add Audit log entry'
     form_options = (('formid', 'login'), ('method', 'POST'))

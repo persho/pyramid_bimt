@@ -16,6 +16,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 import deform
+import colander
 
 
 user_group_table = Table(
@@ -171,60 +172,6 @@ class User(Base, BaseMixin):
         return q
 
 
-class AuditLogEntry(Base):
-    """A class representing an Audit log entry."""
-
-    __tablename__ = 'audit_log_entries'
-
-    id = Column(
-        Integer,
-        primary_key=True,
-    )
-
-    timestamp = Column(
-        DateTime,
-        default=datetime.utcnow,
-    )
-
-    user_id = Column(
-        Integer,
-        ForeignKey('users.id'),
-    )
-
-    event_type_id = Column(
-        Integer,
-        ForeignKey('audit_log_event_types.id'),
-    )
-
-    comment = Column(
-        Unicode,
-    )
-
-    @classmethod
-    def get(self, id):
-        """Get an AuditLogEntry by id."""
-        result = Session.query(AuditLogEntry).filter_by(id=id)
-        if result.count() < 1:
-            return None
-        return result.one()
-
-    @classmethod
-    def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
-        """Return all Audit log entries.
-
-        filter_by: dict -> {'name': 'foo'}
-
-        By default, order by AuditLogEntry.AuditLogEventType.
-        """
-        AuditLogEntry = class_
-        q = Session.query(AuditLogEntry)
-        q = q.order_by(getattr(AuditLogEntry, order_by).desc())
-        if filter_by:
-            q = q.filter_by(**filter_by)
-        q = q.limit(limit)
-        return q
-
-
 class AuditLogEventType(Base):
     """A class representing an Audit log event type."""
 
@@ -280,4 +227,87 @@ class AuditLogEventType(Base):
         q = q.order_by(getattr(AuditLogEventType, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)
+        return q
+
+
+@colander.deferred
+def users_choice_widget(node, kw):
+    users = User.get_all()
+    choices = [(user.id, user.email) for user in users]
+    return deform.widget.SelectWidget(values=choices)
+
+
+@colander.deferred
+def event_types_choice_widget():
+    types = AuditLogEventType.get_all()
+    choices = [(type_.id, type_.name) for type_ in types]
+    return deform.widget.SelectWidget(values=choices)
+
+
+class AuditLogEntry(Base):
+    """A class representing an Audit log entry."""
+
+    __tablename__ = 'audit_log_entries'
+
+    id = Column(
+        Integer,
+        primary_key=True,
+    )
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow,
+        info={'colanderalchemy': dict(title='Timestamp')}
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey('users.id'),
+        info={'colanderalchemy': dict(
+            title='User ID',
+            # TODO: Make values dynamic, not read at startup
+            widget=users_choice_widget
+        )}
+    )
+
+    event_type_id = Column(
+        Integer,
+        ForeignKey('audit_log_event_types.id'),
+        info={'colanderalchemy': dict(
+            title='Event Type ID',
+            # TODO: Make values dynamic, not read at startup
+            widget=event_types_choice_widget
+        )}
+    )
+
+    comment = Column(
+        Unicode,
+        info={'colanderalchemy': dict(
+            title='Comment',
+            missing=u'Manual audit log entry',
+        )}
+    )
+
+    @classmethod
+    def get(self, id):
+        """Get an AuditLogEntry by id."""
+        result = Session.query(AuditLogEntry).filter_by(id=id)
+        if result.count() < 1:
+            return None
+        return result.one()
+
+    @classmethod
+    def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
+        """Return all Audit log entries.
+
+        filter_by: dict -> {'name': 'foo'}
+
+        By default, order by AuditLogEntry.AuditLogEventType.
+        """
+        AuditLogEntry = class_
+        q = Session.query(AuditLogEntry)
+        q = q.order_by(getattr(AuditLogEntry, order_by).desc())
+        if filter_by:
+            q = q.filter_by(**filter_by)
+        q = q.limit(limit)
         return q
