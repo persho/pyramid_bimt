@@ -5,15 +5,15 @@ from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
 from pyramid.security import remember
-from pyramid.view import view_config
 from pyramid_basemodel import Session
+from pyramid.view import view_config, view_defaults
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
-from pyramid_bimt.models import User
+from pyramid_bimt.models import User, UserSettings
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
 from colanderalchemy import SQLAlchemySchemaNode
@@ -89,73 +89,67 @@ def forbidden_redirect(context, request):
     return HTTPFound(location=location)
 
 
-@view_config(
-    route_name='users',
-    permission='admin',
-    renderer='templates/users.pt',
-    layout='default',
-)
-def users(request):
-    return {
-        'users': User.get_all(),
-    }
+@view_defaults(route_name='user')
+class UserView(object):
+    def __init__(self, context, request):
+        self.request = request
+        self.context = context
 
+    @view_config(
+        route_name='users',
+        permission='admin',
+        renderer='templates/users.pt',
+        layout='default',
+    )
+    def list(self):
+        return {
+            'users': User.get_all(),
+        }
 
-@view_config(
-    route_name='user',
-    permission='admin',
-    renderer='templates/user.pt',
-    layout='default',
-)
-def user(request):
-    user_ = request.context
-    fields = []
-    skip = ['profile', 'get', 'get_all', 'get_by_id', 'password', 'user']
+    @view_config(
+        permission='admin',
+        renderer='templates/user.pt',
+        layout='default',
+    )
+    def view(self):
+        user_ = self.context
+        fields = (self.view.schema.dictify(user_) or {}).get('settings', [])
+        return {
+            'user': user_,
+            'fields': fields,
+        }
 
-    for attr in [attr for attr in user_.__class__.__dict__ if not attr.startswith('_')]:  # noqa
-        if attr in skip:
-            continue
-        elif attr == 'groups':
-            fields.append(
-                {'key': 'user_{}'.format(attr), 'value': ', '.join([g.name for g in user_.groups])})  # noqa
+    @view_config(name='enable', permission='admin')
+    def user_enable(self):
+        user = self.context
+        if user.enable():
+            self.request.registry.notify(UserEnabled(self.request, user))
+            self.request.session.flash('User {} enabled.'.format(user.email))
         else:
-            fields.append(
-                {'key': 'user_{}'.format(attr), 'value': getattr(user_, attr)})
+            self.request.session.flash(
+                'User {} already enabled, skipping.'.format(user.email))
+        return HTTPFound(
+            location=self.request.route_path('user', traverse=(user.email,))
+        )
 
-    for attr in [attr for attr in user_.profile.__class__.__dict__ if not attr.startswith('_')]:  # noqa
-        if attr in skip:
-            continue
-        fields.append(
-            {'key': 'profile_{}'.format(attr), 'value': getattr(user_.profile, attr)})  # noqa
+    @view_config(name='disable', permission='admin')
+    def user_disable(self):
+        user = self.context
+        if user.disable():
+            self.request.registry.notify(UserDisabled(self.request, user))
+            self.request.session.flash('User {} disabled.'.format(user.email))
+        else:
+            self.request.session.flash(
+                'User {} already disabled, skipping.'.format(user.email))
+        return HTTPFound(
+            location=self.request.route_path('user', traverse=(user.email,))
+        )
 
-    return {
-        'user': user_,
-        'fields': fields,
-    }
-
-
-@view_config(route_name='user_enable', permission='admin')
-def user_enable(request):
-    user = request.context
-    if user.enable():
-        request.registry.notify(UserEnabled(request, user))
-        request.session.flash('User {} enabled.'.format(user.email))
-    else:
-        request.session.flash(
-            'User {} already enabled, skipping.'.format(user.email))
-    return HTTPFound(location=request.route_path('user', user_id=user.email))
-
-
-@view_config(route_name='user_disable', permission='admin')
-def user_disable(request):
-    user = request.context
-    if user.disable():
-        request.registry.notify(UserDisabled(request, user))
-        request.session.flash('User {} disabled.'.format(user.email))
-    else:
-        request.session.flash(
-            'User {} already disabled, skipping.'.format(user.email))
-    return HTTPFound(location=request.route_path('user', user_id=user.email))
+    view.schema = SQLAlchemySchemaNode(
+        User,
+        includes=["settings"],
+        overrides={"settings": {"includes": ["key", "value"]}}
+    )
 
 
 @view_config(

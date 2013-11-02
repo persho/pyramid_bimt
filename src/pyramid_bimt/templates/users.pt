@@ -15,12 +15,12 @@
             <td>${user.id}</td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_url('user', user_id=user.email)}">${user.email}
+                 href="${request.route_url('user', traverse=(user.email,))}">${user.email}
             </td>
             <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
             <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
-            <td tal:condition="not user.enabled"><a class="btn btn-xs btn-success" href="${request.route_url('user_enable', user_id=user.email)}">enable</td>
-            <td tal:condition="user.enabled"><a class="btn btn-xs btn-danger" href="${request.route_url('user_disable', user_id=user.email)}">disable</td>
+            <td tal:condition="not user.enabled"><a class="btn btn-xs btn-success" href="${request.route_url('user', traverse=(user.email, 'enable'))}">enable</td>
+            <td tal:condition="user.enabled"><a class="btn btn-xs btn-danger" href="${request.route_url('user', traverse=(user.email, 'disable'))}">disable</td>
         </tr>
       </table>
     </div>

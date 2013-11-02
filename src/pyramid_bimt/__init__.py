@@ -41,23 +41,9 @@ def includeme(config):
     # configure routes
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-
-    config.add_route(
-        'users', '/users', factory=UserFactory)
-    config.add_route(
-        'user', '/users/{user_id}', factory=UserFactory, traverse='/{user_id}')
-    config.add_route(
-        'user_enable',
-        '/users/{user_id}/enable',
-        factory=UserFactory,
-        traverse='/{user_id}',
-    )
-    config.add_route(
-        'user_disable',
-        '/users/{user_id}/disable',
-        factory=UserFactory,
-        traverse='/{user_id}',
-    )
+    config.add_route('audit-log', '/audit-log')
+    config.add_route('users', '/users', factory=UserFactory)
+    config.add_route('user', '/users/*traverse', factory=UserFactory)
 
     config.add_route('audit_log', '/audit_log', factory=AuditLogFactory)
     config.add_route(
