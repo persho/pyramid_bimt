@@ -1,0 +1,8 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:define-macro="layout">
+  <body>
+    <div metal:define-slot="content" />
+  </body>
+</html>
