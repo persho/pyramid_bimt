@@ -45,6 +45,7 @@ setup(
         'test': [
             'coverage',
             'flake8',
+            'mock',
             'nose',
             'nose-selecttests',
             'unittest2',

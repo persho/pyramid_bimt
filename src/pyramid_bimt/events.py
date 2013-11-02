@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides events triggered on user creation, login, logout, etc."""
 
+from pyramid_basemodel import Session
 from zope.interface import Attribute
 from zope.interface import Interface
 from zope.interface import implementer
@@ -42,49 +43,67 @@ class IUserDeleted(Interface):
     user = Attribute('The user who owns the email address.')
 
 
+class PyramidBIMTEvent(object):
+    """A base class for events raised by pyramid_bimt package."""
+
+    def log_event(self):
+        from pyramid_bimt.models import AuditLogEntry
+        from pyramid_bimt.models import AuditLogEventType
+        event_type = AuditLogEventType.get(name=self.__class__.__name__)
+        entry = AuditLogEntry(
+            user_id=self.user.id,
+            event_type_id=event_type.id,
+        )
+        Session.add(entry)
+
+
 @implementer(IUserCreated)
-class UserSignedUp(object):
-    """An instance of this class is emitted whenever a new user is created."""
+class UserSignedUp(PyramidBIMTEvent):
+    """Emitted whenever a new user is created."""
 
     def __init__(self, request, user, data=None):
         self.request = request
         self.user = user
         self.data = data
+        self.log_event()
 
 
 @implementer(IUserLoggedIn)
-class UserLoggedIn(object):
-    """An instance of this class is emitted whenever a user logs in."""
+class UserLoggedIn(PyramidBIMTEvent):
+    """Emitted whenever a user logs in."""
 
     def __init__(self, request, user, data=None):
         self.request = request
         self.user = user
         self.data = data
+        self.log_event()
 
 
 @implementer(IUserLoggedOut)
-class UserLoggedOut(object):
-    """An instance of this class is emitted whenever a user logs out."""
+class UserLoggedOut(PyramidBIMTEvent):
+    """Emitted whenever a user logs out."""
 
     def __init__(self, request, user, data=None):
         self.request = request
         self.user = user
         self.data = data
+        self.log_event()
 
 
 @implementer(IUserChangedPassword)
-class UserChangedPassword(object):
-    """An instance of this class is emitted whenever a password is changed."""
+class UserChangedPassword(PyramidBIMTEvent):
+    """Emitted whenever a user changes its password."""
 
     def __init__(self, request, user, data=None):
         self.request = request
         self.user = user
         self.data = data
+        self.log_event()
 
 
 @implementer(IUserDeleted)
-class UserDeleted(object):
-    """An instance of this class is emitted whenever a user is deleted."""
+class UserDeleted(PyramidBIMTEvent):
+    """Emitted whenever a user is deleted."""
 
     def __init__(self, request, username, data=None):
         self.request = request

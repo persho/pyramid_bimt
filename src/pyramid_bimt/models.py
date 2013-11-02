@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Define models."""
 
+from datetime import datetime
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
 from sqlalchemy import Column
+from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -57,6 +59,9 @@ class User(Base, BaseMixin):
     groups = relationship(
         'Group', secondary=user_group_table, backref='users')
 
+    audit_log_entries = relationship(
+        'AuditLogEntry', backref='user')
+
     email = Column(
         String,
         unique=True,
@@ -84,7 +89,7 @@ class User(Base, BaseMixin):
         return result.one()
 
     @classmethod
-    def get_all(class_, order_by='email', filter_by=None):
+    def get_all(class_, order_by='email', filter_by=None, limit=1000):
         """Return all users.
 
         filter_by: dict -> {'name': 'foo'}
@@ -94,6 +99,119 @@ class User(Base, BaseMixin):
         User = class_
         q = Session.query(User)
         q = q.order_by(getattr(User, order_by))
+        if filter_by:
+            q = q.filter_by(**filter_by)
+        q = q.limit(limit)
+        return q
+
+
+class AuditLogEntry(Base):
+    """A class representing an Audit log entry."""
+
+    __tablename__ = 'audit_log_entries'
+
+    id = Column(
+        Integer,
+        primary_key=True,
+    )
+
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey('users.id'),
+    )
+
+    event_type_id = Column(
+        Integer,
+        ForeignKey('audit_log_event_types.id'),
+    )
+
+    comment = Column(
+        Unicode,
+    )
+
+    @classmethod
+    def get(self, id):
+        """Get an AuditLogEntry by id."""
+        result = Session.query(AuditLogEntry).filter_by(id=id)
+        if result.count() < 1:
+            return None
+        return result.one()
+
+    @classmethod
+    def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
+        """Return all Audit log entries.
+
+        filter_by: dict -> {'name': 'foo'}
+
+        By default, order by AuditLogEntry.AuditLogEventType.
+        """
+        AuditLogEntry = class_
+        q = Session.query(AuditLogEntry)
+        q = q.order_by(getattr(AuditLogEntry, order_by).desc())
+        if filter_by:
+            q = q.filter_by(**filter_by)
+        q = q.limit(limit)
+        return q
+
+
+class AuditLogEventType(Base):
+    """A class representing an Audit log event type."""
+
+    __tablename__ = 'audit_log_event_types'
+
+    entries = relationship('AuditLogEntry', backref='event_type')
+
+    id = Column(
+        Integer,
+        primary_key=True,
+    )
+
+    name = Column(
+        String,
+        unique=True,
+        nullable=False,
+    )
+
+    title = Column(
+        Unicode,
+    )
+
+    description = Column(
+        Unicode,
+    )
+
+    @classmethod
+    def get(self, name):
+        """Get an AuditLogEventType by name."""
+        result = Session.query(AuditLogEventType).filter_by(name=name)
+        if result.count() < 1:
+            return None
+        return result.one()
+
+    @classmethod
+    def get_by_id(self, id):
+        """Get an AuditLogEventType by id."""
+        result = Session.query(AuditLogEventType).filter_by(id=id)
+        if result.count() < 1:
+            return None
+        return result.one()
+
+    @classmethod
+    def get_all(class_, order_by='name', filter_by=None):
+        """Return all Audit log event types.
+
+        filter_by: dict -> {'name': 'foo'}
+
+        By default, order by AuditLogEventType.name.
+        """
+        AuditLogEventType = class_
+        q = Session.query(AuditLogEventType)
+        q = q.order_by(getattr(AuditLogEventType, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)
         return q

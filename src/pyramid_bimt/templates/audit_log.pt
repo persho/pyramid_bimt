@@ -1,0 +1,26 @@
+<metal:block use-macro="main_template">
+
+  <div metal:fill-slot="content" id="content">
+
+    <h1>Audit Log</h1>
+    <table class="table">
+      <tr>
+        <th>Timestamp</th>
+        <th>Event Type</th>
+        <th>User</th>
+        <th>Comment</th>
+      </tr>
+      <tr tal:repeat="entry entries">
+        <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
+        <td>
+            <span data-toggle="tooltip" data-placement="bottom" title="${entry.event_type.description}">
+             ${entry.event_type.title}
+            </span>
+        </td>
+        <td><a href="${request.route_url('user', user_id=entry.user.email)}">${entry.user.email}</a></td>
+        <td>${entry.comment}</td>
+      </tr>
+    </table>
+  </div>
+
+</metal:block>
