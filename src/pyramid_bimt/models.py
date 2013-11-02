@@ -51,6 +51,25 @@ class Group(Base, BaseMixin):
         return group
 
 
+class UserSettings(Base, BaseMixin):
+    """A key value store for user settings."""
+
+    __tablename__ = 'user_settings'
+
+    key = Column(
+        String,
+        unique=True,
+        nullable=False,
+    )
+    value = Column(Unicode)
+
+    user_id = Column(
+        Integer,
+        ForeignKey('users.id'),
+        nullable=False
+    )
+
+
 class User(Base, BaseMixin):
     """A class representing a User."""
 
@@ -70,6 +89,10 @@ class User(Base, BaseMixin):
     password = Column(
         Unicode(120),
         nullable=False,
+    )
+    settings = relationship(
+        "UserSettings",
+        cascade="all,delete-orphan",
     )
 
     @property
