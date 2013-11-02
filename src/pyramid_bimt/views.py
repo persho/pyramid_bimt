@@ -7,8 +7,11 @@ from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
 from pyramid_bimt.models import User
+from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
+from pyramid_bimt.events import UserLoggedIn
+from pyramid_bimt.events import UserLoggedOut
 
 import deform
 import colander
@@ -51,6 +54,7 @@ class LoginForm(FormView):
         user = User.get(email)
         if (user is not None and verify(password, user.password)):
             headers = remember(self.request, user.email)
+            self.request.registry.notify(UserLoggedIn(self.request, user))
             self.request.session.flash(u"Login successful.")
             return HTTPFound(location=came_from, headers=headers)
         self.request.session.flash(u"Login failed.", 'error')
@@ -69,6 +73,7 @@ def logout(context, request):
     :result: Redirect to came_from.
     :rtype: pyramid.httpexceptions.HTTPFound
     """
+    request.registry.notify(UserLoggedOut(request, request.user))
     headers = forget(request)
     request.session.flash(u"You have been logged out.")
     location = request.params.get('came_from', request.application_url)
@@ -128,4 +133,16 @@ def user(request):
     return {
         'user': user_,
         'fields': fields,
+    }
+
+
+@view_config(
+    route_name='audit-log',
+    permission='admin',
+    renderer='templates/audit_log.pt',
+    layout='default',
+)
+def audit_log(request):
+    return {
+        'entries': AuditLogEntry.get_all(),
     }
