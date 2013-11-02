@@ -3,7 +3,7 @@
 
 from pyramid_basemodel import Session
 from pyramid_bimt.models import Group
-from pyramid_bimt.models import User
+from pyramid_bimt.models import User, UserSettings
 from pyramid_bimt.security import encrypt
 from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
@@ -59,6 +59,7 @@ def add_default_content():
         admin = User(
             email='admin@bar.com',
             password=encrypt('secret'),
+            settings=[UserSettings(key="bnh", value="on")]
         )
         admin.groups.append(admins)
         admin.groups.append(users)
