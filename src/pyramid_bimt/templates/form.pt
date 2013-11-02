@@ -16,8 +16,10 @@
     </div>
 
     <metal:block fill-slot="js">
-      <script type="text/javascript"
-              src="${request.static_url('deform:static/scripts/deform.js')}"></script>
+      <script src="${request.static_url('deform:static/scripts/deform.js')}" type="text/javascript"></script>
+      <script src="${request.static_url('deform:static/pickadate/picker.js')}" type="text/javascript"></script>
+      <script src="${request.static_url('deform:static/pickadate/picker.date.js')}" type="text/javascript"></script>
+      <script src="${request.static_url('deform:static/pickadate/picker.time.js')}" type="text/javascript"></script>
     </metal:block fill-slot="js">
 
 </metal:block>

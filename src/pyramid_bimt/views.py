@@ -6,11 +6,13 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
+from pyramid_basemodel import Session
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import User
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
@@ -168,7 +170,7 @@ def user_disable(request):
 
 
 @view_config(
-    route_name='audit-log',
+    route_name='audit_log',
     permission='admin',
     renderer='templates/audit_log.pt',
     layout='default',
@@ -177,3 +179,84 @@ def audit_log(request):
     return {
         'entries': AuditLogEntry.get_all(),
     }
+
+
+@view_config(
+    route_name='audit_log_delete',
+    permission='admin',
+)
+def audit_log_delete(request):
+    entry = request.context
+    Session.delete(entry)
+    request.session.flash(u'Audit log entry deleted.')
+    return HTTPFound(location=request.route_path('audit_log'))
+
+
+def users_ids():
+    users = User.get_all()
+    return [(user.id, user.email) for user in users]
+
+
+def event_types_ids():
+    types = AuditLogEventType.get_all()
+    return [(type_.id, type_.name) for type_ in types]
+
+
+class AuditLogAddEntrySchema(colander.Schema):
+    timestamp = colander.SchemaNode(
+        colander.DateTime(),
+        title='Timestamp',
+    )
+    user_id = colander.SchemaNode(
+        colander.Integer(),
+        title='User ID',
+        widget=deform.widget.SelectWidget(values=users_ids())
+    )
+    event_type_id = colander.SchemaNode(
+        colander.Integer(),
+        title='Event Type ID',
+        widget=deform.widget.SelectWidget(values=event_types_ids())
+    )
+    comment = colander.SchemaNode(
+        colander.String(),
+        title='Comment',
+        missing=u'Manual audit log entry',
+    )
+
+
+@view_config(
+    route_name='audit_log_add',
+    renderer='templates/form.pt',
+    layout='default',
+    permission='admin',
+)
+class AuditLogAddEntryForm(FormView):
+    schema = AuditLogAddEntrySchema()
+    buttons = ('submit', )
+    title = 'Add Audit log entry'
+    form_options = (('formid', 'login'), ('method', 'POST'))
+
+    def __call__(self):
+        result = super(AuditLogAddEntryForm, self).__call__()
+        if isinstance(result, dict):
+            result['title'] = self.title
+        return result
+
+    def submit_success(self, appstruct):
+        entry = AuditLogEntry(
+            timestamp=appstruct['timestamp'],
+            user_id=appstruct['user_id'],
+            event_type_id=appstruct['event_type_id'],
+            comment=appstruct['comment'],
+        )
+        Session.add(entry)
+        self.request.session.flash(u"Audit log entry added.")
+        return HTTPFound(location=self.request.route_path('audit_log'))
+
+    def appstruct(self):
+        return {
+            'timestamp': self.request.params.get('timestamp', None),
+            'user_id': self.request.params.get('user_id', 0),
+            'event_type_id': self.request.params.get('event_type_id', 0),
+            'comment': self.request.params.get('comment', ''),
+        }

@@ -4,6 +4,7 @@
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.acl import UserFactory
 from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
@@ -37,8 +38,9 @@ def includeme(config):
     # configure routes
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('audit-log', '/audit-log')
-    config.add_route('users', '/users', factory=UserFactory)
+
+    config.add_route(
+        'users', '/users', factory=UserFactory)
     config.add_route(
         'user', '/users/{user_id}', factory=UserFactory, traverse='/{user_id}')
     config.add_route(
@@ -52,6 +54,19 @@ def includeme(config):
         '/users/{user_id}/disable',
         factory=UserFactory,
         traverse='/{user_id}',
+    )
+
+    config.add_route('audit_log', '/audit_log', factory=AuditLogFactory)
+    config.add_route(
+        'audit_log_add',
+        '/audit-log/add',
+        factory=AuditLogFactory,
+    )
+    config.add_route(
+        'audit_log_delete',
+        '/audit-log/{entry_id}/delete',
+        factory=AuditLogFactory,
+        traverse='/{entry_id}',
     )
 
     # Run a venusian scan to pick up the declarative configuration.
