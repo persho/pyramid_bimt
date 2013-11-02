@@ -6,14 +6,16 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid_basemodel import Session
-from pyramid.view import view_config, view_defaults
+from pyramid.view import view_config
+from pyramid.view import view_defaults
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
-from pyramid_bimt.models import User, UserSettings
+from pyramid_bimt.models import User
+from pyramid_bimt.models import UserSettings
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
 from colanderalchemy import SQLAlchemySchemaNode
