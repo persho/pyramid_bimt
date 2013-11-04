@@ -18,7 +18,7 @@
              ${entry.event_type.title}
             </span>
         </td>
-        <td><a href="${request.route_url('user', traverse=(entry.user.email,)}">${entry.user.email}</a></td>
+        <td><a href="${request.route_url('user', traverse=(entry.user.email, ))}">${entry.user.email}</a></td>
         <td>${entry.comment}</td>
         <td><a class="btn btn-xs btn-danger" href="${request.route_url('audit_log_delete', entry_id=entry.id)}">delete</a></td>
       </tr>

@@ -240,7 +240,7 @@ def users_choice_widget(node, kw):
 
 
 @colander.deferred
-def event_types_choice_widget():
+def event_types_choice_widget(node, kw):
     types = AuditLogEventType.get_all()
     choices = [(type_.id, type_.name) for type_ in types]
     return deform.widget.SelectWidget(values=choices)
