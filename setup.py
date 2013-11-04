@@ -60,7 +60,4 @@ setup(
             'waitress',
         ],
     },
-    dependency_links=[
-        "https://github.com/stefanofontanelli/ColanderAlchemy/archive/2abcc36a17bb4680a872938717f3af250f22b1db.tar.gz#ColanderAlchemy-0.3.dev0"  # noqa
-    ],
 )
