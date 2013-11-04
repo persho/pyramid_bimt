@@ -5,9 +5,9 @@ python:
 env:
   global:
   - secure: |-
-      eWQmVzpv7TqRe9PV0GyQXwZMRRRU9AKmlBLzBCt/hC5vOzvyXHZxKwdCfP25
-      DuHpcHfPerDsZXurvAVw63WMcUW7isGu27Kw+wSjPv9eboBqhUOvl8T4ZH+1
-      3+VGyvZoFtFv6DhIUOzvSE3xHRoMmZALm14wcUIKk/dBiFh76a8=  # COVERALLS TOKEN
+      YTvnghR+9P9jN+cxAvfUekStim0ncA9PzA3evSCUhDruvcG+UfarpdjB65O/oujGfa
+      uSjRwr1NmkR6/r0k96/LA9EyKdzVqNr/v+SVaWeVmzPva1h29jWJu4CIZqjwqyYqSy
+      eSZuV9+dxQL7CXny6FwI5qG/CZwtMAACyh1lyVg=  # COVERALLS TOKEN
 
 install:
  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
