@@ -89,14 +89,16 @@ class User(Base, BaseMixin):
         unique=True,
         nullable=False,
         info={'colanderalchemy': dict(
-            widget=deform.widget.PasswordWidget(size=128),
-            title='Email'
+            title='Email',
         )}
     )
     password = Column(
         Unicode(120),
         nullable=False,
-        info={'colanderalchemy': dict(title='Password')}
+        info={'colanderalchemy': dict(
+            title='Password',
+            widget=deform.widget.PasswordWidget(size=128),
+        )}
     )
     settings = relationship(
         "UserSettings",
