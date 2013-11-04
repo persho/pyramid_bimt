@@ -38,6 +38,7 @@ setup(
     install_requires=[
         'pyramid',
         'pyramid_basemodel',
+        'pyramid_deform',
         'pyramid_layout',
         'SQLAlchemy',
         'ColanderAlchemy>=0.3.dev0',
@@ -52,6 +53,11 @@ setup(
             'nose-selecttests',
             'unittest2',
             'webtest',
+        ],
+        'development': [
+            'pyramid_debugtoolbar',
+            'Sphinx',
+            'waitress',
         ],
     },
     dependency_links=[

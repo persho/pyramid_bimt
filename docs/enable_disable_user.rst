@@ -3,6 +3,7 @@ Enable/Disable User
 ===================
 
 We follow a concept of enabled/disabled members:
+
 * enabled members can login and use the app normally
 * disabled members can login too, but cannot use the app's normal views, they
   are only allowed to see their account page

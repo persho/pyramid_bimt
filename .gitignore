@@ -1,0 +1,16 @@
+.coverage
+.installed.cfg
+.mr.developer.cfg
+bin/
+bms-app.db
+build/
+develop-eggs/
+docs/html/
+htmlcov/
+include/
+lib/
+local
+man/
+parts
+src/pyramid_bimt
+var
