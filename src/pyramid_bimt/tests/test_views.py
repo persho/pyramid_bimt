@@ -26,7 +26,8 @@ class TestUserView(unittest.TestCase):
         context = User.get("admin@bar.com")
         resp = UserView(context, request).view()
         self.assertEqual(resp["user"], context)
-        self.assertEqual(resp["fields"], [{"key": "bnh", "value": "on"}])
+        self.assertEqual(list(resp["audit_log_entries"]), [])
+        self.assertEqual(resp["settings"], [{"key": "bnh", "value": "on"}])
 
 
 class TestUserViewFunctional(unittest.TestCase):
