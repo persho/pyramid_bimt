@@ -30,7 +30,7 @@ import colander
     layout='default',
 )
 class LoginForm(FormView):
-    schema = SQLAlchemySchemaNode(User, includes=["username", "password"])
+    schema = SQLAlchemySchemaNode(User, includes=["email", "password"])
     buttons = ('login', )
     title = 'Login'
     form_options = (('formid', 'login'), ('method', 'POST'))
