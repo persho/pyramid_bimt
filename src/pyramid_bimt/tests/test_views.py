@@ -6,7 +6,6 @@ from pyramid_basemodel import Session
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt import configure
 
-import mock
 import unittest
 import webtest
 

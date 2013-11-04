@@ -13,15 +13,10 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
-from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import User
-from pyramid_bimt.models import UserSettings
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
 from colanderalchemy import SQLAlchemySchemaNode
-
-import deform
-import colander
 
 
 @view_config(
