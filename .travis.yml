@@ -23,6 +23,7 @@ after_success:
 
 notifications:
   irc:
+    skip_join: true
     channels:
       - "irc.freenode.org#niteoweb"
     template:
