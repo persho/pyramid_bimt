@@ -10,7 +10,6 @@ env:
       3+VGyvZoFtFv6DhIUOzvSE3xHRoMmZALm14wcUIKk/dBiFh76a8=  # COVERALLS TOKEN
 
 install:
- - npm install jshint -g
  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
  - make .installed.cfg
 
