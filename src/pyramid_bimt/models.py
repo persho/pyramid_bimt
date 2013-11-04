@@ -268,7 +268,7 @@ class AuditLogEntry(Base):
         info={'colanderalchemy': dict(
             title='User ID',
             # TODO: Make values dynamic, not read at startup
-            widget=users_choice_widget
+            widget=users_choice_widget,
         )}
     )
 

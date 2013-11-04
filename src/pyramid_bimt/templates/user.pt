@@ -1,15 +1,41 @@
 <metal:block use-macro="main_template">
 
-    <div metal:fill-slot="content" id="content">
+  <div metal:fill-slot="content" id="content">
 
-      <a href="${request.route_url('users')}">Back to Users overview</a>
-      <h1>${user.email}</h1>
-      <table class="table">
-        <tr tal:repeat="field fields">
-            <th>${field.key}</th><td>${field.value}</td>
-        </tr>
-      </table>
+    <a href="${request.route_url('users')}">Back to Users overview</a>
+    <h1>${user.email}</h1>
+    <table class="table">
+      <tr><th>Email</th><td>${user.email}</td><th>
+      <tr><th>Created</th><td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
+      <tr><th>Modified</th><td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
+      <tr><th>Groups</th><td>${', '.join([g.name for g in user.groups])}</td><th>
+      <tr>
+        <th>Audit Log</th>
+        <td>
+          <table class="table table-condensed">
+            <tr>
+              <th>Timestamp</th>
+              <th>Event Type</th>
+              <th>Comment</th>
+            </tr>
+            <tr tal:repeat="entry audit_log_entries">
+              <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
+              <td>${entry.event_type.title}</td>
+              <td>${entry.comment}</td>
+            </tr>
+          </table>
+        </td>
+      <th>
+    </table>
 
-    </div/>
+
+    <h2>User Settings</h2>
+    <table class="table">
+      <tr tal:repeat="setting settings">
+        <th>${setting.key}</th><td>${setting.value}</td>
+      </tr>
+    </table>
+
+  </div/>
 
 </metal:block>

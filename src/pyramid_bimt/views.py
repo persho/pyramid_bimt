@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
+from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
 from pyramid.security import remember
-from pyramid_basemodel import Session
 from pyramid.view import view_config
 from pyramid.view import view_defaults
+from pyramid_basemodel import Session
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
@@ -16,7 +17,6 @@ from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import User
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
-from colanderalchemy import SQLAlchemySchemaNode
 
 
 @view_config(
@@ -110,10 +110,12 @@ class UserView(object):
     )
     def view(self):
         user_ = self.context
-        fields = (self.view.schema.dictify(user_) or {}).get('settings', [])
+        settings = (self.view.schema.dictify(user_) or {}).get('settings', [])
         return {
             'user': user_,
-            'fields': fields,
+            'audit_log_entries': AuditLogEntry.get_all(
+                filter_by={'user_id': user_.id}),
+            'settings': settings,
         }
 
     @view_config(name='enable', permission='admin')
