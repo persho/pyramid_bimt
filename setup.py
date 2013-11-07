@@ -18,7 +18,7 @@ long_description = \
 
 setup(
     name='pyramid_bimt',
-    version='0.1',
+    version='0.2',
     description='Base package for BIMT apps.',
     long_description=long_description,
     classifiers=[
@@ -34,7 +34,6 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
-    paster_plugins=['pyramid'],
     install_requires=[
         'pyramid',
         'pyramid_basemodel',
@@ -58,6 +57,7 @@ setup(
             'pyramid_debugtoolbar',
             'Sphinx',
             'waitress',
+            'zest.releaser',
         ],
     },
 )

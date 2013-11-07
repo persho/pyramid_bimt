@@ -44,6 +44,11 @@ tests: .installed.cfg
 	@bin/code-analysis
 	@bin/nosetests -s
 
+release:
+	@bin/prerelease
+	@VERSION=`python setup.py --version`; echo "Tagging version v$$VERSION"; git tag -a v$$VERSION -m "version $$VERSION"
+	@bin/postrelease
+
 clean:
 	@rm -rf .coverage .installed.cfg .mr.developer.cfg .Python bin build \
 		develop-eggs dist docs/html htmlcov lib include man parts \

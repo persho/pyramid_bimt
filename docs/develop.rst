@@ -46,3 +46,40 @@ Now you can run a variety of commands::
     $ make tests  # run all tests
     $ make coverage  # generate HTML report of test coverage
     $ make clean  # clean up if something is broken and start from scratch
+
+
+Release process
+---------------
+
+The ``pytamid_bimt`` package is hosted on our private PyPI at
+http://niteoweb-pypi.herokuapp.com/packages/. New releases are made automatically
+by Travis CI whenever a new tag is pushed to GitHub. To make a new release,
+run ``make release``. This command will do the following:
+
+#. Ask you for a version number for this release, update setup.py/CHANGELOG.rst
+   with it and offer to commit the version change to git.
+#. Create a git tag with the name 'v{$VERSION}'.
+#. Ask you for a version number for the next release and append ``.dev0`` to it
+   to indicate it's in development. It will again update setup.py/CHANGELOR.rst
+   and offer to commit changes.
+#. Offer to push both commits and the new tag.
+#. Travis CI will build the tag and deploy the new release to our internal
+   PyPI.
+
+
+To use releases from our private PyPI in your project, you need to add the
+following to your buildout::
+
+    [buildout]
+    extensions += isotoma.buildout.basicauth
+    find-links += find-links += http://niteoweb-pypi.herokuapp.com/packages/
+    allow-hosts += *@niteoweb-pypi.herokuapp.com
+
+    [basicauth]
+    credentials = niteoweb-pypi
+    interactive = no
+
+    [niteoweb-pypi]
+    uri = http://niteoweb-pypi.herokuapp.com/packages/
+    username = niteoweb
+    password = ni6kixe2why9ga
