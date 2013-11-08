@@ -32,7 +32,6 @@ def configure(config, settings={}):
     config.set_session_factory(session_factory)
 
     # configure routes
-    config.add_route('home', '/')  # should be overwritten by the app
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('audit-log', '/audit-log')
@@ -91,4 +90,15 @@ def main(global_config, **settings):
     )
 
     includeme(config)
+
+    # Add Home view & route, to serve as example, but not being used in apps
+    def home(context, request):
+        """Default Home view. Should be overwritten by an app."""
+        return {
+            'title': 'A sample BIMT page',
+            'form': None,
+        }
+    config.add_view('home', renderer='templates/form.pt', layout='default')
+    config.add_route('home', '/')  # should be overwritten by the app
+
     return config.make_wsgi_app()

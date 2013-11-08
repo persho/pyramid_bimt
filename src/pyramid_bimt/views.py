@@ -36,19 +36,6 @@ The Big IM Toolbox Team
 
 
 @view_config(
-    route_name='home',
-    renderer='templates/form.pt',
-    layout='default',
-)
-def home(context, request):
-    """Default Home view. Should be overwritten by an app."""
-    return {
-        'title': 'A sample BIMT page',
-        'form': None,
-    }
-
-
-@view_config(
     route_name='login',
     renderer='templates/form.pt',
     layout='default',
