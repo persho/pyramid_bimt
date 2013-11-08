@@ -7,7 +7,7 @@ from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
-from pyramid_bimt.models import UserSettings
+from pyramid_bimt.models import UserProperty
 from pyramid_bimt.security import encrypt
 from sqlalchemy import engine_from_config
 
@@ -62,9 +62,9 @@ def add_default_content():
 
         # Init the admin user account
         admin = User(
-            email='admin@bar.com',
+            email=u'admin@bar.com',
             password=encrypt('secret'),
-            settings=[UserSettings(key="bnh", value=u"on")]
+            properties=[UserProperty(key=u"bimt", value=u"rocks"), ],
         )
         admin.groups.append(admins)
         admin.groups.append(users)

@@ -54,10 +54,10 @@ class Group(Base, BaseMixin):
         return group
 
 
-class UserSettings(Base, BaseMixin):
-    """A key value store for user settings."""
+class UserProperty(Base, BaseMixin):
+    """A key value store for user properties."""
 
-    __tablename__ = 'user_settings'
+    __tablename__ = 'user_properties'
 
     key = Column(
         String,
@@ -107,10 +107,25 @@ class User(Base, BaseMixin):
             title='Full name',
         )}
     )
-    settings = relationship(
-        "UserSettings",
+    properties = relationship(
+        "UserProperty",
         cascade="all,delete-orphan",
     )
+
+    def get_property(self, key):
+        result = Session.query(UserProperty).filter_by(user_id=self.id, key=key)
+        if result.count() < 1:
+            return None
+        return result.one().value
+
+    def set_property(self, key, value, strict=False):
+        result = Session.query(UserProperty).filter_by(user_id=self.id, key=key)
+        if result.count() < 1 and strict:
+            raise ValueError('Property "{}" not found.'.format(key))
+        elif result.count() < 1 and not strict:
+            self.properties.append(UserProperty(key=key, value=value))
+        else:
+            result.one().value = value
 
     @property
     def admin(self):
