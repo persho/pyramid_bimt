@@ -39,6 +39,7 @@ setup(
         'pyramid_basemodel',
         'pyramid_deform',
         'pyramid_layout',
+        'pyramid_mailer',
         'SQLAlchemy',
         'ColanderAlchemy>=0.3.dev0',
         'passlib',

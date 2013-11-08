@@ -94,10 +94,17 @@ class User(Base, BaseMixin):
     )
     password = Column(
         Unicode(120),
-        nullable=False,
+        nullable=True,
         info={'colanderalchemy': dict(
             title='Password',
             widget=deform.widget.PasswordWidget(size=128),
+        )}
+    )
+    fullname = Column(
+        Unicode(120),
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Full name',
         )}
     )
     settings = relationship(
