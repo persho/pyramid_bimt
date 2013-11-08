@@ -2,7 +2,6 @@
 """Views for loggin in, logging out, etc."""
 
 from colanderalchemy import SQLAlchemySchemaNode
-from passlib.utils import generate_password
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import forget
@@ -17,6 +16,7 @@ from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
+from pyramid_bimt.security import generate
 from pyramid_bimt.security import verify
 from pyramid_deform import FormView
 from pyramid_mailer import get_mailer
@@ -76,7 +76,7 @@ class LoginForm(FormView):
         email = appstruct['email'].lower()
         user = User.get(email)
         if user is not None:
-            password = generate_password()
+            password = generate()
             user.password = encrypt(password)
             mailer = get_mailer(self.request)
             message = Message(
