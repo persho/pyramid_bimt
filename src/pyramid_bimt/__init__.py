@@ -3,17 +3,24 @@
 
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from pyramid_basemodel import Session
 from pyramid_bimt.acl import AuditLogFactory
+from pyramid_bimt.acl import RootFactory
 from pyramid_bimt.acl import UserFactory
 from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
+from sqlalchemy import engine_from_config
 
 
 def configure(config, settings={}):
 
     # Include pyramid layout
     config.include('pyramid_layout')
+
+    # Add route to deform's static resources
+    config.add_static_view('deform_static', 'deform:static')
 
     # Add helpful properties to the request object
     config.set_request_property(
@@ -25,6 +32,7 @@ def configure(config, settings={}):
     config.set_session_factory(session_factory)
 
     # configure routes
+    config.add_route('home', '/')  # should be overwritten by the app
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('audit-log', '/audit-log')
@@ -69,3 +77,18 @@ def includeme(config):
     config.set_authentication_policy(authentication_policy)
 
     configure(config, settings)
+
+
+def main(global_config, **settings):
+    """This function returns a Pyramid WSGI application and is only used
+    when developing BIMT in isolation."""
+    engine = engine_from_config(settings, 'sqlalchemy.')
+    Session.configure(bind=engine)
+
+    config = Configurator(
+        settings=settings,
+        root_factory=RootFactory,
+    )
+
+    includeme(config)
+    return config.make_wsgi_app()

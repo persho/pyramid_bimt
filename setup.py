@@ -61,4 +61,8 @@ setup(
             'zest.releaser',
         ],
     },
+    entry_points="""\
+    [paste.app_factory]
+    main = pyramid_bimt:main
+    """,
 )

@@ -10,6 +10,29 @@ import unittest
 import webtest
 
 
+class TestLoginViewsFunctional(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB()
+        configure(self.config)
+        app = self.config.make_wsgi_app()
+        self.testapp = webtest.TestApp(app)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_login(self):
+        resp = self.testapp.get('/login', status=200)
+        self.assertIn("<h1>Login</h1>", resp.text)
+        resp.form['email'] = 'admin@bar.com'
+        resp.form['password'] = 'secret'
+        resp = resp.form.submit('login')
+        self.assertIn("302 Found", resp.text)
+        resp = resp.follow()
+        self.assertIn("Login successful.", resp.text)
+
+
 class TestUserView(unittest.TestCase):
     def setUp(self):
         testing.setUp()
@@ -32,19 +55,9 @@ class TestUserView(unittest.TestCase):
 
 class TestUserViewFunctional(unittest.TestCase):
     def setUp(self):
-        class MyLayout(object):
-            def __init__(self, context, request):
-                self.request = request
-                self.context = context
-
         self.config = testing.setUp()
         initTestingDB()
         configure(self.config)
-        self.config.add_layout(
-            MyLayout,
-            'pyramid_bimt:templates/main.pt',
-            name="default"
-        )
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
 
