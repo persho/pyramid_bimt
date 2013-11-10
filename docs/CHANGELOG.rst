@@ -7,7 +7,8 @@ Changelog
 0.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added missing files to git.
+  [zupo]
 
 
 0.1.2 (2013-11-10)
