@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.1.6 (unreleased)
+0.1.6 (2013-11-10)
 ------------------
 
 - Set correct unique constraint for ``key`` in ``UserProperty``.
