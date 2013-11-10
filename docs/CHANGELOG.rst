@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.1.5 (unreleased)
+0.1.5 (2013-11-10)
 ------------------
 
 - Fix reset password email template.
