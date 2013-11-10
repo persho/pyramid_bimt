@@ -29,10 +29,10 @@
     </table>
 
 
-    <h2>User Settings</h2>
+    <h2>User Properties</h2>
     <table class="table">
-      <tr tal:repeat="setting settings">
-        <th>${setting.key}</th><td>${setting.value}</td>
+      <tr tal:repeat="property properties">
+        <th>${property.key}</th><td>${property.value}</td>
       </tr>
     </table>
 

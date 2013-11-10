@@ -153,12 +153,12 @@ class UserView(object):
     )
     def view(self):
         user_ = self.context
-        settings = (self.view.schema.dictify(user_) or {}).get('settings', [])
+        properties = (self.view.schema.dictify(user_) or {}).get('properties', [])  # noqa
         return {
             'user': user_,
             'audit_log_entries': AuditLogEntry.get_all(
                 filter_by={'user_id': user_.id}),
-            'settings': settings,
+            'properties': properties,
         }
 
     @view_config(name='enable', permission='admin')
@@ -189,8 +189,8 @@ class UserView(object):
 
     view.schema = SQLAlchemySchemaNode(
         User,
-        includes=["settings"],
-        overrides={"settings": {"includes": ["key", "value"]}}
+        includes=["properties"],
+        overrides={"properties": {"includes": ["key", "value"]}}
     )
 
 

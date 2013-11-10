@@ -64,7 +64,7 @@ def add_default_content():
         admin = User(
             email=u'admin@bar.com',
             password=encrypt('secret'),
-            properties=[UserProperty(key=u"bimt", value=u"rocks"), ],
+            properties=[UserProperty(key=u"bimt", value=u"on"), ],
         )
         admin.groups.append(admins)
         admin.groups.append(users)

@@ -7,7 +7,8 @@ Changelog
 0.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed regressions when refactoring UserSettings -> UserProperty.
+  [zupo]
 
 
 0.1.1 (2013-11-10)

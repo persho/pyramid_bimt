@@ -50,7 +50,7 @@ class TestUserView(unittest.TestCase):
         resp = UserView(context, request).view()
         self.assertEqual(resp["user"], context)
         self.assertEqual(list(resp["audit_log_entries"]), [])
-        self.assertEqual(resp["settings"], [{"key": "bnh", "value": "on"}])
+        self.assertEqual(resp["properties"], [{"key": "bimt", "value": "on"}])
 
 
 class TestUserViewFunctional(unittest.TestCase):
