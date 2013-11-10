@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.1.2 (unreleased)
+0.1.2 (2013-11-10)
 ------------------
 
 - Added redirect from /users/ to /users.
