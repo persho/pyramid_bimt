@@ -7,7 +7,8 @@ Changelog
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added the 'default return value' feature to get_property().
+  [zupo]
 
 
 0.1 (2013-11-08)

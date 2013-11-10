@@ -18,6 +18,8 @@ from sqlalchemy.orm import relationship
 import deform
 import colander
 
+_marker = object()
+
 
 user_group_table = Table(
     'user_group',
@@ -112,10 +114,19 @@ class User(Base, BaseMixin):
         cascade="all,delete-orphan",
     )
 
-    def get_property(self, key):
+    def get_property(self, key, default=_marker):
+        """TODO
+
+        :param default: The return value if no property is found. Raises
+            ValueError by default.
+        :type default: anything
+        """
         result = Session.query(UserProperty).filter_by(user_id=self.id, key=key)
         if result.count() < 1:
-            return None
+            if default == _marker:
+                raise ValueError(u'Cannot find property "{}".'.format(key))
+            else:
+                return default
         return result.one().value
 
     def set_property(self, key, value, strict=False):
