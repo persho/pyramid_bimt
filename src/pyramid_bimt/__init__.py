@@ -52,7 +52,7 @@ def configure(config, settings={}):
     )
 
     # Run a venusian scan to pick up the declarative configuration.
-    config.scan('pyramid_bimt', ignore='pyramid_simpleauth.tests')
+    config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
 
 
 def includeme(config):

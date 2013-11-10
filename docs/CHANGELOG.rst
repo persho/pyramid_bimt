@@ -7,7 +7,8 @@ Changelog
 0.1.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Ignore ``tests/`` subpackage when doing Venusian scan.
+  [zupo]
 
 
 0.1.3 (2013-11-10)
