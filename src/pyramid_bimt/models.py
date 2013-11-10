@@ -52,7 +52,7 @@ class Group(Base, BaseMixin):
 
     @classmethod
     def get(self, name):
-        group = Session.query(Group).filter(Group.name == name).one()
+        group = Group.query.filter(Group.name == name).one()
         return group
 
 
@@ -121,7 +121,7 @@ class User(Base, BaseMixin):
             ValueError by default.
         :type default: anything
         """
-        result = Session.query(UserProperty).filter_by(user_id=self.id, key=key)
+        result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1:
             if default == _marker:
                 raise ValueError(u'Cannot find property "{}".'.format(key))
@@ -130,7 +130,7 @@ class User(Base, BaseMixin):
         return result.one().value
 
     def set_property(self, key, value, strict=False):
-        result = Session.query(UserProperty).filter_by(user_id=self.id, key=key)
+        result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise ValueError('Property "{}" not found.'.format(key))
         elif result.count() < 1 and not strict:
@@ -177,7 +177,7 @@ class User(Base, BaseMixin):
     @classmethod
     def get(self, email):
         """Get a User by email."""
-        result = Session.query(User).filter_by(email=email)
+        result = User.query.filter_by(email=email)
         if result.count() < 1:
             return None
         return result.one()
@@ -185,7 +185,7 @@ class User(Base, BaseMixin):
     @classmethod
     def get_by_id(self, user_id):
         """Get a User by id."""
-        result = Session.query(User).filter_by(id=user_id)
+        result = User.query.filter_by(id=user_id)
         if result.count() < 1:
             return None
         return result.one()
@@ -199,7 +199,7 @@ class User(Base, BaseMixin):
         By default, order by User.email.
         """
         User = class_
-        q = Session.query(User)
+        q = User.query
         q = q.order_by(getattr(User, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)
