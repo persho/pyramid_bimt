@@ -3,8 +3,9 @@
 
 from pyramid import testing
 from pyramid_basemodel import Session
-from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
+from pyramid_bimt.testing import initTestingDB
 
 import unittest
 import webtest
@@ -15,6 +16,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.config = testing.setUp()
         initTestingDB()
         configure(self.config)
+        add_home_view(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
 

@@ -78,6 +78,24 @@ def includeme(config):
     configure(config, settings)
 
 
+def home(context, request):
+    """Default Home view. Should be overwritten by an app."""
+    return {
+        'title': 'A sample BIMT page',
+        'form': None,
+    }
+
+
+def add_home_view(config):
+    """Add Home view & route, to serve as example when developing pyramid_bimt
+    individually, but not being used in apps."""
+    config.add_view(
+        'pyramid_bimt.home',
+        renderer='pyramid_bimt:templates/form.pt',
+        layout='default',
+    )
+
+
 def main(global_config, **settings):
     """This function returns a Pyramid WSGI application and is only used
     when developing BIMT in isolation."""
@@ -90,15 +108,5 @@ def main(global_config, **settings):
     )
 
     includeme(config)
-
-    # Add Home view & route, to serve as example, but not being used in apps
-    def home(context, request):
-        """Default Home view. Should be overwritten by an app."""
-        return {
-            'title': 'A sample BIMT page',
-            'form': None,
-        }
-    config.add_view('home', renderer='templates/form.pt', layout='default')
-    config.add_route('home', '/')  # should be overwritten by the app
-
+    add_home_view(config)
     return config.make_wsgi_app()
