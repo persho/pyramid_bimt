@@ -10,6 +10,24 @@ Changelog
 - Added the 'default return value' feature to get_property().
   [zupo]
 
+- Refactored UserSettings -> UserProperty.
+  [zupo]
+
+- Added generate() method for generating random strings to ``security.py`` so
+  apps can reuse it.
+  [zupo]
+
+- Enabled developers to work on pyramid_bimt individually and not
+  necessarily inside the scope of some other app.
+  [zupo]
+
+- Made ``pyramid_bimt`` provide default ``pyramid_layout`` layout. Apps can
+  then use this default one or roll their own.
+  [zupo]
+
+- Added a basic password reset feature.
+  [zupo]
+
 
 0.1 (2013-11-08)
 ----------------
