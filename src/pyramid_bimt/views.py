@@ -27,7 +27,7 @@ Hi {fullname},
 
 your new password for BigMediaScraper is: {password}
 
-Login at ${login_url}.
+Login at {login_url}.
 
 
 Regards,

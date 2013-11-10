@@ -61,9 +61,11 @@ class UserProperty(Base, BaseMixin):
 
     __tablename__ = 'user_properties'
 
+    UniqueConstraint('key', 'user_id', name='key_user_id'),
+
     key = Column(
         String,
-        unique=True,
+        unique=False,
         nullable=False,
     )
     value = Column(Unicode)
