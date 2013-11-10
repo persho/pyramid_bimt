@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.1.4 (unreleased)
+0.1.4 (2013-11-10)
 ------------------
 
 - Ignore ``tests/`` subpackage when doing Venusian scan.
