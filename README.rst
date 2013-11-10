@@ -34,7 +34,5 @@ It provides a common base to develop BIMT projects/app from. Features:
 TODO
 ====
 
-* forgot password form & email
+* better test coverage
 * integration with JVZoo IPN
-* manual entries to audit log
-* case independent email/password
