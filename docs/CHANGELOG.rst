@@ -7,7 +7,8 @@ Changelog
 0.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix reset password email template.
+  [zupo]
 
 
 0.1.4 (2013-11-10)

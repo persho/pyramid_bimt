@@ -23,9 +23,9 @@ from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 
 PASSWORD_RESET_EMAIL_BODY = """
-Hi ${fullname},
+Hi {fullname},
 
-your new password for BigMediaScraper is: ${password}
+your new password for BigMediaScraper is: {password}
 
 Login at ${login_url}.
 
