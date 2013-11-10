@@ -129,7 +129,7 @@ def forbidden_redirect(context, request):
     return HTTPFound(location=location)
 
 
-@view_defaults(route_name='user')
+@view_defaults(route_name='user', permission='admin')
 class UserView(object):
     def __init__(self, context, request):
         self.request = request
@@ -137,7 +137,6 @@ class UserView(object):
 
     @view_config(
         route_name='users',
-        permission='admin',
         renderer='templates/users.pt',
         layout='default',
     )
@@ -147,7 +146,6 @@ class UserView(object):
         }
 
     @view_config(
-        permission='admin',
         renderer='templates/user.pt',
         layout='default',
     )
@@ -161,7 +159,7 @@ class UserView(object):
             'properties': properties,
         }
 
-    @view_config(name='enable', permission='admin')
+    @view_config(name='enable')
     def user_enable(self):
         user = self.context
         if user.enable():
@@ -174,7 +172,7 @@ class UserView(object):
             location=self.request.route_path('user', traverse=(user.email,))
         )
 
-    @view_config(name='disable', permission='admin')
+    @view_config(name='disable')
     def user_disable(self):
         user = self.context
         if user.disable():

@@ -7,6 +7,9 @@ Changelog
 0.1.2 (unreleased)
 ------------------
 
+- Added redirect from /users/ to /users.
+  [zupo]
+
 - Fixed regressions when refactoring UserSettings -> UserProperty.
   [zupo]
 

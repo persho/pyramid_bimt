@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """TODO:"""
 
+from pyramid.httpexceptions import HTTPFound
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import Authenticated
@@ -37,6 +38,8 @@ class UserFactory(object):
     ]
 
     def __init__(self, request):
+        if request.get('PATH_INFO') == '/users/':
+            raise HTTPFound(location=request.route_path('users'))
         self.request = request
 
     def __getitem__(self, key):
