@@ -80,7 +80,8 @@
 
     <!-- Le javascript
     ================================================== -->
-    <div tal:condition="request.registry.settings.get('production_deployment')">
+    <div tal:define="piwik_site_id request.registry.settings.get('bimt.piwik_site_id')"
+         tal:condition="piwik_site_id">
       <!-- Piwik -->
       <script type="text/javascript">
         var _paq = _paq || [];
@@ -90,7 +91,7 @@
         (function() {
           var u=(("https:" == document.location.protocol) ? "https" : "http") + "://piwik.niteoweb.com/";
           _paq.push(["setTrackerUrl", u+"piwik.php"]);
-          _paq.push(["setSiteId", "102"]);
+          _paq.push(["setSiteId", "${piwik_site_id}"]);
           var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
           g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
         })();
