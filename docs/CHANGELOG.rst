@@ -10,8 +10,8 @@ Changelog
 - Add fullname to /users and /user view.
   [matejc]
 
-- Add piwik_site_id to default_layout.pt, trigger it by
-  setting for example: `piwik_site_id = 102` to *.ini.
+- Add bimt.piwik_site_id to default_layout.pt, trigger it by
+  setting for example: `bimt.piwik_site_id = 102` to *.ini.
   [matejc]
 
 

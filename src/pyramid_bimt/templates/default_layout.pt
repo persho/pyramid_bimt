@@ -80,7 +80,7 @@
 
     <!-- Le javascript
     ================================================== -->
-    <div tal:define="piwik_site_id request.registry.settings.get('piwik_site_id')"
+    <div tal:define="piwik_site_id request.registry.settings.get('bimt.piwik_site_id')"
          tal:condition="piwik_site_id">
       <!-- Piwik -->
       <script type="text/javascript">
