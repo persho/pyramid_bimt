@@ -7,7 +7,12 @@ Changelog
 0.1.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add fullname to /users and /user view.
+  [matejc]
+
+- Add piwik_site_id to default_layout.pt, trigger it by
+  setting for example: `piwik_site_id = 102` to *.ini.
+  [matejc]
 
 
 0.1.6 (2013-11-10)
