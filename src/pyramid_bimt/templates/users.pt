@@ -6,6 +6,7 @@
       <table class="table">
         <tr>
           <th>ID</th>
+          <th>Full Name</th>
           <th>Email</th>
           <th>Created</th>
           <th>Modified</th>
@@ -13,6 +14,7 @@
         </tr>
         <tr tal:repeat="user users">
             <td>${user.id}</td>
+            <td>${user.fullname}</td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
                  href="${request.route_url('user', traverse=(user.email,))}">${user.email}
