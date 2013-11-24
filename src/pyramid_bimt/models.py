@@ -61,7 +61,7 @@ class UserProperty(Base, BaseMixin):
 
     __tablename__ = 'user_properties'
 
-    UniqueConstraint('key', 'user_id', name='key_user_id'),
+    UniqueConstraint('key', 'user_id', name='key_user_id')
 
     key = Column(
         String,
