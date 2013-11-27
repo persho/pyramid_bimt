@@ -11,7 +11,7 @@ Changelog
   [matejc]
 
 - Add bimt.piwik_site_id to default_layout.pt, trigger it by
-  setting for example: `bimt.piwik_site_id = 102` to *.ini.
+  setting for example: `bimt.piwik_site_id = 102` to .ini file.
   [matejc]
 
 
