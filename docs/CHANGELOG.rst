@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.1.7 (unreleased)
+0.1.7 (2013-11-27)
 ------------------
 
 - Add fullname to /users and /user view.
