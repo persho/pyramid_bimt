@@ -36,7 +36,23 @@ def configure(config, settings={}):
     config.add_route('logout', '/logout')
     config.add_route('audit-log', '/audit-log')
     config.add_route('users', '/users', factory=UserFactory)
-    config.add_route('user', '/users/*traverse', factory=UserFactory)
+    config.add_route('user_add', '/users/add', factory=UserFactory)
+    config.add_route(
+        'user', '/users/{user_id}',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_enable', '/users/{user_id}/enable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_disable', '/users/{user_id}/disable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_edit', '/users/{user_id}/edit',
+        factory=UserFactory, traverse='/{user_id}'
+    )
 
     config.add_route('audit_log', '/audit_log', factory=AuditLogFactory)
     config.add_route(
@@ -55,11 +71,29 @@ def configure(config, settings={}):
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
 
 
+def check_setting_entries(settings, entries):
+    not_found = []
+    for entry in entries:
+        if entry not in settings:
+            not_found += [entry]
+    if not_found:
+        raise Exception(
+            "Following settings entries are missing from .ini file: {}".format(
+                ", ".join(not_found)
+            )
+        )
+
+
 def includeme(config):
     """Allow developers to use ``config.include('pyramid_bimt')``."""
 
     # Get settings
     settings = config.registry.settings
+
+    # check settings entries needed to be set to application to work
+    check_setting_entries(settings, ['mail.default_sender',
+                                     'bimt.app_name',
+                                     'bimt.app_title'])
 
     # Setup the DB session and such
     config.include('pyramid_basemodel')

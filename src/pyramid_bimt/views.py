@@ -14,6 +14,7 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
@@ -21,11 +22,15 @@ from pyramid_bimt.security import verify
 from pyramid_deform import FormView
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
+from sqlalchemy.orm.exc import NoResultFound
+
+import colander
+import deform
 
 PASSWORD_RESET_EMAIL_BODY = """
 Hi {fullname},
 
-your new password for BigMediaScraper is: {password}
+your new password for {app_title} is: {password}
 
 Login at {login_url}.
 
@@ -76,20 +81,25 @@ class LoginForm(FormView):
         email = appstruct['email'].lower()
         user = User.get(email)
         if user is not None:
+
+            # change user's password and send email
             password = generate()
             user.password = encrypt(password)
             mailer = get_mailer(self.request)
             message = Message(
-                subject="BMS Password Reset",
-                sender="info@bigmediascraper.com",
-                recipients=[email, ],
+                subject="{} Password Reset".format(
+                    self.request.registry.settings['bimt.app_name']),
+                sender=self.request.registry.settings['mail.default_sender'],
+                recipients=[user.email, ],
                 body=PASSWORD_RESET_EMAIL_BODY.format(
                     fullname=user.fullname,
                     password=password,
                     login_url=self.request.route_url('login'),
+                    app_title=self.request.registry.settings['bimt.app_title']
                 ),
             )
             mailer.send(message)
+
             self.request.session.flash(
                 u"A new password was sent to your email.")
             return HTTPFound(location=came_from)
@@ -159,7 +169,7 @@ class UserView(object):
             'properties': properties,
         }
 
-    @view_config(name='enable')
+    @view_config(route_name='user_enable')
     def user_enable(self):
         user = self.context
         if user.enable():
@@ -169,10 +179,10 @@ class UserView(object):
             self.request.session.flash(
                 'User {} already enabled, skipping.'.format(user.email))
         return HTTPFound(
-            location=self.request.route_path('user', traverse=(user.email,))
+            location=self.request.route_path('users')
         )
 
-    @view_config(name='disable')
+    @view_config(route_name='user_disable')
     def user_disable(self):
         user = self.context
         if user.disable():
@@ -182,7 +192,7 @@ class UserView(object):
             self.request.session.flash(
                 'User {} already disabled, skipping.'.format(user.email))
         return HTTPFound(
-            location=self.request.route_path('user', traverse=(user.email,))
+            location=self.request.route_path('users')
         )
 
     view.schema = SQLAlchemySchemaNode(
@@ -190,6 +200,116 @@ class UserView(object):
         includes=["properties"],
         overrides={"properties": {"includes": ["key", "value"]}}
     )
+
+
+def group_validator(form, value):
+    try:
+        Group.get(value)
+    except NoResultFound:
+        raise colander.Invalid(form, 'Group must be one of: {}'.format(
+            ', '.join([g.name for g in Group.query.all()])))
+
+
+class UserEditSchema(colander.MappingSchema):
+    email = colander.SchemaNode(
+        colander.String(),
+        validator=colander.Email(),
+    )
+    fullname = colander.SchemaNode(
+        colander.String(),
+        widget=deform.widget.TextInputWidget()
+    )
+    groups = colander.SchemaNode(
+        colander.Sequence(),
+        colander.SchemaNode(
+            colander.String(),
+            name="Group",
+            validator=group_validator
+        ),
+    )
+
+
+@view_config(
+    route_name='user_edit',
+    renderer='templates/form.pt',
+    permission='admin',
+    layout='default',
+)
+class UserEditForm(FormView):
+    TITLE_EDIT = 'Edit User'
+    TITLE_ADD = 'Add User'
+
+    buttons = ('save', )
+    title = TITLE_EDIT
+    form_options = (('formid', 'useredit'), ('method', 'POST'))
+    schema = UserEditSchema()
+
+    def __call__(self):
+        self.edited_user = self.request.context
+        if not self.edited_user:
+            self.title = self.TITLE_ADD
+
+        self.request.layout_manager.layout.app_name = \
+            self.request.registry.settings['bimt.app_name']
+        self.request.layout_manager.layout.current_page = self.title
+
+        result = super(UserEditForm, self).__call__()
+        if isinstance(result, dict):
+            result['title'] = self.title
+        return result
+
+    def save_success(self, appstruct):
+        if self.edited_user:
+            # edit user
+            user = self.edited_user
+            user.email = appstruct['email']
+            user.fullname = appstruct['fullname']
+            user.groups = [Group.get(name) for name in appstruct['groups']]
+            self.request.session.flash(
+                u"User {} has been changed.".format(user.email))
+        else:
+            # add user
+            user = User(
+                email=appstruct['email'],
+                fullname=appstruct['fullname'],
+                groups=[Group.get(name) for name in appstruct['groups']]
+            )
+            Session.add(user)
+            self.request.session.flash(
+                u"User {} has been added.".format(user.email))
+
+        return HTTPFound(location=self.request.route_url('users'))
+
+    def appstruct(self):
+        params_groups = self.request.params.get('groups')
+        if self.edited_user and params_groups is None:
+            groups = [g.name for g in self.edited_user.groups]
+        else:
+            groups = [g for g in params_groups or []]
+
+        return {
+            'email': self.request.params.get(
+                'email', self.edited_user.email if self.edited_user else u''
+            ),
+            'fullname': self.request.params.get(
+                'fullname',
+                self.edited_user.fullname if self.edited_user else u''
+            ),
+            'groups': groups
+        }
+
+
+@view_config(
+    route_name='user_add',
+    renderer='templates/form.pt',
+    permission='admin',
+    layout='default'
+)
+class UserAddForm(UserEditForm):
+
+    def __call__(self):
+        self.request.context = None
+        return super(UserAddForm, self).__call__()
 
 
 @view_config(

@@ -43,12 +43,16 @@ class UserFactory(object):
         self.request = request
 
     def __getitem__(self, key):
-        user = User.get(key)
-        if user:
-            user.__parent__ = self
-            user.__name__ = key
-            return user
-        else:
+        try:
+            user_id = int(key)
+            user = User.get_by_id(user_id)
+            if user:
+                user.__parent__ = self
+                user.__name__ = key
+                return user
+            else:
+                raise KeyError
+        except ValueError:
             raise KeyError
 
 
