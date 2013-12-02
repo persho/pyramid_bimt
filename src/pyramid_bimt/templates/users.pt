@@ -2,7 +2,6 @@
 
     <div metal:fill-slot="content" id="content">
       <h1>Users</h1>
-      <a class="pull-right" href="${request.route_url('user_add')}">Add User</a>
       <table class="table">
         <tr>
           <th>ID</th>
@@ -11,25 +10,40 @@
           <th>Created</th>
           <th>Modified</th>
           <th>Enable/Disable</th>
-          <th>Actions</th>
+          <th>
+            <a class="btn btn-xs btn-success" href="${request.route_url('user_add')}">
+              <span class="glyphicon glyphicon-plus-sign"></span> Add
+            </a>
+          </th>
         </tr>
         <tr tal:repeat="user users">
-          <td>${user.id}</td>
-          <td>${user.fullname}</td>
           <td>
             <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-               href="${request.route_url('user', user_id=user.id)}">${user.email}
+               href="${request.route_url('user', user_id=user.id)}">${user.id}</a>
+          </td>
+          <td>
+            <a style="${'text-decoration: line-through' if not user.enabled else ''}"
+               href="${request.route_url('user', user_id=user.id)}">${user.fullname}</a>
+          </td>
+          <td>
+            <a style="${'text-decoration: line-through' if not user.enabled else ''}"
+               href="${request.route_url('user', user_id=user.id)}">${user.email}</a>
           </td>
           <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
           <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
-          <td tal:condition="not user.enabled"><a class="btn btn-xs btn-success" href="${request.route_url('user_enable', user_id=user.id)}">enable</td>
-          <td tal:condition="user.enabled"><a class="btn btn-xs btn-danger" href="${request.route_url('user_disable', user_id=user.id)}">disable</td>
-          <td>
-            <a href="${request.route_url('user', user_id=user.id)}" title="View">
-               <span class="glyphicon glyphicon-eye-open"></span>
+          <td tal:condition="not user.enabled">
+            <a class="btn btn-xs btn-success" href="${request.route_url('user_enable', user_id=user.id)}">
+              <span class="glyphicon glyphicon-play"></span> Enable
             </a>
-            <a href="${request.route_url('user_edit', user_id=user.id, traverse=('edit',))}" title="Edit">
-               <span class="glyphicon glyphicon-edit"></span>
+          </td>
+          <td tal:condition="user.enabled">
+            <a class="btn btn-xs btn-danger" href="${request.route_url('user_disable', user_id=user.id)}">
+              <span class="glyphicon glyphicon-pause"></span> Disable
+            </a>
+          </td>
+          <td>
+            <a class="btn btn-xs btn-primary" href="${request.route_url('user_edit', user_id=user.id)}">
+              <span class="glyphicon glyphicon-edit"></span> Edit
             </a>
           </td>
         </tr>

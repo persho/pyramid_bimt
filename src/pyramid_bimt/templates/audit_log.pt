@@ -9,7 +9,11 @@
         <th>Event Type</th>
         <th>User</th>
         <th>Comment</th>
-        <th><a class="btn btn-xs btn-success" href="${request.route_url('audit_log_add')}">Add</a></th>
+        <th>
+          <a class="btn btn-xs btn-success" href="${request.route_url('audit_log_add')}">
+            <span class="glyphicon glyphicon-plus-sign"></span> Add
+          </a>
+        </th>
       </tr>
       <tr tal:repeat="entry entries">
         <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
@@ -18,9 +22,13 @@
              ${entry.event_type.title}
             </span>
         </td>
-        <td><a href="${request.route_url('user', traverse=(entry.user.email, ))}">${entry.user.email}</a></td>
+        <td><a href="${request.route_url('user', user_id=entry.user.id)}">${entry.user.email}</a></td>
         <td>${entry.comment}</td>
-        <td><a class="btn btn-xs btn-danger" href="${request.route_url('audit_log_delete', entry_id=entry.id)}">delete</a></td>
+        <td>
+          <a class="btn btn-xs btn-danger" href="${request.route_url('audit_log_delete', entry_id=entry.id)}">
+            <span class="glyphicon glyphicon-remove-sign"></span> Delete
+          </a>
+        </td>
       </tr>
     </table>
   </div>
