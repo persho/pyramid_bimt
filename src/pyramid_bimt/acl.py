@@ -43,7 +43,7 @@ class UserFactory(object):
         self.request = request
 
     def __getitem__(self, key):
-        user = User.get(key)
+        user = User.get_by_id(key)
         if user:
             user.__parent__ = self
             user.__name__ = key

@@ -13,6 +13,12 @@ from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
+REQUIRED_SETTINGS = [
+    'mail.default_sender',
+    'bimt.app_name',
+    'bimt.app_title',
+]
+
 
 def configure(config, settings={}):
 
@@ -36,7 +42,23 @@ def configure(config, settings={}):
     config.add_route('logout', '/logout')
     config.add_route('audit-log', '/audit-log')
     config.add_route('users', '/users', factory=UserFactory)
-    config.add_route('user', '/users/*traverse', factory=UserFactory)
+    config.add_route('user_add', '/users/add', factory=UserFactory)
+    config.add_route(
+        'user', '/users/{user_id}',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_enable', '/users/{user_id}/enable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_disable', '/users/{user_id}/disable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_edit', '/users/{user_id}/edit',
+        factory=UserFactory, traverse='/{user_id}'
+    )
 
     config.add_route('audit_log', '/audit_log', factory=AuditLogFactory)
     config.add_route(
@@ -57,16 +79,19 @@ def configure(config, settings={}):
 
 def includeme(config):
     """Allow developers to use ``config.include('pyramid_bimt')``."""
-
-    # Get settings
-    settings = config.registry.settings
+    # make sure all required settings are set
+    for setting in REQUIRED_SETTINGS:
+        if setting not in config.registry.settings:
+            raise KeyError(
+                'The "{}" setting is required, please set '
+                'it in your .ini file.'.format(setting))
 
     # Setup the DB session and such
     config.include('pyramid_basemodel')
 
     # Setup authentication and authorization policies.
     authentication_policy = AuthTktAuthenticationPolicy(
-        secret=settings.get('authtkt.secret', 'secret'),
+        secret=config.registry.settings.get('authtkt.secret', 'secret'),
         hashalg='sha512',
         callback=groupfinder,
     )
@@ -75,7 +100,7 @@ def includeme(config):
     config.set_authorization_policy(authorization_policy)
     config.set_authentication_policy(authentication_policy)
 
-    configure(config, settings)
+    configure(config, config.registry.settings)
 
 
 def home(context, request):

@@ -7,7 +7,15 @@ Changelog
 0.1.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Required options are ``mail.default_sender``, ``bimt.app_name``,
+  ``bimt.app_title`` or application will fail at start. For example look
+  at the ``development.ini``.
+  [matejc]
+
+- Add and edit user form, for now only email, full name and groups. All
+  features are located in ``\users`` path. View/edit user options are in
+  Options column for each member.
+  [matejc]
 
 
 0.1.7 (2013-11-27)

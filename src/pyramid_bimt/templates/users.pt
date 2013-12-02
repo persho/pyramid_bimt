@@ -1,8 +1,8 @@
 <metal:block use-macro="main_template">
 
     <div metal:fill-slot="content" id="content">
-
       <h1>Users</h1>
+      <a class="pull-right" href="${request.route_url('user_add')}">Add User</a>
       <table class="table">
         <tr>
           <th>ID</th>
@@ -11,18 +11,27 @@
           <th>Created</th>
           <th>Modified</th>
           <th>Enable/Disable</th>
+          <th>Actions</th>
         </tr>
         <tr tal:repeat="user users">
-            <td>${user.id}</td>
-            <td>${user.fullname}</td>
-            <td>
-              <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_url('user', traverse=(user.email,))}">${user.email}
-            </td>
-            <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
-            <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
-            <td tal:condition="not user.enabled"><a class="btn btn-xs btn-success" href="${request.route_url('user', traverse=(user.email, 'enable'))}">enable</td>
-            <td tal:condition="user.enabled"><a class="btn btn-xs btn-danger" href="${request.route_url('user', traverse=(user.email, 'disable'))}">disable</td>
+          <td>${user.id}</td>
+          <td>${user.fullname}</td>
+          <td>
+            <a style="${'text-decoration: line-through' if not user.enabled else ''}"
+               href="${request.route_url('user', user_id=user.id)}">${user.email}
+          </td>
+          <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
+          <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
+          <td tal:condition="not user.enabled"><a class="btn btn-xs btn-success" href="${request.route_url('user_enable', user_id=user.id)}">enable</td>
+          <td tal:condition="user.enabled"><a class="btn btn-xs btn-danger" href="${request.route_url('user_disable', user_id=user.id)}">disable</td>
+          <td>
+            <a href="${request.route_url('user', user_id=user.id)}" title="View">
+               <span class="glyphicon glyphicon-eye-open"></span>
+            </a>
+            <a href="${request.route_url('user_edit', user_id=user.id, traverse=('edit',))}" title="Edit">
+               <span class="glyphicon glyphicon-edit"></span>
+            </a>
+          </td>
         </tr>
       </table>
     </div>
