@@ -14,7 +14,10 @@ import webtest
 
 class TestLoginViewsFunctional(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
         initTestingDB()
         configure(self.config)
         add_home_view(self.config)
@@ -58,7 +61,10 @@ class TestUserView(unittest.TestCase):
 
 class TestUserViewFunctional(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
         initTestingDB()
         configure(self.config)
         app = self.config.make_wsgi_app()
@@ -114,8 +120,10 @@ class TestUserViewFunctional(unittest.TestCase):
 
 class TestEditUserViewFunctional(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
-        self.config.registry.settings['bimt.app_name'] = "BIMT"
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
         initTestingDB()
         configure(self.config)
         app = self.config.make_wsgi_app()

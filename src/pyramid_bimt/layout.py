@@ -9,11 +9,11 @@ from pyramid_layout.panel import panel_config
 class DefaultLayout(object):
     page_title = 'BIMT App'
 
-    def __init__(self, context, request, app_name='BIMT', current_page='Home'):
+    def __init__(self, context, request, current_page='Home'):
         self.context = context
         self.request = request
-        self.app_name = app_name
         self.current_page = current_page
+        self.app_title = self.request.registry.settings['bimt.app_title']
 
 
 @panel_config(name='footer')

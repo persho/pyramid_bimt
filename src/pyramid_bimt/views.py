@@ -88,7 +88,7 @@ class LoginForm(FormView):
             mailer = get_mailer(self.request)
             message = Message(
                 subject="{} Password Reset".format(
-                    self.request.registry.settings['bimt.app_name']),
+                    self.request.registry.settings['bimt.app_title']),
                 sender=self.request.registry.settings['mail.default_sender'],
                 recipients=[user.email, ],
                 body=PASSWORD_RESET_EMAIL_BODY.format(
@@ -249,8 +249,6 @@ class UserEditForm(FormView):
         if not self.edited_user:
             self.title = self.TITLE_ADD
 
-        self.request.layout_manager.layout.app_name = \
-            self.request.registry.settings['bimt.app_name']
         self.request.layout_manager.layout.current_page = self.title
 
         result = super(UserEditForm, self).__call__()
