@@ -13,6 +13,12 @@ from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
+REQUIRED_SETTINGS = [
+    'mail.default_sender',
+    'bimt.app_name',
+    'bimt.app_title',
+]
+
 
 def configure(config, settings={}):
 
@@ -71,36 +77,21 @@ def configure(config, settings={}):
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
 
 
-def check_setting_entries(settings, entries):
-    not_found = []
-    for entry in entries:
-        if entry not in settings:
-            not_found += [entry]
-    if not_found:
-        raise Exception(
-            "Following settings entries are missing from .ini file: {}".format(
-                ", ".join(not_found)
-            )
-        )
-
-
 def includeme(config):
     """Allow developers to use ``config.include('pyramid_bimt')``."""
-
-    # Get settings
-    settings = config.registry.settings
-
-    # check settings entries needed to be set to application to work
-    check_setting_entries(settings, ['mail.default_sender',
-                                     'bimt.app_name',
-                                     'bimt.app_title'])
+    # make sure all required settings are set
+    for setting in REQUIRED_SETTINGS:
+        if setting not in config.registry.settings:
+            raise KeyError(
+                'The "{}" setting is required, please set '
+                'it in your .ini file.'.format(setting))
 
     # Setup the DB session and such
     config.include('pyramid_basemodel')
 
     # Setup authentication and authorization policies.
     authentication_policy = AuthTktAuthenticationPolicy(
-        secret=settings.get('authtkt.secret', 'secret'),
+        secret=config.registry.settings.get('authtkt.secret', 'secret'),
         hashalg='sha512',
         callback=groupfinder,
     )
@@ -109,7 +100,7 @@ def includeme(config):
     config.set_authorization_policy(authorization_policy)
     config.set_authentication_policy(authentication_policy)
 
-    configure(config, settings)
+    configure(config, config.registry.settings)
 
 
 def home(context, request):
