@@ -5,6 +5,7 @@ from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
+from pyramid_basemodel import Session
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import AuditLogEntry

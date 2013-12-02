@@ -92,30 +92,14 @@ class TestUserViewFunctional(unittest.TestCase):
         self.testapp.get('/users/1/disable', status=302)
         self.testapp.get('/users/1/enable', status=302)
 
-    def test_actions_users(self):
+    def test_user_actions(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
         resp = self.testapp.get('/users', status=200)
 
-        # view user action
-        self.assertIn(
-            '<a href="http://localhost/users/1" title="View">',
-            resp.text
-        )
-
-        # edit user action
-        self.assertIn(
-            '<a href="http://localhost/users/1/edit"'
-            ' title="Edit">',
-            resp.text
-        )
-
-        # add user action
-        self.assertIn(
-            '<a class="pull-right" href="http://localhost/users/add">'
-            'Add User</a>',
-            resp.text
-        )
+        self.assertIn('href="http://localhost/users/1"', resp.text)
+        self.assertIn('href="http://localhost/users/1/edit"', resp.text)
+        self.assertIn('href="http://localhost/users/add"', resp.text)
 
 
 class TestEditUserViewFunctional(unittest.TestCase):
