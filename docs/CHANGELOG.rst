@@ -4,8 +4,11 @@ Changelog
 =========
 
 
-0.1.8 (unreleased)
+0.1.8 (2013-12-02)
 ------------------
+
+- Moved ``/audit_log`` URL to ``/audit-log``.
+  [zupo]
 
 - Split ``views.py`` into ``views/`` sub-package.
   [zupo]
