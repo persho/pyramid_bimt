@@ -18,7 +18,7 @@ long_description = \
 
 setup(
     name='pyramid_bimt',
-    version='0.1.8',
+    version='0.1.9.dev0',
     description='Base package for BIMT apps.',
     long_description=long_description,
     classifiers=[
