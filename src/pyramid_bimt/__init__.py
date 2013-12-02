@@ -40,7 +40,6 @@ def configure(config, settings={}):
     # configure routes
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
-    config.add_route('audit-log', '/audit-log')
     config.add_route('users', '/users', factory=UserFactory)
     config.add_route('user_add', '/users/add', factory=UserFactory)
     config.add_route(
@@ -60,7 +59,7 @@ def configure(config, settings={}):
         factory=UserFactory, traverse='/{user_id}'
     )
 
-    config.add_route('audit_log', '/audit_log', factory=AuditLogFactory)
+    config.add_route('audit_log', '/audit-log', factory=AuditLogFactory)
     config.add_route(
         'audit_log_add',
         '/audit-log/add',
