@@ -49,7 +49,7 @@ class TestUserView(unittest.TestCase):
         testing.tearDown()
 
     def test_view_user(self):
-        from pyramid_bimt.views import UserView
+        from pyramid_bimt.views.user import UserView
         from pyramid_bimt.models import User
         context = User.get("admin@bar.com")
         request = testing.DummyRequest()
