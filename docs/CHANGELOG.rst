@@ -12,7 +12,6 @@ Changelog
   at the ``development.ini``.
   [matejc]
 
-
 - Add and edit user form, for now only email, full name and groups. All
   features are located in ``\users`` path. View/edit user options are in
   Options column for each member.
