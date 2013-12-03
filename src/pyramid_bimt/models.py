@@ -52,8 +52,7 @@ class Group(Base, BaseMixin):
 
     @classmethod
     def by_name(self, name):
-        group = Group.query.filter(Group.name == name).one()
-        return group
+        return Group.query.filter(Group.name == name).first()
 
 
 class UserProperty(Base, BaseMixin):
@@ -132,6 +131,7 @@ class User(Base, BaseMixin):
         return result.one().value
 
     def set_property(self, key, value, strict=False):
+        """TODO"""
         result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise ValueError('Property "{}" not found.'.format(key))
@@ -179,18 +179,12 @@ class User(Base, BaseMixin):
     @classmethod
     def by_id(self, user_id):
         """Get a User by id."""
-        result = User.query.filter_by(id=user_id)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return User.query.filter_by(id=user_id).first()
 
     @classmethod
     def by_email(self, email):
         """Get a User by email."""
-        result = User.query.filter_by(email=email)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return User.query.filter_by(email=email).first()
 
     @classmethod
     def get_all(class_, order_by='email', filter_by=None, limit=1000):
@@ -238,18 +232,12 @@ class AuditLogEventType(Base):
     @classmethod
     def by_name(self, name):
         """Get an AuditLogEventType by name."""
-        result = Session.query(AuditLogEventType).filter_by(name=name)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEventType).filter_by(name=name).first()
 
     @classmethod
     def by_id(self, id):
         """Get an AuditLogEventType by id."""
-        result = Session.query(AuditLogEventType).filter_by(id=id)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEventType).filter_by(id=id).first()
 
     @classmethod
     def get_all(class_, order_by='name', filter_by=None):
@@ -328,10 +316,7 @@ class AuditLogEntry(Base):
     @classmethod
     def by_id(self, id):
         """Get an AuditLogEntry by id."""
-        result = Session.query(AuditLogEntry).filter_by(id=id)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEntry).filter_by(id=id).first()
 
     @classmethod
     def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
