@@ -43,6 +43,7 @@ setup(
         'SQLAlchemy',
         'ColanderAlchemy>=0.3.dev0',
         'passlib',
+        'pyramid_raven',
     ],
     extras_require={
         'test': [

@@ -72,6 +72,9 @@ def configure(config, settings={}):
         traverse='/{entry_id}',
     )
 
+    config.add_route('raise_js_error', '/raise-error/js')
+    config.add_route('raise_http_error', '/raise-error/{error_code}')
+
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
 
