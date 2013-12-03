@@ -4,14 +4,14 @@ Changelog
 =========
 
 
-0.1.9 (unreleased)
+0.1.9 (2013-12-03)
 ------------------
 
 - Support for integration with GetSentry. Apps need to provide the following:
    * include pyramid_raven in production.ini
    * configure sentry logger in production.ini
    * pass over SENTRY_DNS in Procfile
-  [zupo]
+
 
 
 0.1.8 (2013-12-02)
