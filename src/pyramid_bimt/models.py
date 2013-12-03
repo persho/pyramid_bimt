@@ -177,7 +177,7 @@ class User(Base, BaseMixin):
             return False
 
     @classmethod
-    def get(self, email):
+    def by_email(self, email):
         """Get a User by email."""
         result = User.query.filter_by(email=email)
         if result.count() < 1:

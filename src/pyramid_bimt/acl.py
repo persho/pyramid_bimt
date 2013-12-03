@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def groupfinder(userid, request):
-    user = User.get(userid)
+    user = User.by_email(userid)
     if user and user.groups:
         return ['g:{}'.format(g.name) for g in user.groups]
     else:
