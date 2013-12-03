@@ -7,7 +7,8 @@ Changelog
 0.1.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix raise-error/js.
+  [zupo]
 
 
 0.1.9 (2013-12-03)
