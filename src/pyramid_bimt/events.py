@@ -65,7 +65,7 @@ class PyramidBIMTEvent(object):
     def log_event(self):
         from pyramid_bimt.models import AuditLogEntry
         from pyramid_bimt.models import AuditLogEventType
-        event_type = AuditLogEventType.get(name=self.__class__.__name__)
+        event_type = AuditLogEventType.by_name(name=self.__class__.__name__)
         entry = AuditLogEntry(
             user_id=self.user.id,
             event_type_id=event_type.id,

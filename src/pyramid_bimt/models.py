@@ -236,7 +236,7 @@ class AuditLogEventType(Base):
     )
 
     @classmethod
-    def get(self, name):
+    def by_name(self, name):
         """Get an AuditLogEventType by name."""
         result = Session.query(AuditLogEventType).filter_by(name=name)
         if result.count() < 1:
