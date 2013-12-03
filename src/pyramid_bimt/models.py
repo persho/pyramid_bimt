@@ -244,7 +244,7 @@ class AuditLogEventType(Base):
         return result.one()
 
     @classmethod
-    def get_by_id(self, id):
+    def by_id(self, id):
         """Get an AuditLogEventType by id."""
         result = Session.query(AuditLogEventType).filter_by(id=id)
         if result.count() < 1:
