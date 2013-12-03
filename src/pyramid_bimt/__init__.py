@@ -20,26 +20,12 @@ REQUIRED_SETTINGS = [
 ]
 
 
-def configure(config, settings={}):
-
-    # Include pyramid layout
-    config.include('pyramid_layout')
-
-    # Add route to deform's static resources
-    config.add_static_view('deform_static', 'deform:static')
-
-    # Add helpful properties to the request object
-    config.set_request_property(
-        get_authenticated_user, 'user', reify=True)
-
-    # Setup session factory
-    session_factory = UnencryptedCookieSessionFactoryConfig(
-        settings.get('session.secret', 'secret'))
-    config.set_session_factory(session_factory)
-
-    # configure routes
+def add_routes_auth(config):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+
+
+def add_routes_user(config):
     config.add_route('users', '/users', factory=UserFactory)
     config.add_route('user_add', '/users/add', factory=UserFactory)
     config.add_route(
@@ -59,6 +45,8 @@ def configure(config, settings={}):
         factory=UserFactory, traverse='/{user_id}'
     )
 
+
+def add_routes_audit_log(config):
     config.add_route('audit_log', '/audit-log', factory=AuditLogFactory)
     config.add_route(
         'audit_log_add',
@@ -72,8 +60,35 @@ def configure(config, settings={}):
         traverse='/{entry_id}',
     )
 
+
+def add_routes_other(config):
+    config.add_route('jvzoo', '/jvzoo')
     config.add_route('raise_js_error', '/raise-error/js')
     config.add_route('raise_http_error', '/raise-error/{error_code}')
+
+
+def configure(config, settings={}):
+
+    # Include pyramid layout
+    config.include('pyramid_layout')
+
+    # Add route to deform's static resources
+    config.add_static_view('deform_static', 'deform:static')
+
+    # Add helpful properties to the request object
+    config.set_request_property(
+        get_authenticated_user, 'user', reify=True)
+
+    # Setup session factory
+    session_factory = UnencryptedCookieSessionFactoryConfig(
+        settings.get('session.secret', 'secret'))
+    config.set_session_factory(session_factory)
+
+    # configure routes
+    add_routes_auth(config)
+    add_routes_user(config)
+    add_routes_audit_log(config)
+    add_routes_other(config)
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')

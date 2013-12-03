@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Define models."""
 
+from datetime import date
 from datetime import datetime
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
 from sqlalchemy import Column
+from sqlalchemy import Date
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -114,6 +116,27 @@ class User(Base, BaseMixin):
         "UserProperty",
         cascade="all,delete-orphan",
     )
+    affiliate = Column(
+        Unicode,
+        unique=True,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Affiliate',
+        )}
+    )
+    billing_email = Column(
+        String,
+        unique=True,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Billing Email',
+        )}
+    )
+    valid_to = Column(
+        Date,
+        default=date.today,
+        info={'colanderalchemy': dict(title='Valid To')},
+    )
 
     def get_property(self, key, default=_marker):
         """TODO
@@ -185,6 +208,11 @@ class User(Base, BaseMixin):
     def by_email(self, email):
         """Get a User by email."""
         return User.query.filter_by(email=email).first()
+
+    @classmethod
+    def by_billing_email(self, billing_email):
+        """Get a User by billing email."""
+        return User.query.filter_by(billing_email=billing_email).first()
 
     @classmethod
     def get_all(class_, order_by='email', filter_by=None, limit=1000):
