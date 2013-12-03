@@ -326,7 +326,7 @@ class AuditLogEntry(Base):
     )
 
     @classmethod
-    def get(self, id):
+    def by_id(self, id):
         """Get an AuditLogEntry by id."""
         result = Session.query(AuditLogEntry).filter_by(id=id)
         if result.count() < 1:

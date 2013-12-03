@@ -61,7 +61,7 @@ class AuditLogFactory(object):
         self.request = request
 
     def __getitem__(self, key):
-        entry = AuditLogEntry.get(key)
+        entry = AuditLogEntry.by_id(key)
         if entry:
             entry.__parent__ = self
             entry.__name__ = key
