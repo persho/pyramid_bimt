@@ -177,17 +177,17 @@ class User(Base, BaseMixin):
             return False
 
     @classmethod
-    def by_email(self, email):
-        """Get a User by email."""
-        result = User.query.filter_by(email=email)
+    def by_id(self, user_id):
+        """Get a User by id."""
+        result = User.query.filter_by(id=user_id)
         if result.count() < 1:
             return None
         return result.one()
 
     @classmethod
-    def get_by_id(self, user_id):
-        """Get a User by id."""
-        result = User.query.filter_by(id=user_id)
+    def by_email(self, email):
+        """Get a User by email."""
+        result = User.query.filter_by(email=email)
         if result.count() < 1:
             return None
         return result.one()
