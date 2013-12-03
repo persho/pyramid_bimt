@@ -4,6 +4,8 @@
 from pyramid_layout.layout import layout_config
 from pyramid_layout.panel import panel_config
 
+import os
+
 
 @layout_config(name='default', template='templates/default_layout.pt')
 class DefaultLayout(object):
@@ -14,6 +16,9 @@ class DefaultLayout(object):
         self.request = request
         self.current_page = current_page
         self.app_title = self.request.registry.settings['bimt.app_title']
+
+    def sentry_dsn(self):
+        return "SENTRY_DSN" in os.environ
 
 
 @panel_config(name='footer')
