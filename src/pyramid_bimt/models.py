@@ -51,7 +51,7 @@ class Group(Base, BaseMixin):
     )
 
     @classmethod
-    def get(self, name):
+    def by_name(self, name):
         group = Group.query.filter(Group.name == name).one()
         return group
 
@@ -157,7 +157,7 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if not self.enabled:
-            users = Group.get('users')
+            users = Group.by_name('users')
             self.groups.append(users)
             return True
         else:
@@ -170,7 +170,7 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if self.enabled:
-            users = Group.get('users')
+            users = Group.by_name('users')
             self.groups.remove(users)
             return True
         else:
