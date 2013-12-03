@@ -42,4 +42,3 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(types[5].name, 'UserLoggedOut')
         self.assertEqual(types[5].title, 'User Logged Out')
         self.assertEqual(types[5].description, 'Emitted whenever a user logs out.')  # noqa
-

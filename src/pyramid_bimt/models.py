@@ -89,6 +89,9 @@ class User(Base, BaseMixin):
     audit_log_entries = relationship(
         'AuditLogEntry', backref='user')
 
+    properties = relationship(
+        'UserProperty', cascade='all,delete-orphan')
+
     email = Column(
         String,
         unique=True,
@@ -112,10 +115,6 @@ class User(Base, BaseMixin):
             title='Full name',
         )}
     )
-    properties = relationship(
-        "UserProperty",
-        cascade="all,delete-orphan",
-    )
     affiliate = Column(
         Unicode,
         unique=True,
@@ -135,7 +134,9 @@ class User(Base, BaseMixin):
     valid_to = Column(
         Date,
         default=date.today,
-        info={'colanderalchemy': dict(title='Valid To')},
+        info={'colanderalchemy': dict(
+            title='Valid To',
+        )},
     )
 
     def get_property(self, key, default=_marker):

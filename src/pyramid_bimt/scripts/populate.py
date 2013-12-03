@@ -74,7 +74,6 @@ def add_default_content():
 
 def main(argv=sys.argv):
 
-    # TODO: check for DB existance etc.? this fails if run more than once
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
         print "DATABASE_URL not set, using default SQLite db."  # noqa
