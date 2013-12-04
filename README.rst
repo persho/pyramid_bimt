@@ -35,7 +35,3 @@ TODO
 ====
 
 * better test coverage
-* integration with JVZoo IPN
-  * validity scheduler
-  * task: rewrite reset pass email
-  * payment reminders
