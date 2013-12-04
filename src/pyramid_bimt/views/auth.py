@@ -22,8 +22,8 @@ Hi {fullname},
 
 your new password for {app_title} is: {password}
 
-Login at {login_url}.
-
+Login to the members' area:
+{login_url}
 
 Regards,
 The Big IM Toolbox Team

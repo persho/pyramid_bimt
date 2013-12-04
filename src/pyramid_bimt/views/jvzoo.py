@@ -153,7 +153,7 @@ class JVZooView(object):
         mailer.send(Message(
             subject=u'Welcome to {}!'.format(app_title),
             recipients=[user.email, ],
-            body=render(
+            html=render(
                 'pyramid_bimt:templates/email_welcome.pt',
                 {
                     'fullname': user.fullname,

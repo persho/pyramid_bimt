@@ -217,11 +217,11 @@ class TestJVZooViewIntegration(unittest.TestCase):
         mailer = get_mailer(request)
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn('Hello Foo Bär'.decode('utf-8'), mailer.outbox[0].body)
-        self.assertIn('u: bar@bms.com', mailer.outbox[0].body)
-        self.assertIn('p: secret', mailer.outbox[0].body)
-        self.assertIn('BIMT Team', mailer.outbox[0].body)
+        self.assertIn('Hello Foo Bär'.decode('utf-8'), mailer.outbox[0].html)
+        self.assertIn('u: bar@bms.com', mailer.outbox[0].html)
+        self.assertIn('p: secret', mailer.outbox[0].html)
+        self.assertIn('BIMT Team', mailer.outbox[0].html)
         self.assertIn(
             '<a href="http://example.com/login">http://example.com/login</a>',
-            mailer.outbox[0].body,
+            mailer.outbox[0].html,
         )
