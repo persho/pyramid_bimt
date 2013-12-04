@@ -4,11 +4,24 @@ Changelog
 =========
 
 
-0.1.9.2 (unreleased)
---------------------
+0.2 (2013-12-04)
+----------------
 
-- Add the ``expire_subscriptions`` script that apps should call every night to
-  disable any members that have expired ``valid_to`` dates.
+- Integration with JVZoo Instant Payment Notification service. Apps need to:
+  * Perform DB migration.
+  * Set ``bimt.jvzoo_trial_period``, ``bimt.jvzoo_regular_period`` and
+    ``bimt.jvzoo_secret_key`` settings.
+  * Add a daily scheduled task to run the ``expire_subscriptions`` script.
+
+- Rename ``IUserSignedUp`` to ``IUserCreated`` since users are created by the
+  system, they do no sign up on themselves.
+  [zupo]
+
+- Remove ``IUserDeleted`` event, since we do not yet support deleting users.
+  [zupo]
+
+- Rewrite get methods in models classes to all be named in a consistent way:
+  by_id(), by_email(), etc.
   [zupo]
 
 
