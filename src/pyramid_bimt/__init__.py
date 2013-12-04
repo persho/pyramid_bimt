@@ -17,7 +17,58 @@ REQUIRED_SETTINGS = [
     'mail.default_sender',
     'bimt.app_name',
     'bimt.app_title',
+    'bimt.jvzoo_trial_period',
+    'bimt.jvzoo_regular_period',
+    'bimt.jvzoo_secret_key',
+    'bimt.piwik_site_id',
 ]
+
+
+def add_routes_auth(config):
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
+
+
+def add_routes_user(config):
+    config.add_route('users', '/users', factory=UserFactory)
+    config.add_route('user_add', '/users/add', factory=UserFactory)
+    config.add_route(
+        'user', '/users/{user_id}',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_enable', '/users/{user_id}/enable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_disable', '/users/{user_id}/disable',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+    config.add_route(
+        'user_edit', '/users/{user_id}/edit',
+        factory=UserFactory, traverse='/{user_id}'
+    )
+
+
+def add_routes_audit_log(config):
+    config.add_route('audit_log', '/audit-log', factory=AuditLogFactory)
+    config.add_route(
+        'audit_log_add',
+        '/audit-log/add',
+        factory=AuditLogFactory,
+    )
+    config.add_route(
+        'audit_log_delete',
+        '/audit-log/{entry_id}/delete',
+        factory=AuditLogFactory,
+        traverse='/{entry_id}',
+    )
+
+
+def add_routes_other(config):
+    config.add_route('jvzoo', '/jvzoo')
+    config.add_route('raise_js_error', '/raise-error/js')
+    config.add_route('raise_http_error', '/raise-error/{error_code}')
 
 
 def configure(config, settings={}):
@@ -38,42 +89,10 @@ def configure(config, settings={}):
     config.set_session_factory(session_factory)
 
     # configure routes
-    config.add_route('login', '/login')
-    config.add_route('logout', '/logout')
-    config.add_route('users', '/users', factory=UserFactory)
-    config.add_route('user_add', '/users/add', factory=UserFactory)
-    config.add_route(
-        'user', '/users/{user_id}',
-        factory=UserFactory, traverse='/{user_id}'
-    )
-    config.add_route(
-        'user_enable', '/users/{user_id}/enable',
-        factory=UserFactory, traverse='/{user_id}'
-    )
-    config.add_route(
-        'user_disable', '/users/{user_id}/disable',
-        factory=UserFactory, traverse='/{user_id}'
-    )
-    config.add_route(
-        'user_edit', '/users/{user_id}/edit',
-        factory=UserFactory, traverse='/{user_id}'
-    )
-
-    config.add_route('audit_log', '/audit-log', factory=AuditLogFactory)
-    config.add_route(
-        'audit_log_add',
-        '/audit-log/add',
-        factory=AuditLogFactory,
-    )
-    config.add_route(
-        'audit_log_delete',
-        '/audit-log/{entry_id}/delete',
-        factory=AuditLogFactory,
-        traverse='/{entry_id}',
-    )
-
-    config.add_route('raise_js_error', '/raise-error/js')
-    config.add_route('raise_http_error', '/raise-error/{error_code}')
+    add_routes_auth(config)
+    add_routes_user(config)
+    add_routes_audit_log(config)
+    add_routes_other(config)
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Define models."""
 
+from datetime import date
 from datetime import datetime
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
 from sqlalchemy import Column
+from sqlalchemy import Date
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -51,9 +53,8 @@ class Group(Base, BaseMixin):
     )
 
     @classmethod
-    def get(self, name):
-        group = Group.query.filter(Group.name == name).one()
-        return group
+    def by_name(self, name):
+        return Group.query.filter(Group.name == name).first()
 
 
 class UserProperty(Base, BaseMixin):
@@ -88,6 +89,9 @@ class User(Base, BaseMixin):
     audit_log_entries = relationship(
         'AuditLogEntry', backref='user')
 
+    properties = relationship(
+        'UserProperty', cascade='all,delete-orphan')
+
     email = Column(
         String,
         unique=True,
@@ -111,9 +115,28 @@ class User(Base, BaseMixin):
             title='Full name',
         )}
     )
-    properties = relationship(
-        "UserProperty",
-        cascade="all,delete-orphan",
+    affiliate = Column(
+        Unicode,
+        unique=True,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Affiliate',
+        )}
+    )
+    billing_email = Column(
+        String,
+        unique=True,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Billing Email',
+        )}
+    )
+    valid_to = Column(
+        Date,
+        default=date.today,
+        info={'colanderalchemy': dict(
+            title='Valid To',
+        )},
     )
 
     def get_property(self, key, default=_marker):
@@ -132,6 +155,7 @@ class User(Base, BaseMixin):
         return result.one().value
 
     def set_property(self, key, value, strict=False):
+        """TODO"""
         result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise ValueError('Property "{}" not found.'.format(key))
@@ -157,7 +181,7 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if not self.enabled:
-            users = Group.get('users')
+            users = Group.by_name('users')
             self.groups.append(users)
             return True
         else:
@@ -170,27 +194,26 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if self.enabled:
-            users = Group.get('users')
+            users = Group.by_name('users')
             self.groups.remove(users)
             return True
         else:
             return False
 
     @classmethod
-    def get(self, email):
-        """Get a User by email."""
-        result = User.query.filter_by(email=email)
-        if result.count() < 1:
-            return None
-        return result.one()
+    def by_id(self, user_id):
+        """Get a User by id."""
+        return User.query.filter_by(id=user_id).first()
 
     @classmethod
-    def get_by_id(self, user_id):
-        """Get a User by id."""
-        result = User.query.filter_by(id=user_id)
-        if result.count() < 1:
-            return None
-        return result.one()
+    def by_email(self, email):
+        """Get a User by email."""
+        return User.query.filter_by(email=email).first()
+
+    @classmethod
+    def by_billing_email(self, billing_email):
+        """Get a User by billing email."""
+        return User.query.filter_by(billing_email=billing_email).first()
 
     @classmethod
     def get_all(class_, order_by='email', filter_by=None, limit=1000):
@@ -236,20 +259,14 @@ class AuditLogEventType(Base):
     )
 
     @classmethod
-    def get(self, name):
+    def by_name(self, name):
         """Get an AuditLogEventType by name."""
-        result = Session.query(AuditLogEventType).filter_by(name=name)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEventType).filter_by(name=name).first()
 
     @classmethod
-    def get_by_id(self, id):
+    def by_id(self, id):
         """Get an AuditLogEventType by id."""
-        result = Session.query(AuditLogEventType).filter_by(id=id)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEventType).filter_by(id=id).first()
 
     @classmethod
     def get_all(class_, order_by='name', filter_by=None):
@@ -326,12 +343,9 @@ class AuditLogEntry(Base):
     )
 
     @classmethod
-    def get(self, id):
+    def by_id(self, id):
         """Get an AuditLogEntry by id."""
-        result = Session.query(AuditLogEntry).filter_by(id=id)
-        if result.count() < 1:
-            return None
-        return result.one()
+        return Session.query(AuditLogEntry).filter_by(id=id).first()
 
     @classmethod
     def get_all(class_, order_by='timestamp', filter_by=None, limit=100):

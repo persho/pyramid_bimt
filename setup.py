@@ -35,14 +35,15 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
+        'ColanderAlchemy>=0.3.dev0',
+        'SQLAlchemy',
+        'flufl.enum',
+        'passlib',
         'pyramid',
         'pyramid_basemodel',
         'pyramid_deform',
         'pyramid_layout',
         'pyramid_mailer',
-        'SQLAlchemy',
-        'ColanderAlchemy>=0.3.dev0',
-        'passlib',
         'pyramid_raven',
     ],
     extras_require={

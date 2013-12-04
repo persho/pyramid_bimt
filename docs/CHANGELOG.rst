@@ -7,7 +7,9 @@ Changelog
 0.1.9.2 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Add the ``expire_subscriptions`` script that apps should call every night to
+  disable any members that have expired ``valid_to`` dates.
+  [zupo]
 
 
 0.1.9.1 (2013-12-03)

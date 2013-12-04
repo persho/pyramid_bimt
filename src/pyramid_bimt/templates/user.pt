@@ -7,6 +7,9 @@
     <table class="table">
       <tr><th>Full Name</th><td>${user.fullname}</td><th>
       <tr><th>Email</th><td>${user.email}</td><th>
+      <tr><th>Billing Email</th><td>${user.billing_email}</td><th>
+      <tr><th>Subscription Valid To</th><td>${user.valid_to}</td><th>
+      <tr><th>Affiliate</th><td>${user.affiliate}</td><th>
       <tr><th>Created</th><td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
       <tr><th>Modified</th><td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
       <tr><th>Groups</th><td>${', '.join([g.name for g in user.groups])}</td><th>

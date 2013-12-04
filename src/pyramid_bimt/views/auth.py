@@ -22,8 +22,8 @@ Hi {fullname},
 
 your new password for {app_title} is: {password}
 
-Login at {login_url}.
-
+Login to the members' area:
+{login_url}
 
 Regards,
 The Big IM Toolbox Team
@@ -52,7 +52,7 @@ class LoginForm(FormView):
             'came_from', self.request.application_url)
         email = appstruct['email'].lower()
         password = appstruct['password']
-        user = User.get(email)
+        user = User.by_email(email)
         if (user is not None and verify(password, user.password)):
             headers = remember(self.request, user.email)
             self.request.registry.notify(UserLoggedIn(self.request, user))
@@ -69,7 +69,7 @@ class LoginForm(FormView):
         came_from = self.request.params.get(
             'came_from', self.request.application_url)
         email = appstruct['email'].lower()
-        user = User.get(email)
+        user = User.by_email(email)
         if user is not None:
 
             # change user's password and send email

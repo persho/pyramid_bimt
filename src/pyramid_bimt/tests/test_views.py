@@ -51,7 +51,7 @@ class TestUserView(unittest.TestCase):
     def test_view_user(self):
         from pyramid_bimt.views.user import UserView
         from pyramid_bimt.models import User
-        context = User.get("admin@bar.com")
+        context = User.by_email("admin@bar.com")
         request = testing.DummyRequest()
         resp = UserView(context, request).view()
         self.assertEqual(resp["user"], context)

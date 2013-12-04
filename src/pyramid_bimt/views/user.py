@@ -83,7 +83,7 @@ class UserView(object):
 
 def group_validator(form, value):
     try:
-        Group.get(value)
+        Group.by_name(value)
     except NoResultFound:
         raise colander.Invalid(form, 'Group must be one of: {}'.format(
             ', '.join([g.name for g in Group.query.all()])))
@@ -141,7 +141,7 @@ class UserEditForm(FormView):
             user = self.edited_user
             user.email = appstruct['email']
             user.fullname = appstruct['fullname']
-            user.groups = [Group.get(name) for name in appstruct['groups']]
+            user.groups = [Group.by_name(name) for name in appstruct['groups']]
             self.request.session.flash(
                 u"User {} has been changed.".format(user.email))
         else:
@@ -149,7 +149,7 @@ class UserEditForm(FormView):
             user = User(
                 email=appstruct['email'],
                 fullname=appstruct['fullname'],
-                groups=[Group.get(name) for name in appstruct['groups']]
+                groups=[Group.by_name(name) for name in appstruct['groups']]
             )
             Session.add(user)
             self.request.session.flash(

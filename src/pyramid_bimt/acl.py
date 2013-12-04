@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def groupfinder(userid, request):
-    user = User.get(userid)
+    user = User.by_email(userid)
     if user and user.groups:
         return ['g:{}'.format(g.name) for g in user.groups]
     else:
@@ -43,7 +43,7 @@ class UserFactory(object):
         self.request = request
 
     def __getitem__(self, key):
-        user = User.get_by_id(key)
+        user = User.by_id(key)
         if user:
             user.__parent__ = self
             user.__name__ = key
@@ -61,7 +61,7 @@ class AuditLogFactory(object):
         self.request = request
 
     def __getitem__(self, key):
-        entry = AuditLogEntry.get(key)
+        entry = AuditLogEntry.by_id(key)
         if entry:
             entry.__parent__ = self
             entry.__name__ = key
