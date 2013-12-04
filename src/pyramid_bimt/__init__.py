@@ -17,6 +17,10 @@ REQUIRED_SETTINGS = [
     'mail.default_sender',
     'bimt.app_name',
     'bimt.app_title',
+    'bimt.jvzoo_trial_period',
+    'bimt.jvzoo_regular_period',
+    'bimt.jvzoo_secret_key',
+    'bimt.piwik_site_id',
 ]
 
 
