@@ -8,7 +8,8 @@ all: docs tests
 
 coverage: htmlcov/index.html
 
-htmlcov/index.html: src/pyramid_bimt/*.py bin/coverage
+htmlcov/index.html: src/pyramid_bimt/*.py src/pyramid_bimt/scripts/*.py  \
+		src/pyramid_bimt/views/*.py src/pyramid_bimt/tests/*.py bin/coverage
 	@bin/coverage run --source=./src/pyramid_bimt/ --branch bin/nosetests
 	@bin/coverage html -i
 	@touch $@
