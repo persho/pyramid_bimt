@@ -4,6 +4,10 @@
 from passlib.apps import custom_app_context as pwd_context
 from passlib.utils import generate_password
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def encrypt(cleartext):
     """Encrypt a raw password into a secure salted hash using passlib."""
@@ -18,7 +22,11 @@ def encrypt(cleartext):
 
 def verify(cleartext, cyphertext):
     """Verify a password using passlib."""
-    return pwd_context.verify(cleartext, cyphertext)
+    try:
+        return pwd_context.verify(cleartext, cyphertext)
+    except ValueError as e:
+        logger.warning(e)
+        return False
 
 
 def generate(**kwargs):

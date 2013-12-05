@@ -55,6 +55,7 @@ setup(
             'nose-selecttests',
             'unittest2',
             'webtest',
+            'zope.testing',
         ],
         'development': [
             'pyramid_debugtoolbar',
