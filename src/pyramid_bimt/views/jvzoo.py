@@ -43,7 +43,7 @@ class JVZooView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='jvzoo')
+    @view_config(route_name='jvzoo', renderer='string')
     def jvzoo(self):
         """The /jvzoo view, called by the JVZoo Notification Service."""
 
@@ -56,7 +56,6 @@ class JVZooView(object):
         logger.info(self.request.POST.items())
         try:
             self._verify_POST()
-
             # try to find an existing user using the ``ccustemail``
             user = User.by_email(self.request.POST['ccustemail'])
             if not user:
@@ -111,7 +110,7 @@ class JVZooView(object):
 
             else:
                 raise ValueError(
-                    u'Unknown Transaction Type "{}".'.format(trans_type))
+                    u'Unknown Transaction Type: {}'.format(trans_type))
 
             return 'Done.'
 
@@ -144,7 +143,7 @@ class JVZooView(object):
         if self.request.POST['cverify'] == sha[:8]:
             return True
         else:
-            raise ValueError('Checksum verification failed.')
+            raise ValueError('Checksum verification failed')
 
     def send_welcome_email(self, user, password):
         """Send a welcome email to the user, containing login credentials."""

@@ -53,8 +53,37 @@ class TestJVZooView(unittest.TestCase):
         resp = JVZooView(request).jvzoo()
         self.assertEqual(
             resp,
-            'POST handling failed: ValueError: Checksum verification failed.',
+            'POST handling failed: ValueError: Checksum verification failed',
         )
+
+    @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
+    @mock.patch('pyramid_bimt.views.jvzoo.User')
+    def test_invalid_transaction_type(self, User, verify_POST):
+        from pyramid_bimt.views.jvzoo import JVZooView
+        post = {
+            'ccustemail': 'foo@bar.com',
+            'ctransaction': 'FOO',
+        }
+
+        verify_POST.return_value = True
+        User.by_email = mock.Mock()
+        request = testing.DummyRequest(post=post)
+        resp = JVZooView(request).jvzoo()
+        self.assertEqual(
+            resp,
+            'POST handling failed: ValueError: Unknown Transaction Type: FOO',
+        )
+
+    def test_verify_POST(self):
+        """Test POST verification process."""
+        from pyramid_bimt.views.jvzoo import JVZooView
+        post = dict(
+            secretkey='secret',
+            ccustname='fullname',
+            cverify='38CFCDED',
+        )
+        request = testing.DummyRequest(post=post)
+        self.assertTrue(JVZooView(request)._verify_POST())
 
 
 class TestJVZooViewIntegration(unittest.TestCase):
