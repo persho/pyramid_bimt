@@ -25,7 +25,7 @@ def verify(cleartext, cyphertext):
     try:
         return pwd_context.verify(cleartext, cyphertext)
     except ValueError as e:
-        logger.warning(e)
+        logger.exception(e)
         return False
 
 

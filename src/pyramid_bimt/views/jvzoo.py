@@ -50,7 +50,7 @@ class JVZooView(object):
         # check for POST request
         if not self.request.POST:
             msg = 'No POST request.'
-            logger.warning(msg)
+            logger.exception(msg)
             return msg
 
         logger.info(self.request.POST.items())
@@ -117,7 +117,7 @@ class JVZooView(object):
         except Exception as ex:
             msg = 'POST handling failed: {}: {}'.format(
                 ex.__class__.__name__, ex.message)
-            logger.warning(msg)
+            logger.exception(msg)
             return msg
 
     def _verify_POST(self):
@@ -126,17 +126,14 @@ class JVZooView(object):
         :return: True if verified, raise ValueError if verification failed.
         :rtype: bool
         """
-        self.request.POST['secretkey'] = self.request.registry.settings[
-            'bimt.jvzoo_secret_key']
-
         # concatenate POST parameters into a string
         strparams = u''
         for key, value in sorted(self.request.POST.items()):
-            if key not in ['cverify', 'secretkey']:
-                strparams += unicode(value + '|', 'utf-8')
+            if key != 'cverify':
+                strparams += value + '|'
 
         # secretkey must be last
-        strparams += self.request.POST['secretkey']
+        strparams += self.request.registry.settings['bimt.jvzoo_secret_key']
 
         # calculate SHA digest and compare to ``cverify`` value
         sha = hashlib.sha1(strparams.encode('utf-8')).hexdigest().upper()
