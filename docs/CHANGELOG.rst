@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.2.2 (unreleased)
+0.2.2 (2013-12-05)
 ------------------
 
 - Additional fixes & tests for JVZoo integration.
