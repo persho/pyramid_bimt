@@ -43,7 +43,7 @@ class JVZooView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='jvzoo')
+    @view_config(route_name='jvzoo', renderer='string')
     def jvzoo(self):
         """The /jvzoo view, called by the JVZoo Notification Service."""
 
