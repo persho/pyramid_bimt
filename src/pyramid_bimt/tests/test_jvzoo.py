@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 """Tests for the JVZoo Notification Service integration."""
 
+from datetime import date
+from datetime import timedelta
 from pyramid import testing
 from pyramid_basemodel import Session
 from pyramid_bimt import add_routes_auth
-from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt import configure
 from pyramid_bimt.models import User
-from datetime import date
+from pyramid_bimt.testing import initTestingDB
 
 import mock
 import unittest
+import webtest
 
 
 class TestJVZooView(unittest.TestCase):
@@ -78,9 +81,8 @@ class TestJVZooView(unittest.TestCase):
         """Test POST verification process."""
         from pyramid_bimt.views.jvzoo import JVZooView
         post = dict(
-            secretkey='secret',
-            ccustname='fullname',
-            cverify='38CFCDED',
+            ccustname=u'fullname',
+            cverify=u'38CFCDED',
         )
         request = testing.DummyRequest(post=post)
         self.assertTrue(JVZooView(request)._verify_POST())
@@ -252,5 +254,73 @@ class TestJVZooViewIntegration(unittest.TestCase):
         self.assertIn('BIMT Team', mailer.outbox[0].html)
         self.assertIn(
             '<a href="http://example.com/login">http://example.com/login</a>',
+            mailer.outbox[0].html,
+        )
+
+
+class TestJVZooViewFunctional(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+            'bimt.jvzoo_secret_key': 'secret',
+            'bimt.jvzoo_trial_period': 4,
+            'bimt.jvzoo_regular_period': 7,
+        }
+        self.config = testing.setUp(settings=settings)
+        self.config.include('pyramid_mailer.testing')
+        initTestingDB()
+        configure(self.config)
+        app = self.config.make_wsgi_app()
+        self.testapp = webtest.TestApp(app)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_create_new_user(self):
+        post = {
+            'ccustname': 'John Smith',
+            'ccustemail': 'john.smith@email.com',
+            'ctransaction': 'SALE',
+            'ctransaffiliate': 'affiliate@email.com',
+            'ctransreceipt': 123,
+            'cverify': '3D6C1378',
+        }
+        resp = self.testapp.post('/jvzoo', params=post, status=200)
+        self.assertEqual("Done.", resp.text)
+
+        user = User.by_email('john.smith@email.com')
+        self.assertEqual(user.fullname, 'John Smith')
+        self.assertEqual(user.affiliate, 'affiliate@email.com')
+        self.assertEqual(user.valid_to, date.today() + timedelta(days=4))
+        self.assertTrue(user.enabled)
+
+        self.assertEqual(len(user.audit_log_entries), 2)
+
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserCreated')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Created by JVZoo, transaction id: 123, type: SALE',
+        )
+
+        self.assertEqual(
+            user.audit_log_entries[1].event_type.name, u'UserEnabled')
+        self.assertEqual(
+            user.audit_log_entries[1].comment,
+            u'Enabled by JVZoo, transaction id: 123, type: SALE',
+        )
+
+        from pyramid_mailer import get_mailer
+        mailer = get_mailer(testing.DummyRequest())
+        self.assertEqual(len(mailer.outbox), 1)
+        self.assertEqual(mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn('Hello John Smith', mailer.outbox[0].html)
+        self.assertIn('u: john.smith@email.com', mailer.outbox[0].html)
+        self.assertRegexpMatches(mailer.outbox[0].html, 'p: .{10}\n')
+        self.assertIn('BIMT Team', mailer.outbox[0].html)
+        self.assertIn(
+            '<a href="http://localhost/login">http://localhost/login</a>',
             mailer.outbox[0].html,
         )

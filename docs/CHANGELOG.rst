@@ -7,7 +7,11 @@ Changelog
 0.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Additional fixes & tests for JVZoo integration.
+  [zupo]
+
+- Send more data to sentry using logger.exception().
+  [zupo]
 
 
 0.2.1 (2013-12-05)
@@ -26,7 +30,7 @@ Changelog
 - Integration with JVZoo Instant Payment Notification service. Apps need to:
   * Perform DB migration.
   * Set ``bimt.jvzoo_trial_period``, ``bimt.jvzoo_regular_period`` and
-    ``bimt.jvzoo_secret_key`` settings.
+  ``bimt.jvzoo_secret_key`` settings.
   * Add a daily scheduled task to run the ``expire_subscriptions`` script.
 
 - Rename ``IUserSignedUp`` to ``IUserCreated`` since users are created by the
