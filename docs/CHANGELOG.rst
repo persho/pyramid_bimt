@@ -4,10 +4,14 @@ Changelog
 =========
 
 
-0.3 (unreleased)
-----------------
+0.2.1 (2013-12-05)
+------------------
 
-- Nothing changed yet.
+- The jvzoo view was missing a renderer.
+  [zupo]
+
+- Fix "hash could not be identified" error.
+  [zupo]
 
 
 0.2 (2013-12-04)
