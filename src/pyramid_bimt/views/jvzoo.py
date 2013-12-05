@@ -81,6 +81,7 @@ class JVZooView(object):
                     UserCreated(self.request, user, comment.format(
                         u'Created', trans_id, trans_type)))
                 self.send_welcome_email(user, password)
+                logger.info('JVZoo created new user: {}'.format(user.email))
 
             # perform different actions for different transaction types
             if trans_type == 'SALE':
@@ -88,6 +89,7 @@ class JVZooView(object):
                     'bimt.jvzoo_trial_period']
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.enable()
+                logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(
                         u'Enabled', trans_id, trans_type)))
@@ -97,6 +99,7 @@ class JVZooView(object):
                     'bimt.jvzoo_regular_period']
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.enable()
+                logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(
                         u'Enabled', trans_id, trans_type)))
@@ -104,6 +107,7 @@ class JVZooView(object):
             elif trans_type in ['RFND', 'CGBK', 'INSF']:
                 user.valid_to = date.today()
                 user.disable()
+                logger.info('JVZoo disabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserDisabled(self.request, user, comment.format(
                         u'Disabled', trans_id, trans_type)))
@@ -112,6 +116,7 @@ class JVZooView(object):
                 raise ValueError(
                     u'Unknown Transaction Type: {}'.format(trans_type))
 
+            logger.info('JVZoo done.')
             return 'Done.'
 
         except Exception as ex:
