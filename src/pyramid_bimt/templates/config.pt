@@ -1,0 +1,31 @@
+<metal:block use-macro="main_template">
+
+  <div metal:fill-slot="content" id="content">
+
+    <h2>Pyramid Settings (${len(settings)})</h2>
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr tal:repeat="entry settings">
+        <td tal:content="python: entry[0]" />
+        <td tal:content="python: entry[1]" />
+      </tr>
+    </table>
+
+    <h2>Environment Variables (${len(environ)})</h2>
+    <table class="table">
+      <tr>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+      <tr tal:repeat="entry environ">
+        <td tal:content="python: entry[0]" />
+        <td tal:content="python: entry[1]" />
+      </tr>
+    </table>
+
+  </div>
+
+</metal:block>

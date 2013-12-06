@@ -2,12 +2,13 @@
 """Tests for pyramid_bimt views."""
 
 from pyramid import testing
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
-from pyramid.httpexceptions import HTTPNotFound
 
+import mock
 import unittest
 import webtest
 
@@ -134,3 +135,36 @@ class TestEditUserViewFunctional(unittest.TestCase):
             userid='admin@bar.com', permissive=True)
         self.assertRaises(
             HTTPNotFound, self.testapp.get, '/users/123456789/edit')
+
+
+class TestConfig(unittest.TestCase):
+    def setUp(self):
+        testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    @mock.patch("pyramid_bimt.views.misc.os")
+    def test_environ(self, patched_os):
+        from pyramid_bimt.views.misc import config
+        request = testing.DummyRequest()
+
+        patched_os.environ = {'c': '3', 'a': '1', 'b': '2'}
+
+        result = config(request)
+
+        self.assertEqual(
+            result['environ'], [('a', '1'), ('b', '2'), ('c', '3')]
+        )
+
+    def test_settings(self):
+        from pyramid_bimt.views.misc import config
+        request = testing.DummyRequest()
+
+        request.registry.settings = {'c': '3', 'a': '1', 'b': '2'}
+
+        result = config(request)
+
+        self.assertEqual(
+            result['settings'], [('a', '1'), ('b', '2'), ('c', '3')]
+        )
