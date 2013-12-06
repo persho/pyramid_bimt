@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.2.3 (unreleased)
+0.2.3 (2013-12-06)
 ------------------
 
 - Overhaul of setting entries check, split them as default and production.
