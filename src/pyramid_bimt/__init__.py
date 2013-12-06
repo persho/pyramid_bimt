@@ -69,6 +69,7 @@ def add_routes_other(config):
     config.add_route('jvzoo', '/jvzoo')
     config.add_route('raise_js_error', '/raise-error/js')
     config.add_route('raise_http_error', '/raise-error/{error_code}')
+    config.add_route('config', '/config')
 
 
 def configure(config, settings={}):
