@@ -13,14 +13,29 @@ from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
+import sys
+
+
 REQUIRED_SETTINGS = [
-    'mail.default_sender',
+    'authtkt.secret',
     'bimt.app_name',
     'bimt.app_title',
-    'bimt.jvzoo_trial_period',
+    'script_location',
+    'session.secret',
+    'sqlalchemy.url',
+]
+
+REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.jvzoo_regular_period',
     'bimt.jvzoo_secret_key',
+    'bimt.jvzoo_trial_period',
     'bimt.piwik_site_id',
+    'mail.default_sender',
+    'mail.host',
+    'mail.password',
+    'mail.port',
+    'mail.tls',
+    'mail.username',
 ]
 
 
@@ -99,14 +114,27 @@ def configure(config, settings={}):
     config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
 
 
-def includeme(config):
-    """Allow developers to use ``config.include('pyramid_bimt')``."""
-    # make sure all required settings are set
+def check_required_settings(config):
+    # make sure default required settings are set
     for setting in REQUIRED_SETTINGS:
         if setting not in config.registry.settings:
             raise KeyError(
                 'The "{}" setting is required, please set '
                 'it in your .ini file.'.format(setting))
+
+    # check if we are running with production.ini
+    if "production.ini" in " ".join(sys.argv).lower():
+        # make sure production required settings are set
+        for setting in REQUIRED_SETTINGS_PRODUCTION:
+            if setting not in config.registry.settings:
+                raise KeyError(
+                    'The "{}" production setting is required, please set '
+                    'it in your production.ini file.'.format(setting))
+
+
+def includeme(config):
+    """Allow developers to use ``config.include('pyramid_bimt')``."""
+    check_required_settings(config)
 
     # Setup the DB session and such
     config.include('pyramid_basemodel')

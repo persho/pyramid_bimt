@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests for pyramid_bimt views."""
 
-from mock import patch
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid_basemodel import Session
@@ -9,6 +8,7 @@ from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
 
+import mock
 import unittest
 import webtest
 
@@ -144,7 +144,7 @@ class TestConfig(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @patch("pyramid_bimt.views.misc.os")
+    @mock.patch("pyramid_bimt.views.misc.os")
     def test_environ(self, patched_os):
         from pyramid_bimt.views.misc import config
         request = testing.DummyRequest()

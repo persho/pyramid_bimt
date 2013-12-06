@@ -7,6 +7,13 @@ Changelog
 0.2.3 (unreleased)
 ------------------
 
+- Overhaul of setting entries check, split them as default and production.
+  [matejc]
+
+- Config view at route /config where there is read only information about
+  Pyramid setttings and environment variables.
+  [matejc]
+
 - Minor tweaks to welcome email.
   [zupo]
 
