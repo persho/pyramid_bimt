@@ -7,7 +7,11 @@ Changelog
 0.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Minor tweaks to welcome email.
+  [zupo]
+
+- Print to logger.info() on milestones in the JVZoo POST handling process.
+  [zupo]
 
 
 0.2.2 (2013-12-05)
