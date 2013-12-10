@@ -7,7 +7,8 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix for exceptions in verify password function, returns False on Exception.
+  [matejc]
 
 
 0.2.3 (2013-12-06)
