@@ -7,7 +7,7 @@
     <meta name="description" content="${layout.app_title}">
     <meta name="author" content="NiteoWeb Ltd.">
 
-    <tal:sentry condition="python: layout.sentry_dsn()">
+    <tal:sentry condition="layout.sentry_dsn">
       ${panel('raven-js')}
     </tal:sentry>
 

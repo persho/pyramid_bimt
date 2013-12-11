@@ -62,7 +62,7 @@ class AuditLogAddEntryForm(FormView):
             comment=appstruct['comment'],
         )
         Session.add(entry)
-        self.request.session.flash(u"Audit log entry added.")
+        self.request.session.flash(u'Audit log entry added.')
         return HTTPFound(location=self.request.route_path('audit_log'))
 
     def appstruct(self):

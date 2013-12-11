@@ -22,10 +22,9 @@ class DefaultLayout(object):
         self.request = request
         self.current_page = current_page
         self.hide_sidebar = hide_sidebar
-        self.app_title = self.request.registry.settings['bimt.app_title']
 
-    def sentry_dsn(self):
-        return "SENTRY_DSN" in os.environ
+        self.app_title = self.request.registry.settings['bimt.app_title']
+        self.sentry_dsn = 'SENTRY_DSN' in os.environ
 
 
 @panel_config(name='footer')

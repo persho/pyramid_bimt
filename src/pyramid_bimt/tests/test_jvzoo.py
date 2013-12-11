@@ -288,7 +288,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
             'cverify': '3D6C1378',
         }
         resp = self.testapp.post('/jvzoo', params=post, status=200)
-        self.assertEqual("Done.", resp.text)
+        self.assertEqual('Done.', resp.text)
 
         user = User.by_email('john.smith@email.com')
         self.assertEqual(user.fullname, 'John Smith')

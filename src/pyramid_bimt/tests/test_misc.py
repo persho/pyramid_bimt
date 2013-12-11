@@ -66,7 +66,7 @@ class TestCheckSettings(unittest.TestCase):
 
         self.assertIn('bimt.app_name', cm.exception.message)
 
-    @mock.patch("pyramid_bimt.sys")
+    @mock.patch('pyramid_bimt.sys')
     def test_check_required_settings_production(self, patched_sys):
         from pyramid_bimt import check_required_settings
 
@@ -77,14 +77,14 @@ class TestCheckSettings(unittest.TestCase):
         except KeyError as ke:
             self.fail(ke.message)
 
-    @mock.patch("pyramid_bimt.sys")
+    @mock.patch('pyramid_bimt.sys')
     def test_empty_required_settings_production(self, patched_sys):
         from pyramid_bimt import check_required_settings
         patched_sys.argv = ['pserve', 'production.ini']
         with self.assertRaises(KeyError):
             check_required_settings(self.config_empty)
 
-    @mock.patch("pyramid_bimt.sys")
+    @mock.patch('pyramid_bimt.sys')
     def test_missing_required_settings_production(self, patched_sys):
         from pyramid_bimt import check_required_settings
 

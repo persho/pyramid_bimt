@@ -65,7 +65,7 @@ def add_default_content():
             email=u'admin@bar.com',
             password=encrypt('secret'),
             fullname=u'Admin',
-            properties=[UserProperty(key=u"bimt", value=u"on"), ],
+            properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         admin.groups.append(admins)
         admin.groups.append(users)
@@ -76,8 +76,8 @@ def main(argv=sys.argv):
 
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
-        print "DATABASE_URL not set, using default SQLite db."  # noqa
-        db_url = "sqlite:///./bimt-app.db"
+        print 'DATABASE_URL not set, using default SQLite db.'  # noqa
+        db_url = 'sqlite:///./bimt-app.db'
 
     settings = {'sqlalchemy.url': db_url}
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -85,7 +85,7 @@ def main(argv=sys.argv):
     Base.metadata.create_all(engine)
 
     add_default_content()
-    print "DB populated with dummy data: {0}".format(db_url)  # noqa
+    print 'DB populated with dummy data: {0}'.format(db_url)  # noqa
 
 
 if __name__ == '__main__':

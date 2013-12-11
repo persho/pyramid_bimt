@@ -14,7 +14,7 @@ def encrypt(cleartext):
     cleartext = cleartext.strip()
     cyphertext = pwd_context.encrypt(
         cleartext,
-        scheme="sha512_crypt",
+        scheme='sha512_crypt',
         rounds=90000,
     )
     return unicode(cyphertext)
