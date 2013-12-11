@@ -24,7 +24,7 @@ def verify(cleartext, cyphertext):
     """Verify a password using passlib."""
     try:
         return pwd_context.verify(cleartext, cyphertext)
-    except ValueError as e:
+    except Exception as e:
         logger.exception(e)
         return False
 
