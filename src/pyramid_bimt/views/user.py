@@ -77,8 +77,8 @@ class UserView(object):
 
     view.schema = SQLAlchemySchemaNode(
         User,
-        includes=["properties"],
-        overrides={"properties": {"includes": ["key", "value"]}}
+        includes=['properties'],
+        overrides={'properties': {'includes': ['key', 'value']}}
     )
 
 
@@ -103,7 +103,7 @@ class UserEditSchema(colander.MappingSchema):
         colander.Sequence(),
         colander.SchemaNode(
             colander.String(),
-            name="Group",
+            name='Group',
             validator=group_validator
         ),
     )
@@ -144,7 +144,7 @@ class UserEditForm(FormView):
             user.fullname = appstruct['fullname']
             user.groups = [Group.by_name(name) for name in appstruct['groups']]
             self.request.session.flash(
-                u"User {} has been changed.".format(user.email))
+                u'User {} has been modified.'.format(user.email))
         else:
             # add user
             user = User(
@@ -154,7 +154,7 @@ class UserEditForm(FormView):
             )
             Session.add(user)
             self.request.session.flash(
-                u"User {} has been added.".format(user.email))
+                u'User {} has been added.'.format(user.email))
 
         Session.flush()  # this is needed, so that we get user.id NOW
         return HTTPFound(

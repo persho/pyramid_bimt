@@ -123,7 +123,7 @@ def check_required_settings(config):
                 'it in your .ini file.'.format(setting))
 
     # check if we are running with production.ini
-    if "production.ini" in " ".join(sys.argv).lower():
+    if 'production.ini' in ' '.join(sys.argv).lower():
         # make sure production required settings are set
         for setting in REQUIRED_SETTINGS_PRODUCTION:
             if setting not in config.registry.settings:

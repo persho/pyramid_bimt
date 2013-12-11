@@ -37,13 +37,13 @@ def main(argv=sys.argv):
 
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
-        raise KeyError("DATABASE_URL not set, please set it.")
+        raise KeyError('DATABASE_URL not set, please set it.')
 
     settings = {'sqlalchemy.url': db_url}
     engine = engine_from_config(settings, 'sqlalchemy.')
     Session.configure(bind=engine)
     expire_subscriptions()
-    print "Expire subscription script finished."
+    logger.info('Expire subscription script finished.')
 
 
 if __name__ == '__main__':

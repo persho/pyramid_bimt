@@ -36,7 +36,7 @@ The Big IM Toolbox Team
     layout='default',
 )
 class LoginForm(FormView):
-    schema = SQLAlchemySchemaNode(User, includes=["email", "password"])
+    schema = SQLAlchemySchemaNode(User, includes=['email', 'password'])
     buttons = ('login', 'reset password')
     title = 'Login'
     form_options = (('formid', 'login'), ('method', 'POST'))
@@ -56,14 +56,14 @@ class LoginForm(FormView):
         if (user is not None and verify(password, user.password)):
             headers = remember(self.request, user.email)
             self.request.registry.notify(UserLoggedIn(self.request, user))
-            self.request.session.flash(u"Login successful.")
+            self.request.session.flash(u'Login successful.')
 
             if not user.enabled:
                 self.request.session.flash(
-                    u"Your account is disabled.", 'warning')
+                    u'Your account is disabled.', 'warning')
 
             return HTTPFound(location=came_from, headers=headers)
-        self.request.session.flash(u"Login failed.", 'error')
+        self.request.session.flash(u'Login failed.', 'error')
 
     def reset_password_success(self, appstruct):
         came_from = self.request.params.get(
@@ -77,7 +77,7 @@ class LoginForm(FormView):
             user.password = encrypt(password)
             mailer = get_mailer(self.request)
             message = Message(
-                subject="{} Password Reset".format(
+                subject='{} Password Reset'.format(
                     self.request.registry.settings['bimt.app_title']),
                 sender=self.request.registry.settings['mail.default_sender'],
                 recipients=[user.email, ],
@@ -91,11 +91,11 @@ class LoginForm(FormView):
             mailer.send(message)
 
             self.request.session.flash(
-                u"A new password was sent to your email.")
+                u'A new password was sent to your email.')
             return HTTPFound(location=came_from)
         self.request.session.flash(
-            u"Password reset failed. Make sure you "
-            "have correctly entered your email address.", 'error')
+            u'Password reset failed. Make sure you '
+            'have correctly entered your email address.', 'error')
 
     def appstruct(self):
         return {
@@ -113,7 +113,7 @@ def logout(context, request):
     """
     request.registry.notify(UserLoggedOut(request, request.user))
     headers = forget(request)
-    request.session.flash(u"You have been logged out.")
+    request.session.flash(u'You have been logged out.')
     location = request.params.get('came_from', request.application_url)
     return HTTPFound(location=location, headers=headers)
 
