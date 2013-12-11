@@ -13,6 +13,8 @@ from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 from pyramid_bimt.security import verify
+from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
@@ -42,6 +44,8 @@ class LoginForm(FormView):
     form_options = (('formid', 'login'), ('method', 'POST'))
 
     def __call__(self):
+        app_assets.need()
+        form_assets.need()
         result = super(LoginForm, self).__call__()
         if isinstance(result, dict):
             result['title'] = self.title

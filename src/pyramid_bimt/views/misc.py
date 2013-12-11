@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """misc and tool views, etc."""
 
+from pyramid_bimt.static import app_assets
 from pyramid.httpexceptions import exception_response
 from pyramid.view import view_config
 from datetime import datetime
@@ -40,6 +41,7 @@ def raise_js_error(request):
     renderer='pyramid_bimt:templates/config.pt',
 )
 def config(request):
+    app_assets.need()
     request.layout_manager.layout.hide_sidebar = True
     settings = sorted(request.registry.settings.items(), key=lambda x: x[0])
     environ = sorted(os.environ.items(), key=lambda x: x[0])

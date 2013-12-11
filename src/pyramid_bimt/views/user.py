@@ -11,6 +11,8 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
+from pyramid_bimt.static import form_assets
+from pyramid_bimt.static import app_assets
 from pyramid_deform import FormView
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -31,6 +33,7 @@ class UserView(object):
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
+        app_assets.need()
         return {
             'users': User.get_all(),
         }
@@ -40,6 +43,7 @@ class UserView(object):
         layout='default',
     )
     def view(self):
+        app_assets.need()
         user_ = self.context
         properties = (self.view.schema.dictify(user_) or {}).get('properties', [])  # noqa
         return {
@@ -125,6 +129,9 @@ class UserEditForm(FormView):
     schema = UserEditSchema()
 
     def __call__(self):
+        app_assets.need()
+        form_assets.need()
+
         self.edited_user = self.request.context
         if not self.edited_user:
             self.title = self.TITLE_ADD
@@ -188,5 +195,7 @@ class UserEditForm(FormView):
 class UserAddForm(UserEditForm):
 
     def __call__(self):
+        app_assets.need()
+        form_assets.need()
         self.request.context = None
         return super(UserAddForm, self).__call__()

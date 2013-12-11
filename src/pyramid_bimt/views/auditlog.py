@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
+from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import form_assets
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
@@ -17,6 +19,7 @@ from pyramid_deform import FormView
 )
 def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
+    app_assets.need()
     return {
         'entries': AuditLogEntry.get_all(),
     }
@@ -49,6 +52,8 @@ class AuditLogAddEntryForm(FormView):
     form_options = (('formid', 'login'), ('method', 'POST'))
 
     def __call__(self):
+        app_assets.need()
+        form_assets.need()
         result = super(AuditLogAddEntryForm, self).__call__()
         if isinstance(result, dict):
             result['title'] = self.title

@@ -37,11 +37,16 @@ setup(
     install_requires=[
         'ColanderAlchemy>=0.3.dev0',
         'SQLAlchemy',
+        'fanstatic [cssmin,jsmin]',
         'flufl.enum',
+        'js.bootstrap',
+        'js.deform',
+        'js.jquery',
         'passlib',
         'pyramid',
         'pyramid_basemodel',
         'pyramid_deform',
+        'pyramid_fanstatic',
         'pyramid_layout',
         'pyramid_mailer',
         'pyramid_raven',
@@ -58,8 +63,8 @@ setup(
             'zope.testing',
         ],
         'development': [
-            'pyramid_debugtoolbar',
             'Sphinx',
+            'pyramid_debugtoolbar',
             'waitress',
             'zest.releaser',
         ],
@@ -67,5 +72,9 @@ setup(
     entry_points="""\
     [paste.app_factory]
     main = pyramid_bimt:main
+
+    # Fanstatic resource library
+    [fanstatic.libraries]
+    pyramid_bimt = pyramid_bimt.static:lib_bimt
     """,
 )

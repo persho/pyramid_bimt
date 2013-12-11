@@ -9,6 +9,7 @@ from pyramid_bimt.scripts.expire_subscriptions import expire_subscriptions
 from pyramid_bimt.testing import initTestingDB
 
 import mock
+import transaction
 import unittest
 
 
@@ -71,7 +72,7 @@ class TestExpireSubscriptionsIntegration(unittest.TestCase):
         mocked_date.today.return_value = date(2013, 12, 30)
         user = User.by_email('admin@bar.com')
         user.valid_to = date(2013, 12, 29)
-        Session.flush()
+        transaction.commit()
 
         expire_subscriptions()
 
@@ -82,5 +83,5 @@ class TestExpireSubscriptionsIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserDisabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Disabled user 1 because its valid_to (2013-12-11) has expired.',
+            u'Disabled user 1 because its valid_to (2013-12-29) has expired.',
         )

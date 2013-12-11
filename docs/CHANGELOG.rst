@@ -7,6 +7,9 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
+- Handle all static resources with Fanstatic.
+  [zupo]
+
 - Redirect to user view after edit user.
   [matejc]
 

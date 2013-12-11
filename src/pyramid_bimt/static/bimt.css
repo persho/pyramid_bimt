@@ -1,0 +1,11 @@
+/* CSS shared among all BIMT apps, mostly fixes to widgets and third-party
+   libs */
+
+.picker__header select {
+    height: 3em;
+    font-size: 100%;
+}
+
+.picker__footer button {
+    font-size: 100%;
+}
