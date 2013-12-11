@@ -156,7 +156,9 @@ class UserEditForm(FormView):
             self.request.session.flash(
                 u"User {} has been added.".format(user.email))
 
-        return HTTPFound(location=self.request.route_url('users'))
+        Session.flush()  # this is needed, so that we get user.id NOW
+        return HTTPFound(
+            location=self.request.route_url('user', user_id=user.id))
 
     def appstruct(self):
         params_groups = self.request.params.get('groups')
