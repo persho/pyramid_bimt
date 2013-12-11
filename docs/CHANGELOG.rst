@@ -7,6 +7,10 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
+- Expired_subscriptions script now writes an AuditLog entry when disabling a
+  user.
+  [zupo]
+
 - Allow views to hide the sidebar by setting the
   ``request.layout_manager.layout.hide_sidebar`` value to ``True``.
   [zupo]

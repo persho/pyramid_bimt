@@ -3,6 +3,8 @@
 
 from datetime import date
 from pyramid_basemodel import Session
+from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import User
 from sqlalchemy import engine_from_config
 
@@ -20,9 +22,15 @@ def expire_subscriptions():
             if user.enabled:
                 if user.valid_to < date.today():
                     user.disable()
-                    logger.info(
-                        "Disabled user {} because its valid_to ({}) has "
-                        "expired.".format(user.id, user.valid_to))
+                    msg = u'Disabled user {} because its valid_to ({}) has ' \
+                        'expired.'.format(user.id, user.valid_to)
+                    Session.add(AuditLogEntry(
+                        user_id=user.id,
+                        event_type_id=AuditLogEventType.by_name(
+                            'UserDisabled').id,
+                        comment=msg,
+                    ))
+                    logger.info(msg)
 
 
 def main(argv=sys.argv):
