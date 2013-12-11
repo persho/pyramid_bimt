@@ -16,6 +16,7 @@ from pyramid_deform import FormView
     layout='default',
 )
 def audit_log(request):
+    request.layout_manager.layout.hide_sidebar = True
     return {
         'entries': AuditLogEntry.get_all(),
     }

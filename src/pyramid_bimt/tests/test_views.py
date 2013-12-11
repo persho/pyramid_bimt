@@ -147,7 +147,7 @@ class TestConfig(unittest.TestCase):
     @mock.patch("pyramid_bimt.views.misc.os")
     def test_environ(self, patched_os):
         from pyramid_bimt.views.misc import config
-        request = testing.DummyRequest()
+        request = testing.DummyRequest(layout_manager=mock.Mock())
 
         patched_os.environ = {'c': '3', 'a': '1', 'b': '2'}
 
@@ -159,7 +159,7 @@ class TestConfig(unittest.TestCase):
 
     def test_settings(self):
         from pyramid_bimt.views.misc import config
-        request = testing.DummyRequest()
+        request = testing.DummyRequest(layout_manager=mock.Mock())
 
         request.registry.settings = {'c': '3', 'a': '1', 'b': '2'}
 

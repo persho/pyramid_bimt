@@ -40,6 +40,7 @@ def raise_js_error(request):
     renderer='pyramid_bimt:templates/config.pt',
 )
 def config(request):
+    request.layout_manager.layout.hide_sidebar = True
     settings = sorted(request.registry.settings.items(), key=lambda x: x[0])
     environ = sorted(os.environ.items(), key=lambda x: x[0])
     return {
