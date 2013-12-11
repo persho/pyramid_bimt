@@ -124,11 +124,38 @@ class TestEditUserViewFunctional(unittest.TestCase):
         resp = self.testapp.get('/users/add', status=200)
         self.assertIn("<h1>Add User</h1>", resp.text)
 
+        form = resp.forms['useredit']
+        form['email'] = u"test@xyz.xyz"
+        form['fullname'] = u"Test Xyz"
+        resp = form.submit('save')
+
+        self.assertEqual(resp.status, "302 Found")
+
+        resp = resp.follow()
+
+        self.assertEqual(resp.status, "200 OK")
+        self.assertIn("User test@xyz.xyz has been added.", resp.text)
+        self.assertIn("<td>test@xyz.xyz</td>", resp.text)
+        self.assertIn("<td>Test Xyz</td>", resp.text)
+
     def test_edit_user(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
         resp = self.testapp.get('/users/1/edit', status=200)
         self.assertIn("<h1>Edit User</h1>", resp.text)
+
+        form = resp.forms['useredit']
+        form['fullname'] = u"Test Admin"
+        resp = form.submit('save')
+
+        self.assertEqual(resp.status, "302 Found")
+
+        resp = resp.follow()
+
+        self.assertEqual(resp.status, "200 OK")
+        self.assertIn("User admin@bar.com has been changed.", resp.text)
+        self.assertIn("<td>admin@bar.com</td>", resp.text)
+        self.assertIn("<td>Test Admin</td>", resp.text)
 
     def test_edit_no_user(self):
         self.config.testing_securitypolicy(

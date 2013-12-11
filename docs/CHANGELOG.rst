@@ -7,6 +7,9 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
+- Redirect to user view after edit user.
+  [matejc]
+
 - Expired_subscriptions script now writes an AuditLog entry when disabling a
   user.
   [zupo]
