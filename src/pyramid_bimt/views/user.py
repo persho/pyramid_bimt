@@ -30,6 +30,7 @@ class UserView(object):
         layout='default',
     )
     def list(self):
+        self.request.layout_manager.layout.hide_sidebar = True
         return {
             'users': User.get_all(),
         }

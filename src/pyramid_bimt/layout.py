@@ -11,10 +11,17 @@ import os
 class DefaultLayout(object):
     page_title = 'BIMT App'
 
-    def __init__(self, context, request, current_page='Home'):
+    def __init__(
+        self,
+        context,
+        request,
+        current_page='Home',
+        hide_sidebar=False,
+    ):
         self.context = context
         self.request = request
         self.current_page = current_page
+        self.hide_sidebar = hide_sidebar
         self.app_title = self.request.registry.settings['bimt.app_title']
 
     def sentry_dsn(self):

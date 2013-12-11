@@ -7,6 +7,10 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
+- Allow views to hide the sidebar by setting the
+  ``request.layout_manager.layout.hide_sidebar`` value to ``True``.
+  [zupo]
+
 - Fix for exceptions in verify password function, returns False on Exception.
   [matejc]
 
