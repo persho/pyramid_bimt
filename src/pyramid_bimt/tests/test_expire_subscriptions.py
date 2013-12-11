@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """Tests for the expire_subscriptions script."""
 
-from pyramid import testing
 from datetime import date
+from pyramid import testing
+from pyramid_basemodel import Session
+from pyramid_bimt.models import User
 from pyramid_bimt.scripts.expire_subscriptions import expire_subscriptions
+from pyramid_bimt.testing import initTestingDB
 
 import mock
 import unittest
@@ -23,16 +26,6 @@ class TestExpireSubscriptions(unittest.TestCase):
         user.enabled = enabled
         user.valid_to = valid_to
         return user
-
-    @mock.patch('pyramid_bimt.scripts.expire_subscriptions.User')
-    @mock.patch('pyramid_bimt.scripts.expire_subscriptions.date')
-    def test_disable_expired_member(self, mocked_date, User):
-        mocked_date.today.return_value = date(2013, 12, 30)
-        user = self._make_user(valid_to=date(2013, 12, 29))
-        User.get_all.return_value = [user, ]
-
-        expire_subscriptions()
-        user.disable.assert_called_with()
 
     @mock.patch('pyramid_bimt.scripts.expire_subscriptions.User')
     @mock.patch('pyramid_bimt.scripts.expire_subscriptions.date')
@@ -61,3 +54,33 @@ class TestExpireSubscriptions(unittest.TestCase):
 
         self.assertEqual(
             cm.exception.message, 'Expected call: disable()\nNot called')
+
+
+class TestExpireSubscriptionsIntegration(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    @mock.patch('pyramid_bimt.scripts.expire_subscriptions.date')
+    def test_disable_expired_member(self, mocked_date):
+        mocked_date.today.return_value = date(2013, 12, 30)
+        user = User.by_email('admin@bar.com')
+        user.valid_to = date(2013, 12, 29)
+        Session.flush()
+
+        expire_subscriptions()
+
+        user = User.by_email('admin@bar.com')
+        self.assertFalse(user.enabled)
+        self.assertEqual(len(user.audit_log_entries), 1)
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserDisabled')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Disabled user 1 because its valid_to (2013-12-11) has expired.',
+        )
