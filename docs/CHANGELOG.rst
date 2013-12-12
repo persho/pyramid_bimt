@@ -4,10 +4,11 @@ Changelog
 =========
 
 
-0.2.4 (unreleased)
-------------------
+0.3 (2013-12-12)
+----------------
 
-- Handle all static resources with Fanstatic.
+- Handle all static resources with Fanstatic. Overhaul of templates and
+  CSS/JS files.
   [zupo]
 
 - Redirect to user view after edit user.
