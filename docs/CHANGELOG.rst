@@ -4,7 +4,7 @@ Changelog
 =========
 
 
-0.3.2 (unreleased)
+0.3.2 (2013-12-13)
 ------------------
 
 - Libraries (such as pyramid_bimt) need to include compiled resources.
