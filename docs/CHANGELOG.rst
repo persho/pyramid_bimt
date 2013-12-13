@@ -7,7 +7,11 @@ Changelog
 0.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Move flash messages back to the content area.
+  [zupo]
+
+- Various fixes for Fanstatic integration.
+  [zupo]
 
 
 0.3 (2013-12-12)
