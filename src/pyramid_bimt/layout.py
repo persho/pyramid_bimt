@@ -26,6 +26,20 @@ class DefaultLayout(object):
         self.app_title = self.request.registry.settings['bimt.app_title']
         self.sentry_dsn = 'SENTRY_DSN' in os.environ
 
+    def flash_messages(self):
+        pop = self.request.session.pop_flash
+        messages = []
+        for queue in ('', 'info', 'warning', 'error'):
+            for msg in pop(queue):
+                if queue == '':
+                    queue_ = 'info'
+                elif queue == 'error':
+                    queue_ = 'danger'
+                else:
+                    queue_ = queue
+                messages.append(dict(msg=msg, level=queue_))
+        return messages
+
 
 @panel_config(name='footer')
 def footer(context, request):

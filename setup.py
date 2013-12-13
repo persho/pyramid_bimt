@@ -37,7 +37,7 @@ setup(
     install_requires=[
         'ColanderAlchemy>=0.3.dev0',
         'SQLAlchemy',
-        'fanstatic [cssmin,jsmin]',
+        'fanstatic',
         'flufl.enum',
         'js.bootstrap',
         'js.deform',
@@ -54,6 +54,7 @@ setup(
     extras_require={
         'test': [
             'coverage',
+            'fanstatic [cssmin,jsmin]',
             'flake8',
             'mock',
             'nose',
@@ -64,6 +65,7 @@ setup(
         ],
         'development': [
             'Sphinx',
+            'fanstatic [cssmin,jsmin]',
             'pyramid_debugtoolbar',
             'waitress',
             'zest.releaser',

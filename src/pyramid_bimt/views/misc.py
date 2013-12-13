@@ -24,6 +24,7 @@ def raise_http_error(request):
     renderer='pyramid_bimt:templates/form.pt',
 )
 def raise_js_error(request):
+    app_assets.need()
     return {
         'title': 'JS error',
         'form': """<script type="text/javascript">

@@ -25,35 +25,18 @@
     <div class="container-fluid">
       <div class="row-fluid">
 
-        <div id="flash" tal:condition="request.session.peek_flash()">
-          <div class="alert alert-info" tal:repeat="message request.session.pop_flash()">
-                ${message}
-          </div>
-        </div>
-
-        <div id="flash" tal:condition="request.session.peek_flash('info')">
-          <div class="alert alert-info" tal:repeat="message request.session.pop_flash('info')">
-                ${message}
-          </div>
-        </div>
-
-        <div id="flash" tal:condition="request.session.peek_flash('warning')">
-          <div class="alert alert-warning" tal:repeat="message request.session.pop_flash('warning')">
-                ${message}
-          </div>
-        </div>
-
-        <div id="flash" tal:condition="request.session.peek_flash('error')">
-          <div class="alert alert-danger" tal:repeat="message request.session.pop_flash('error')">
-                ${message}
-          </div>
-        </div>
-
         <div class="col-md-3" tal:condition="request.user and request.user.enabled and not layout.hide_sidebar">
           ${panel('sidebar')}
         </div>
 
         <div class="${python: 'col-md-12' if layout.hide_sidebar else 'col-md-9'}">
+          <tal:messages tal:repeat="message python:layout.flash_messages()">
+            <div id="flash">
+              <div class="alert alert-${message.level}">
+                ${message.msg}
+              </div>
+            </div>
+          </tal:messages>
           <div metal:define-slot="content" id="content" />
         </div>
 
