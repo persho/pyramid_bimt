@@ -71,6 +71,16 @@ def add_default_content():
         admin.groups.append(users)
         Session.add(admin)
 
+        # Init the normal user account
+        one = User(
+            email=u'one@bar.com',
+            password=encrypt('secret'),
+            fullname=u'One Bar',
+            properties=[UserProperty(key=u'bimt', value=u'on'), ],
+        )
+        one.groups.append(users)
+        Session.add(one)
+
 
 def main(argv=sys.argv):
 

@@ -20,6 +20,7 @@ REQUIRED_SETTINGS = [
     'authtkt.secret',
     'bimt.app_name',
     'bimt.app_title',
+    'bimt.disabled_user_redirect_path',
     'script_location',
     'session.secret',
     'sqlalchemy.url',

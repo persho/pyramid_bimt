@@ -14,6 +14,7 @@ class TestCheckSettings(unittest.TestCase):
             'authtkt.secret': '',
             'bimt.app_name': 'bimt',
             'bimt.app_title': 'BIMT',
+            'bimt.disabled_user_redirect_path': '',
             'script_location': '',
             'session.secret': '',
             'sqlalchemy.url': '',

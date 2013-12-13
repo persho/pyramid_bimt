@@ -7,6 +7,13 @@ Changelog
 0.3.1 (unreleased)
 ------------------
 
+- Redirect user to value of settings entry named
+  'bimt.disabled_user_redirect_path'. The value is path, ex: /settings
+  [matejc]
+
+- Added new non-admin user to 'add_default_content' for testing env.
+  [matejc]
+
 - Move flash messages back to the content area.
   [zupo]
 
