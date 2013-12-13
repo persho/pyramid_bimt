@@ -65,6 +65,10 @@ class LoginForm(FormView):
             if not user.enabled:
                 self.request.session.flash(
                     u'Your account is disabled.', 'warning')
+                return HTTPFound(
+                    location=self.request.registry.settings['bimt.disabled_user_redirect_path'],  # noqa
+                    headers=headers
+                )
 
             return HTTPFound(location=came_from, headers=headers)
         self.request.session.flash(u'Login failed.', 'error')

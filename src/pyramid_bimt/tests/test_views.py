@@ -17,6 +17,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
     def setUp(self):
         settings = {
             'bimt.app_title': 'BIMT',
+            'bimt.disabled_user_redirect_path': '/settings',
         }
         self.config = testing.setUp(settings=settings)
         initTestingDB()
@@ -38,6 +39,29 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('302 Found', resp.text)
         resp = resp.follow()
         self.assertIn('Login successful.', resp.text)
+
+    def test_login_disabled(self):
+        from pyramid_bimt.models import User
+        user = User.by_email('one@bar.com')
+        user.disable()
+
+        resp = self.testapp.get('/login', status=200)
+        self.assertIn('<h1>Login</h1>', resp.text)
+
+        resp.form['email'] = 'one@bar.com'
+        resp.form['password'] = 'secret'
+        resp = resp.form.submit('login')
+        self.assertIn('302 Found', resp.text)
+
+        # /settings path does not exist in this package,
+        # therefore we check for 404
+        with self.assertRaises(HTTPNotFound) as cm:
+            resp.follow()
+        if cm.exception.message != '/settings':
+            self.fail(
+                'This test should fail with message /settings! '
+                'But it fails with message {}'.format(cm.exception.message)
+            )
 
 
 class TestUserView(unittest.TestCase):
