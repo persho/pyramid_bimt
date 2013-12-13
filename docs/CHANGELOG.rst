@@ -7,7 +7,8 @@ Changelog
 0.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Libraries (such as pyramid_bimt) need to include compiled resources.
+  [zupo]
 
 
 0.3.1 (2013-12-13)
