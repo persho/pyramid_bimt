@@ -7,7 +7,8 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- We always store emails in lower-case.
+  [zupo]
 
 
 0.3.2 (2013-12-13)

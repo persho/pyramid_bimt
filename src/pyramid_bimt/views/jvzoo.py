@@ -57,9 +57,10 @@ class JVZooView(object):
         try:
             self._verify_POST()
             # try to find an existing user using the ``ccustemail``
-            user = User.by_email(self.request.POST['ccustemail'])
+            email = self.request.POST['ccustemail'].lower()
+            user = User.by_email(email)
             if not user:
-                user = User.by_billing_email(self.request.POST['ccustemail'])
+                user = User.by_billing_email(email)
 
             comment = u'{} by JVZoo, transaction id: {}, type: {}'
             trans_id = self.request.POST.get('ctransreceipt', u'unknown')
@@ -69,12 +70,12 @@ class JVZooView(object):
             if not user:
                 password = generate()
                 user = User(
-                    email=self.request.POST['ccustemail'],
+                    email=email,
                     password=encrypt(password),
                     fullname=u'{}'.format(
                         self.request.POST['ccustname'].decode('utf-8')),
                     affiliate=u'{}'.format(
-                        self.request.POST['ctransaffiliate'].decode('utf-8')),
+                        self.request.POST['ctransaffiliate'].decode('utf-8').lower()),  # noqa
                 )
                 Session.add(user)
                 self.request.registry.notify(

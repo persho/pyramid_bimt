@@ -129,7 +129,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         from pyramid_bimt.views.jvzoo import JVZooView
         user = self._make_user(email='foo@bms.com')
         post = {
-            'ccustemail': 'foo@bms.com',
+            'ccustemail': 'FOO@bms.com',
             'ctransaction': 'BILL',
             'ctransreceipt': 123,
 
@@ -157,7 +157,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         from pyramid_bimt.views.jvzoo import JVZooView
         user = self._make_user(email='foo@bms.com')
         post = {
-            'ccustemail': 'foo@bms.com',
+            'ccustemail': 'FOO@bms.com',
             'ctransaction': 'RFND',
             'ctransreceipt': 123,
         }
@@ -184,7 +184,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         from pyramid_bimt.views.jvzoo import JVZooView
         user = self._make_user(billing_email='bar@bms.com', enabled=False)
         post = {
-            'ccustemail': 'bar@bms.com',
+            'ccustemail': 'BAR@bms.com',
             'ctransaction': 'SALE',
             'ctransreceipt': 123,
         }
@@ -211,7 +211,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
     def test_new_user(self, generate, verify_POST, mocked_date):
         from pyramid_bimt.views.jvzoo import JVZooView
         post = {
-            'ccustemail': 'bar@bms.com',
+            'ccustemail': 'BAR@bms.com',
             'ctransaction': 'SALE',
             'ccustname': 'Foo Bär',
             'ctransreceipt': 123,
@@ -281,11 +281,11 @@ class TestJVZooViewFunctional(unittest.TestCase):
     def test_create_new_user(self):
         post = {
             'ccustname': 'John Smith',
-            'ccustemail': 'john.smith@email.com',
+            'ccustemail': 'John.Smith@email.com',
             'ctransaction': 'SALE',
-            'ctransaffiliate': 'affiliate@email.com',
+            'ctransaffiliate': 'Affiliate@email.com',
             'ctransreceipt': 123,
-            'cverify': '3D6C1378',
+            'cverify': '43EE120C',
         }
         resp = self.testapp.post('/jvzoo', params=post, status=200)
         self.assertEqual('Done.', resp.text)

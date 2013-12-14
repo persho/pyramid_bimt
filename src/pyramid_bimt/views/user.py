@@ -147,7 +147,7 @@ class UserEditForm(FormView):
         if self.edited_user:
             # edit user
             user = self.edited_user
-            user.email = appstruct['email']
+            user.email = appstruct['email'].lower()
             user.fullname = appstruct['fullname']
             user.groups = [Group.by_name(name) for name in appstruct['groups']]
             self.request.session.flash(
@@ -155,7 +155,7 @@ class UserEditForm(FormView):
         else:
             # add user
             user = User(
-                email=appstruct['email'],
+                email=appstruct['email'].lower(),
                 fullname=appstruct['fullname'],
                 groups=[Group.by_name(name) for name in appstruct['groups']]
             )
