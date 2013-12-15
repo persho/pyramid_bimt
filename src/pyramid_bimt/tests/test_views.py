@@ -33,7 +33,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
     def test_login(self):
         resp = self.testapp.get('/login', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
-        resp.form['email'] = 'admin@bar.com'
+        resp.form['email'] = 'ONE@bar.com'
         resp.form['password'] = 'secret'
         resp = resp.form.submit('login')
         self.assertIn('302 Found', resp.text)
@@ -48,7 +48,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = self.testapp.get('/login', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
 
-        resp.form['email'] = 'one@bar.com'
+        resp.form['email'] = 'ONE@bar.com'
         resp.form['password'] = 'secret'
         resp = resp.form.submit('login')
         self.assertIn('302 Found', resp.text)
@@ -76,7 +76,7 @@ class TestUserView(unittest.TestCase):
     def test_view_user(self):
         from pyramid_bimt.views.user import UserView
         from pyramid_bimt.models import User
-        context = User.by_email('admin@bar.com')
+        context = User.by_email('one@bar.com')
         request = testing.DummyRequest()
         resp = UserView(context, request).view()
         self.assertEqual(resp['user'], context)
@@ -149,7 +149,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         self.assertIn('<h1>Add User</h1>', resp.text)
 
         form = resp.forms['useredit']
-        form['email'] = u'test@xyz.xyz'
+        form['email'] = u'TEST@xyz.xyz'
         form['fullname'] = u'Test Xyz'
         resp = form.submit('save')
 
@@ -164,12 +164,13 @@ class TestEditUserViewFunctional(unittest.TestCase):
 
     def test_edit_user(self):
         self.config.testing_securitypolicy(
-            userid='admin@bar.com', permissive=True)
+            userid='one@bar.com', permissive=True)
         resp = self.testapp.get('/users/1/edit', status=200)
         self.assertIn('<h1>Edit User</h1>', resp.text)
 
         form = resp.forms['useredit']
-        form['fullname'] = u'Test Admin'
+        form['fullname'] = u'One Two'
+        form['email'] = u'TWO@bar.com'
         resp = form.submit('save')
 
         self.assertEqual(resp.status, '302 Found')
@@ -177,13 +178,13 @@ class TestEditUserViewFunctional(unittest.TestCase):
         resp = resp.follow()
 
         self.assertEqual(resp.status, '200 OK')
-        self.assertIn('User admin@bar.com has been modified.', resp.text)
-        self.assertIn('<td>admin@bar.com</td>', resp.text)
-        self.assertIn('<td>Test Admin</td>', resp.text)
+        self.assertIn('User two@bar.com has been modified.', resp.text)
+        self.assertIn('<td>two@bar.com</td>', resp.text)
+        self.assertIn('<td>One Two</td>', resp.text)
 
     def test_edit_no_user(self):
         self.config.testing_securitypolicy(
-            userid='admin@bar.com', permissive=True)
+            userid='one@bar.com', permissive=True)
         self.assertRaises(
             HTTPNotFound, self.testapp.get, '/users/123456789/edit')
 
