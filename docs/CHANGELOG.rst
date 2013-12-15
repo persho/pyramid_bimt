@@ -7,6 +7,9 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
+- [DB MIGRATION REQUIRED] Add the Portlets feature, available on ``/portlets``.
+  [matejc]
+
 - Util methods that are used in multiple applications added
   [ferewuz]
 
@@ -20,7 +23,7 @@ Changelog
   small fix to user edit form.
   [ferewuz]
 
-- We always store emails in lower-case.
+- [DB MIGRATION REQUIRED] We always store emails in lower-case.
   [zupo]
 
 

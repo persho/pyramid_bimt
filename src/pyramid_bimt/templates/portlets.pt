@@ -1,0 +1,38 @@
+<metal:block use-macro="main_template">
+
+    <div metal:fill-slot="content" id="content">
+      <h1>Portlets (${len(portlets)})</h1>
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Groups</th>
+          <th>Position</th>
+          <th>Weight</th>
+          <th>Modified</th>
+          <th>Status</th>
+          <th>
+            <a class="btn btn-xs btn-success" href="${request.route_url('portlet_add')}">
+              <span class="glyphicon glyphicon-plus-sign"></span> Add
+            </a>
+          </th>
+        </tr>
+        <tr tal:repeat="portlet portlets">
+          <td>${portlet.id}</td>
+          <td>${portlet.name}</td>
+          <td>${", ".join([g.name for g in portlet.groups])}</td>
+          <td>${portlet.position}</td>
+          <td>${str(portlet.weight)}</td>
+          <td>${portlet.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
+          <td tal:condition="portlet.enabled">Enabled</td>
+          <td tal:condition="not portlet.enabled">Disabled</td>
+          <td>
+            <a class="btn btn-xs btn-primary" href="${request.route_url('portlet_edit', portlet_id=portlet.id)}">
+              <span class="glyphicon glyphicon-edit"></span> Edit
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+</metal:block>
