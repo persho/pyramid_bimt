@@ -54,8 +54,6 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(AuditLogEventType.by_id(1).title, 'User Changed Password')  # noqa
         self.assertEqual(AuditLogEventType.by_id(1).description, 'Emitted whenever a user changes its password.')  # noqa
 
-
-
     def test_get_event_type_get_all(self):
         from pyramid_bimt.scripts.populate import default_audit_log_event_types
         from pyramid_bimt.models import AuditLogEventType

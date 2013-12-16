@@ -73,9 +73,10 @@ class TestLoginViewsFunctional(unittest.TestCase):
             )
 
     class _MessageMatcher(object):
-        def __init__(self,compare, msg):
+        def __init__(self, compare, msg):
             self.msg = msg
             self.compare = compare
+
         def __eq__(self, other):
             return self.compare(self.msg, other)
 
@@ -111,14 +112,15 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('Password reset failed. Make sure you have correctly '
                       'entered your email address.', resp.text)
 
+
 def compare_message(self, other):
     if (self.subject == other.subject and
-        self.sender == other.sender and
-        self.recipients == other.recipients
-    ):
+            self.sender == other.sender and
+            self.recipients == other.recipients):
         return True
     else:
         return False
+
 
 class TestUserView(unittest.TestCase):
     def setUp(self):
