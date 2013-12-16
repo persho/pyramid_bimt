@@ -88,7 +88,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp.form['email'] = 'foo@bar.com'
         resp = resp.form.submit('reset_password')
         self.assertIn('Password reset failed. Make sure you have correctly '
-                        'entered your email address.', resp.text)
+                      'entered your email address.', resp.text)
 
 
 class TestUserView(unittest.TestCase):
