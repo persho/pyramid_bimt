@@ -14,7 +14,6 @@ from pyramid_bimt.models import User
 from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import app_assets
 from pyramid_deform import FormView
-from sqlalchemy.orm.exc import NoResultFound
 
 import colander
 import deform
@@ -87,9 +86,7 @@ class UserView(object):
 
 
 def group_validator(form, value):
-    try:
-        Group.by_name(value)
-    except NoResultFound:
+    if Group.by_name(value) is None:
         raise colander.Invalid(form, 'Group must be one of: {}'.format(
             ', '.join([g.name for g in Group.query.all()])))
 
