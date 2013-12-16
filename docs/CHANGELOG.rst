@@ -7,6 +7,9 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
+- Test coverage now at 100%, all the missing tests were added.
+  [ferewuz]
+
 - Support for nice searchable/sortable tables with jQuery.DataTables.
   [zupo]
 
