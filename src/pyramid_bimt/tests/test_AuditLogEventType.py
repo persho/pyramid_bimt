@@ -47,43 +47,30 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(types[5].title, 'User Logged Out')
         self.assertEqual(types[5].description, 'Emitted whenever a user logs out.')  # noqa
 
-    def test_event_types_search(self):
-        """Test searching for event types"""
-        from pyramid_bimt.scripts.populate import default_audit_log_event_types
-
+    def test_get_event_type_by_id(self):
         from pyramid_bimt.models import AuditLogEventType
 
         self.assertEqual(AuditLogEventType.by_id(1).name, 'UserChangedPassword')  # noqa
         self.assertEqual(AuditLogEventType.by_id(1).title, 'User Changed Password')  # noqa
         self.assertEqual(AuditLogEventType.by_id(1).description, 'Emitted whenever a user changes its password.')  # noqa
 
-        self.assertEqual(AuditLogEventType.by_id(2).name, 'UserCreated')
-        self.assertEqual(AuditLogEventType.by_id(2).title, 'User Created')
-        self.assertEqual(AuditLogEventType.by_id(2).description, 'Emitted whenever a new user is created.')  # noqa
 
-        self.assertEqual(AuditLogEventType.by_id(3).name, 'UserDisabled')
-        self.assertEqual(AuditLogEventType.by_id(3).title, 'User Disabled')
-        self.assertEqual(AuditLogEventType.by_id(3).description, 'Emitted whenever a user is disabled.')  # noqa
 
-        self.assertEqual(AuditLogEventType.by_id(4).name, 'UserEnabled')
-        self.assertEqual(AuditLogEventType.by_id(4).title, 'User Enabled')
-        self.assertEqual(AuditLogEventType.by_id(4).description, 'Emitted whenever a user is enabled.')  # noqa
-
-        self.assertEqual(AuditLogEventType.by_id(5).name, 'UserLoggedIn')
-        self.assertEqual(AuditLogEventType.by_id(5).title, 'User Logged In')
-        self.assertEqual(AuditLogEventType.by_id(5).description, 'Emitted whenever a user logs in.')  # noqa
-
-        self.assertEqual(AuditLogEventType.by_id(6).name, 'UserLoggedOut')
-        self.assertEqual(AuditLogEventType.by_id(6).title, 'User Logged Out')
-        self.assertEqual(AuditLogEventType.by_id(6).description, 'Emitted whenever a user logs out.')  # noqa
-
+    def test_get_event_type_get_all(self):
+        from pyramid_bimt.scripts.populate import default_audit_log_event_types
+        from pyramid_bimt.models import AuditLogEventType
         event_types = default_audit_log_event_types()
-
         db_event_types = AuditLogEventType.get_all()
         self.assertEqual(event_types[0].name, db_event_types[0].name)
         self.assertEqual(db_event_types.count(), len(event_types))
-
         self.assertEqual(
             AuditLogEventType.get_all(filter_by={'name': 'UserLoggedOut'})[0].name,  # noqa
             'UserLoggedOut',
         )
+
+    def test_get_event_type_by_name(self):
+        from pyramid_bimt.models import AuditLogEventType
+
+        self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').id, 1)  # noqa
+        self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').title, 'User Changed Password')  # noqa
+        self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').description, 'Emitted whenever a user changes its password.')  # noqa
