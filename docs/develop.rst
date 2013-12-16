@@ -24,24 +24,37 @@ it & use it.
 Setting up a local development environment
 ------------------------------------------
 
+The ``pyramid_bimt`` package is not intended to be used as a standalone pyramid
+application, but as a part of a "bimt app" -> a pyramid application, *using*
+``pyramid_bimt`` as a base framework providing authentication, users, audit
+log, etc.
+
+So to develop the ``pyramid_bimt`` package, you first need to checkout an
+app using it. As an example, let's use the BigMediaScraper (bms) app:
+
 Prepare the environment::
 
-    # fetch latest code
-    $ git clone https://github.com/niteoweb/pyramid_bimt.git
-    $ cd pyramid_bimt
+    # fetch latest bms code
+    $ git clone https://github.com/niteoweb/bms.git
+    $ cd bms
 
     # build development environment
     $ make
 
+    # now mark pyramid_bimt as a "development" egg: this will checkout the
+    # source of pyramid_bimt into the src/pyramid-bimt folder of the bms app
+    # and link it inside the bin/pserver script
+    $ bin/develop checkout pyramid-bimt
+    $ bin/buildout
+
 Now you can run a variety of commands::
 
-    # if your DB is empty, populate it with demo content
-    $ make db
-
-    # Start the development instance of Pyramid
+    # Start the development instance of Pyramid, with the local copy of bimt
+    # code that is in src/pyramid-bimt
     $ bin/pserve etc/development.ini --reload
 
     # development commands
+    $ cd src/pyramid-bimt
     $ make docs  # generate HTML format of docs for local viewing
     $ make tests  # run all tests
     $ make coverage  # generate HTML report of test coverage
