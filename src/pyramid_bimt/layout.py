@@ -36,7 +36,7 @@ class DefaultLayout(object):
                 elif queue == 'error':
                     queue_ = 'danger'
                 else:
-                    queue_ = queue
+                    queue_ = queue  # pragma: no cover
                 messages.append(dict(msg=msg, level=queue_))
         return messages
 

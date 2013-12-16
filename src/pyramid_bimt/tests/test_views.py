@@ -61,12 +61,11 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp.form['password'] = 'secret'
         resp = resp.form.submit('login')
         self.assertIn('302 Found', resp.text)
-
         # /settings path does not exist in this package,
         # therefore we check for 404
         with self.assertRaises(HTTPNotFound) as cm:
             resp.follow()
-        if cm.exception.message != '/settings':
+        if cm.exception.message != '/settings':  # pragma: no cover
             self.fail(
                 'This test should fail with message /settings! '
                 'But it fails with message {}'.format(cm.exception.message)
@@ -367,6 +366,30 @@ class TestForbiddenRedirect(unittest.TestCase):
             forbidden_redirect(None, request).location,
             request.route_url('login', _query={'came_from': request.url}),
         )
+
+
+class TestErrorViews(unittest.TestCase):
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
+        configure(self.config)
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_raise_js_error(self):
+        from pyramid_bimt.views.misc import raise_js_error
+        request = testing.DummyRequest()
+        self.assertEqual(raise_js_error(request)['title'], 'JS error')
+
+    def test_raise_http_error(self):
+        from pyramid_bimt.views.misc import raise_http_error
+        request = testing.DummyRequest()
+        request.matchdict = {'error_code': 404}
+        with self.assertRaises(HTTPNotFound):
+            raise_http_error(request)
 
 
 class TestConfig(unittest.TestCase):
