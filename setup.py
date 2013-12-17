@@ -42,6 +42,7 @@ setup(
         'js.bootstrap',
         'js.deform',
         'js.jquery',
+        'js.jquery_datatables',
         'passlib',
         'pyramid',
         'pyramid_basemodel',

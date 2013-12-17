@@ -8,9 +8,11 @@ from js.bootstrap import bootstrap
 from js.deform import deform_form_css
 from js.deform import deform_js
 from js.jquery import jquery
+from js.jquery_datatables import jquery_datatables_js
 from js.modernizr import modernizr
 from pkg_resources import resource_filename
 from pyramid.threadlocal import get_current_registry
+
 
 import logging
 
@@ -55,6 +57,25 @@ bimt_assets = Group([
 ])
 
 base_assets = bimt_assets
+
+table_assets = Group([
+    Resource(
+        library=lib_bimt,
+        relpath='datatables/dataTables.bootstrap.css',
+        minified='datatables/dataTables.bootstrap.min.css',
+        minifier='cssmin',
+        depends=[bootstrap],
+    ),
+    jquery_datatables_js,
+    Resource(
+        library=lib_bimt,
+        relpath='datatables/dataTables.bootstrap.js',
+        minified='datatables/dataTables.bootstrap.min.js',
+        minifier='jsmin',
+        depends=[jquery_datatables_js],
+        bottom=False,
+    ),
+])
 
 form_assets = Group([
     deform_js,
