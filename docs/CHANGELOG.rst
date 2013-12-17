@@ -7,6 +7,10 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
+- Add tests for views that didn't have them, tests for AuditLogEvent,
+  small fix to user edit form.
+  [ferewuz]
+
 - We always store emails in lower-case.
   [zupo]
 
