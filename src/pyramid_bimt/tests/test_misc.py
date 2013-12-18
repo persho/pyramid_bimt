@@ -2,6 +2,8 @@
 """Misc and tools tests."""
 
 from pyramid import testing
+from pyramid_basemodel import Session
+from pyramid_bimt.testing import initTestingDB
 
 import mock
 import unittest
@@ -51,7 +53,7 @@ class TestCheckSettings(unittest.TestCase):
 
         try:
             check_required_settings(self.config_full)
-        except KeyError as ke:
+        except KeyError as ke:  # pragma: no cover
             self.fail(ke.message)
 
     def test_empty_required_settings(self):
@@ -75,7 +77,7 @@ class TestCheckSettings(unittest.TestCase):
 
         try:
             check_required_settings(self.config_full_production)
-        except KeyError as ke:
+        except KeyError as ke:  # pragma: no cover
             self.fail(ke.message)
 
     @mock.patch('pyramid_bimt.sys')
@@ -92,6 +94,60 @@ class TestCheckSettings(unittest.TestCase):
         patched_sys.argv = ['pserve', 'production.ini']
 
         with self.assertRaises(KeyError) as cm:
-            check_required_settings(self.config_missing)
+            check_required_settings(self.config_full)
 
-        self.assertIn('bimt.app_name', cm.exception.message)
+        self.assertIn('bimt.jvzoo_regular_period', cm.exception.message)
+
+
+class TestACL(unittest.TestCase):
+    def setUp(self):
+        from pyramid_bimt import configure
+        self.config = testing.setUp()
+        configure(self.config)
+        self.request = testing.DummyRequest()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_groupfinder(self):
+        from pyramid_bimt.acl import groupfinder
+        self.assertEqual(
+            groupfinder('one@bar.com', self.request),
+            ['g:users'],
+        )
+        self.assertEqual(
+            groupfinder('foo@bar.com', self.request),
+            [],
+        )
+
+    def test_factories(self):
+        from pyramid_bimt.acl import AuditLogFactory
+        from pyramid_bimt.acl import RootFactory
+        from pyramid_bimt.acl import UserFactory
+        from pyramid_bimt.models import AuditLogEntry
+        from pyramid.httpexceptions import HTTPFound
+        import transaction
+
+        entry = AuditLogEntry(
+            user_id=1,
+            event_type_id=1,
+        )
+        Session.add(entry)
+        transaction.commit()
+        audit_log_factory = AuditLogFactory(self.request)
+        self.assertEqual(
+            audit_log_factory[1].id,
+            1,
+        )
+        with self.assertRaises(KeyError):
+            audit_log_factory[0]
+
+        self.assertIsNotNone(RootFactory(self.request))
+
+        self.assertIsNotNone(UserFactory(self.request))
+
+        with self.assertRaises(HTTPFound):
+            self.request['PATH_INFO'] = '/users/'
+            UserFactory(self.request)

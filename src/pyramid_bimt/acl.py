@@ -13,8 +13,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def groupfinder(userid, request):
-    user = User.by_email(userid)
+def groupfinder(user_email, request):
+    user = User.by_email(user_email)
     if user and user.groups:
         return ['g:{}'.format(g.name) for g in user.groups]
     else:

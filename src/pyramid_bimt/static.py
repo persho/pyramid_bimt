@@ -120,7 +120,7 @@ form_assets = Group([
 ])
 
 
-class AppAssets(object):
+class AppAssets(object):  # pragma: no cover
     """Mimick fanstatic's need() call for BIMT app's base assets.
 
     BIMT never runs alone, it is always a dependency of an app. Each app has
@@ -146,7 +146,7 @@ class AppAssets(object):
 app_assets = AppAssets()
 
 
-def pserve():
+def pserve():  # pragma: no cover
     """A pserve script aware of static resources."""
     import pyramid.scripts.pserve
     import pyramid_fanstatic
