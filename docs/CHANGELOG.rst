@@ -7,6 +7,9 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
+- Util methods that are used in multiple applications added
+  [ferewuz]
+
 - Test coverage now at 100%, all the missing tests were added.
   [ferewuz]
 
