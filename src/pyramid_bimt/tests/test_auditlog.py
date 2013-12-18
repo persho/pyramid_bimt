@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
 """Tests for AuditLogEventType."""
 
+from datetime import datetime
+from datetime import timedelta
 from pyramid import testing
 from pyramid_basemodel import Session
+from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.testing import initTestingDB
 
 import unittest
+
+
+def _make_entry(comment=u''):
+    entry = AuditLogEntry(comment=comment)
+    Session.add(entry)
+    return entry
 
 
 class TestAuditLogEventType(unittest.TestCase):
@@ -72,3 +81,41 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').id, 1)  # noqa
         self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').title, 'User Changed Password')  # noqa
         self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').description, 'Emitted whenever a user changes its password.')  # noqa
+
+
+class TestAuditLogEntryModel(unittest.TestCase):
+
+    def setUp(self):
+        initTestingDB(empty=True)
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_default_values(self):
+        entry = _make_entry()
+        Session.flush()
+        self.assertAlmostEqual(
+            entry.timestamp, datetime.utcnow(), delta=timedelta(seconds=10))
+
+
+class TestEntryById(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB(empty=True)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_invalid_id(self):
+        self.assertEqual(AuditLogEntry.by_id(1), None)
+        self.assertEqual(AuditLogEntry.by_id('foo'), None)
+        self.assertEqual(AuditLogEntry.by_id(None), None)
+
+    def test_valid_id(self):
+        _make_entry(comment=u'foö')
+        entry = AuditLogEntry.by_id(1)
+        self.assertEqual(entry.comment, u'foö')

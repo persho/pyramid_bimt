@@ -59,6 +59,8 @@ class AuditLogFactory(object):
     ]
 
     def __init__(self, request):
+        if request.get('PATH_INFO') == '/audit-log/':
+            raise HTTPFound(location=request.route_path('audit_log'))
         self.request = request
 
     def __getitem__(self, key):
