@@ -2,14 +2,11 @@
 pyramid_bimt
 ============
 
-A base package for BIMT apps.
-
-A Heroku-deployable Pyramid app for batch enriching text articles with images
-and videos.
+Base package for BIMT Pyramid apps.
 
 * `Source code @ GitHub <https://github.com/niteoweb/pyramid_bimt>`_
-* `Dev Docs @ GitHub <https://github.com/niteoweb/pyramid_bimt/blob/master/docs/develop.rst>`_
-* `Continuous Integration @ Travis-CI <https://magnum.travis-ci.com/niteoweb/pyramid_bimt/builds/>`_
+* `Documentation @ docs.niteoweb.com <http://docs.niteoweb.com/pyramid_bimt/>`_
+* `Continuous Integration @ Travis CI <https://magnum.travis-ci.com/niteoweb/pyramid_bimt/builds/>`_
 
 .. raw:: html
 
@@ -17,20 +14,27 @@ and videos.
     <img src="https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_100.png">
 
 
-It provides a common base to develop BIMT projects/app from. Features:
+Summary
+=======
+
+The ``pyramid_bimt`` package provides a common framework for `Big IM Toolbox
+<http://www.bigimtoolbox.com>`_ apps to build upon. The package contains code
+that is not specific to a certain app, but shared among many apps, such as:
 
 * SQLAlchemy ``Base`` & ``BaseMixin`` classes and a thread local scoped
-  ``Session`` (from the ``pyramid_basemodel`` package)
-* User model with email & password fields.
-* Login & Logout forms, authentication via passlib.
-* A number of events (user created, logged-in, etc.).
+  ``Session`` (from the ``pyramid_basemodel`` package).
+* User model with email, password and other common fields.
+* Login, Logout, Password Reset forms, authentication via
+  :ref:`passlib <passlib:context-overview>`.
+* A number of events (user created, logged-in, etc.) that apps can
+  subscribe to.
 * Extended request with ``request.user`` shortcut.
 * User management views for admins.
 * Audit log for admins. Can be extended with per-app custom events.
+* Simple portlets.
+* Default layout using ``pyramid_layout``.
+* Static resources handled by :ref:`Fanstatic <fanstatic:packaged_libs>`.
 
+This documentation describers best-practices on how to write and manage BIMT
+apps.
 
-
-TODO
-====
-
-* better test coverage

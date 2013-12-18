@@ -2,12 +2,30 @@ language: python
 python:
   - 2.7
 
+env:
+  global:
+  - secure: |-
+      WFqJNyPzFKCXFQnMxlbm42C6/4OO82rZXN0N7b2Zqer3PuWxbWSFsCdodsLGUib0bO
+      tX+X9dFMPiQCXAUWK74v95vCoMMZEoDlh4QpsGf0oEDU/Y4CvOgnlm0YVd6s7jTZIF
+      42mExSup8IwMqsHJyDTQMM/Y3irrJbNolHiDGn4=  # AWS_ACCESS_KEY_ID
+  - secure: |-
+      DyQVc6Lfjz7Yd3kSpXZZaN7vRoJBzK/c95N4f8wOyxNLSpgBfE+ZbDQKPzffGteuBW
+      hFKdVJQADKG+UG+a0JQX88l4kt3JrWtVtaBRyrxzXHLFJaMjcLvDe0nbTeRDgEyRTu
+      ji2Q0k+EVkzurHwWxECukfbYkc2u1OrtHlWnAok=  # AWS_SECRET_KEY
+
 install:
  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
  - make .installed.cfg
 
 script:
  - make tests
+
+after_script:
+  - make docs
+  - sudo apt-get install s3cmd
+  - echo "access_key=$AWS_ACCESS_KEY_ID" >> .s3cfg
+  - echo "secret_key=$AWS_SECRET_KEY" >> .s3cfg
+  - test $TRAVIS_BRANCH == 'master' && s3cmd sync --config=.s3cfg docs/html/* s3://docs.niteoweb.com/pyramid_bimt/
 
 deploy:
   provider: pypi

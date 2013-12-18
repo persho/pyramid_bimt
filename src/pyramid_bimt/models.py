@@ -65,13 +65,17 @@ class UserProperty(Base, BaseMixin):
 
     UniqueConstraint('key', 'user_id', name='key_user_id')
 
+    #: unique for any key + user_id combination
     key = Column(
         String,
         unique=False,
         nullable=False,
     )
+
+    #: value for the given key
     value = Column(Unicode)
 
+    #: user id of the owner of this property
     user_id = Column(
         Integer,
         ForeignKey('users.id'),
@@ -84,15 +88,19 @@ class User(Base, BaseMixin):
 
     __tablename__ = 'users'
 
+    #: shorthand for accessing user's groups
     groups = relationship(
         'Group', secondary=user_group_table, backref='users')
 
+    #: shorthand for accessing user's auditlog entries
     audit_log_entries = relationship(
         'AuditLogEntry', backref='user')
 
+    #: shorthand for accessing user's properties
     properties = relationship(
         'UserProperty', cascade='all,delete-orphan')
 
+    #: used for logging in and system emails
     email = Column(
         String,
         unique=True,
@@ -101,6 +109,8 @@ class User(Base, BaseMixin):
             title='Email',
         )}
     )
+
+    #: encrypted with passlib
     password = Column(
         Unicode(120),
         nullable=True,
@@ -109,6 +119,8 @@ class User(Base, BaseMixin):
             widget=deform.widget.PasswordWidget(size=128),
         )}
     )
+
+    #: unicode fullname, used in UI and emails
     fullname = Column(
         Unicode(120),
         nullable=True,
@@ -116,6 +128,8 @@ class User(Base, BaseMixin):
             title='Full name',
         )}
     )
+
+    #: email of the affiliate that referred this user
     affiliate = Column(
         Unicode,
         unique=True,
@@ -124,6 +138,9 @@ class User(Base, BaseMixin):
             title='Affiliate',
         )}
     )
+
+    #: (optional) email that is used to make paypal purchases, if different
+    #: than login email
     billing_email = Column(
         String,
         unique=True,
@@ -132,6 +149,11 @@ class User(Base, BaseMixin):
             title='Billing Email',
         )}
     )
+
+    #: date until user's subscription is valid, after this date the
+    #: :func:`expire_subscriptions
+    #: <pyramid_bimt.scripts.expire_subscriptions.expire_subscriptions>` will
+    #: disable the user
     valid_to = Column(
         Date,
         default=date.today,
@@ -245,43 +267,83 @@ class AuditLogEventType(Base):
         primary_key=True,
     )
 
+    #: string, name of the event type
     name = Column(
         String,
         unique=True,
         nullable=False,
     )
 
+    #: unicode, for UI display
     title = Column(
         Unicode,
     )
 
+    #: unicode, for UI display
     description = Column(
         Unicode,
     )
 
     @classmethod
     def by_name(self, name):
-        """Get an AuditLogEventType by name."""
+        """Get an auditlog event type by name.
+
+        A convenience method for getting an ``AuditLogEventType`` by name.
+        Normally you need this when adding a new :class:`AuditLogEntry
+        <pyramid_bimt.models.AuditLogEntry>` and you need to set its
+        :attr:`event type <pyramid_bimt.models.AuditLogEntry.event_type_id>`:
+
+        .. code-block:: python
+
+            AuditLogEntry(
+                user_id=user.id,
+                event_type_id=AuditLogEventType.by_name('UserEnabled').id,
+            )
+
+        :param name: Name of the ``AuditLogEventType`` you want to get.
+        :type name: string
+
+        :return: ``AuditLogEventType`` object of the given name
+        :rtype: instance of ``AuditLogEventType``
+        """
         return Session.query(AuditLogEventType).filter_by(name=name).first()
 
     @classmethod
     def by_id(self, id):
-        """Get an AuditLogEventType by id."""
+        """Get an auditlog event type by id.
+
+        :param name: ID of the ``AuditLogEventType`` you want to get.
+        :type name: int
+
+        :return: ``AuditLogEventType`` object of the given name
+        :rtype: instance of ``AuditLogEventType``
+        """
         return Session.query(AuditLogEventType).filter_by(id=id).first()
 
     @classmethod
-    def get_all(class_, order_by='name', filter_by=None):
-        """Return all Audit log event types.
+    def get_all(class_, order_by='name', filter_by=None, limit=100):
+        """Return all auditlog event types.
 
-        filter_by: dict -> {'name': 'foo'}
+        :param order_by: The column name that should be used for ordering
+            results.
+        :type order_by: string
 
-        By default, order by AuditLogEventType.name.
+        :param filter_by: Mapping of query filters, for example
+            ``{'description': 'foo'}``
+        :type filter_by: dict
+
+        :return: list of AuditLogEventType instances, wrapped in a SQLAlchemy
+            Query object, so you can call ``.all()`` to convert to list, or
+            append additional query parameters (such as ``.desc()`` for
+            descending)
+        :rtype: :class:sqlalchemy.orm.query.Query
         """
         AuditLogEventType = class_
         q = Session.query(AuditLogEventType)
         q = q.order_by(getattr(AuditLogEventType, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)
+        q = q.limit(limit)
         return q
 
 
@@ -300,8 +362,6 @@ def event_types_choice_widget(node, kw):
 
 
 class AuditLogEntry(Base):
-    """A class representing an Audit log entry."""
-
     __tablename__ = 'audit_log_entries'
 
     id = Column(
@@ -309,12 +369,14 @@ class AuditLogEntry(Base):
         primary_key=True,
     )
 
+    #: when was the entry triggered
     timestamp = Column(
         DateTime,
         default=datetime.utcnow,
         info={'colanderalchemy': dict(title='Timestamp')}
     )
 
+    #: id of user that triggered the entry
     user_id = Column(
         Integer,
         ForeignKey('users.id'),
@@ -325,6 +387,7 @@ class AuditLogEntry(Base):
         )}
     )
 
+    #: entry AuditLogEventType id
     event_type_id = Column(
         Integer,
         ForeignKey('audit_log_event_types.id'),
@@ -335,6 +398,7 @@ class AuditLogEntry(Base):
         )}
     )
 
+    #: (optional) additional information about the entry
     comment = Column(
         Unicode,
         info={'colanderalchemy': dict(
@@ -350,11 +414,22 @@ class AuditLogEntry(Base):
 
     @classmethod
     def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
-        """Return all Audit log entries.
+        """Return all auditlog entries.
 
-        filter_by: dict -> {'name': 'foo'}
+        By default, order by ``timestamp`` and limit to ``100`` results.
 
-        By default, order by AuditLogEntry.AuditLogEventType.
+        :param order_by: The column name that should be used for ordering
+            results.
+        :type order_by: string
+
+        :param order_by: Mapping of query filters, for example
+            ``{'comment': 'foo'}``
+        :type order_by: dict
+
+        :return: list of AuditLogEntry instances, wrapped in a SQLAlchemy Query
+            object, so you can call ``.all()`` to convert to list, or append
+            additional query parameters (such as ``.desc()`` for descending)
+        :rtype: :class:sqlalchemy.orm.query.Query
         """
         AuditLogEntry = class_
         q = Session.query(AuditLogEntry)
@@ -386,8 +461,16 @@ portlet_group_table = Table(
 
 class PortletPositions(Enum):
     """Supported positions for portlets"""
+
+    #: display a portlet in the main content area, next to the sidebar, just
+    #: before any othercontent
     above_content = 'Above Content'
+
+    #: display a portlet in the sidebar column, below any other sidebar content
     below_sidebar = 'Below Sidebar'
+
+    #: display a portlet in the footer row, full-width, before any other footer
+    #: content
     above_footer = 'Above Footer'
 
 

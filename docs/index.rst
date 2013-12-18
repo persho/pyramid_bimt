@@ -1,20 +1,18 @@
 .. include:: ../README.rst
 
 
-Developer documentation
-=======================
+Table of Contents
+=================
 
 .. toctree::
     :maxdepth: 2
 
-    develop.rst
     glossary.rst
-    audit_log.rst
-    enable_disable_user.rst
+    process.rst
+    api.rst
+    CHANGELOG.rst
+    LICENSE.rst
 
-
-.. include:: CHANGELOG.rst
-.. include:: LICENSE.rst
 
 Indices and tables
 ==================
