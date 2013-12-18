@@ -11,8 +11,9 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
-from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import form_assets
+from pyramid_bimt.static import table_assets
 from pyramid_deform import FormView
 
 import colander
@@ -33,6 +34,7 @@ class UserView(object):
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
         app_assets.need()
+        table_assets.need()
         return {
             'users': User.get_all(),
         }

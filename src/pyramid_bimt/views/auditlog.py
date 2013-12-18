@@ -3,6 +3,7 @@
 
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
+from pyramid_bimt.static import table_assets
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
@@ -20,6 +21,7 @@ from pyramid_deform import FormView
 def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
     app_assets.need()
+    table_assets.need()
     return {
         'entries': AuditLogEntry.get_all(),
     }

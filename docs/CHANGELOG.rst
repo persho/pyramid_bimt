@@ -7,6 +7,9 @@ Changelog
 0.3.3 (unreleased)
 ------------------
 
+- Support for nice searchable/sortable tables with jQuery.DataTables.
+  [zupo]
+
 - Add tests for views that didn't have them, tests for AuditLogEvent,
   small fix to user edit form.
   [ferewuz]
