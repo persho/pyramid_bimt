@@ -9,13 +9,12 @@ and videos.
 
 * `Source code @ GitHub <https://github.com/niteoweb/pyramid_bimt>`_
 * `Dev Docs @ GitHub <https://github.com/niteoweb/pyramid_bimt/blob/master/docs/develop.rst>`_
-* `Test Coverage @ Coveralls <https://coveralls.io/r/niteoweb/pyramid_bimt>`_
 * `Continuous Integration @ Travis-CI <https://magnum.travis-ci.com/niteoweb/pyramid_bimt/builds/>`_
 
 .. raw:: html
 
     <img src="https://magnum.travis-ci.com/niteoweb/pyramid_bimt.png?token=EfqGo6ntpjJ6E4arsYTQ&branch=master">
-    <img src="https://coveralls.io/repos/niteoweb/pyramid_bimt/badge.png">
+    <img src="https://s3.amazonaws.com/assets.coveralls.io/badges/coveralls_100.png">
 
 
 It provides a common base to develop BIMT projects/app from. Features:

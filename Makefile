@@ -10,7 +10,7 @@ coverage: htmlcov/index.html
 
 htmlcov/index.html: src/pyramid_bimt/*.py src/pyramid_bimt/scripts/*.py  \
 		src/pyramid_bimt/views/*.py src/pyramid_bimt/tests/*.py bin/coverage
-	@bin/coverage run --source=./src/pyramid_bimt/ --branch bin/nosetests
+	@bin/nosetests -s --with-coverage --cover-package=pyramid_bimt
 	@bin/coverage html -i
 	@touch $@
 	@echo "Coverage report was generated at '$@'."
@@ -41,13 +41,15 @@ bin/python:
 	@touch $@
 
 tests: .installed.cfg
+	@bin/nosetests -s --with-coverage --cover-package=pyramid_bimt \
+		--cover-min-percentage=100
 	@bin/flake8 setup.py
 	@bin/code-analysis
-	@bin/nosetests -s
 
 release: .installed.cfg
 	@bin/prerelease
-	@VERSION=`python setup.py --version`; echo "Tagging version v$$VERSION"; git tag -a v$$VERSION -m "version $$VERSION"
+	@VERSION=`python setup.py --version`; echo "Tagging version v$$VERSION"; \
+		git tag -a v$$VERSION -m "version $$VERSION"
 	@bin/postrelease
 
 clean:

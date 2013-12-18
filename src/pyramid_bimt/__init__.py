@@ -133,7 +133,7 @@ def check_required_settings(config):
                     'it in your production.ini file.'.format(setting))
 
 
-def includeme(config):  # pragma: no cover
+def includeme(config):
     """Allow developers to use ``config.include('pyramid_bimt')``."""
     check_required_settings(config)
 
@@ -172,7 +172,7 @@ def add_home_view(config):
     )
 
 
-def main(global_config, **settings):  # pragma: no cover
+def main(global_config, **settings):
     """This function returns a Pyramid WSGI application and is only used
     when developing BIMT in isolation."""
     engine = engine_from_config(settings, 'sqlalchemy.')

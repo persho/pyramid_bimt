@@ -146,7 +146,7 @@ class AppAssets(object):  # pragma: no cover
 app_assets = AppAssets()
 
 
-def pserve():  # pragma: no cover
+def pserve():
     """A pserve script aware of static resources."""
     import pyramid.scripts.pserve
     import pyramid_fanstatic

@@ -82,7 +82,7 @@ def add_default_content():
         Session.add(one)
 
 
-def main(argv=sys.argv):  # pragma: no cover
+def main(argv=sys.argv):
 
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
@@ -98,5 +98,5 @@ def main(argv=sys.argv):  # pragma: no cover
     print 'DB populated with dummy data: {0}'.format(db_url)  # noqa
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == '__main__':
     main()
