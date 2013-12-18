@@ -27,6 +27,7 @@
 
         <div class="col-md-3" tal:condition="request.user and request.user.enabled and not layout.hide_sidebar">
           ${panel('sidebar')}
+          ${panel('below_sidebar_portlets')}
         </div>
 
         <div class="${python: 'col-md-12' if layout.hide_sidebar else 'col-md-9'}">
@@ -37,12 +38,14 @@
               </div>
             </div>
           </tal:messages>
+          ${panel('above_content_portlets')}
           <div metal:define-slot="content" id="content" />
         </div>
 
       </div> <!--/.row-fluid-->
       <div class="row-fluid">
         <div class="col-md-11">
+          ${panel('above_footer_portlets')}
           <hr />
           <footer>
             ${panel('footer')}

@@ -3,6 +3,7 @@
 
 from datetime import date
 from datetime import datetime
+from flufl.enum import Enum
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
@@ -362,3 +363,85 @@ class AuditLogEntry(Base):
             q = q.filter_by(**filter_by)
         q = q.limit(limit)
         return q
+
+
+portlet_group_table = Table(
+    'portlet_group',
+    Base.metadata,
+    Column(
+        'portlet_id',
+        Integer,
+        ForeignKey('portlets.id', onupdate="cascade", ondelete="cascade"),
+        primary_key=True,
+    ),
+    Column(
+        'group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        primary_key=True,
+    ),
+    UniqueConstraint('portlet_id', 'group_id', name='portlet_id_group_id'),
+)
+
+
+class PortletPositions(Enum):
+    """Supported positions for portlets"""
+    above_content = 'Above Content'
+    below_sidebar = 'Below Sidebar'
+    above_footer = 'Above Footer'
+
+
+class Portlet(Base, BaseMixin):
+    """A class representing a Portlet."""
+
+    __tablename__ = 'portlets'
+
+    name = Column(String, unique=True)
+
+    html = Column(Unicode, default=u'')
+
+    groups = relationship(
+        'Group', secondary=portlet_group_table, backref='portlets')
+
+    position = Column(String)
+
+    weight = Column(Integer, default=0)
+
+    @property
+    def enabled(self):
+        """True if Portlet is in any of the groups, False otherwise."""
+        return len(self.groups) > 0
+
+    @classmethod
+    def by_id(self, portlet_id):
+        """Get a Portlet by id."""
+        return Portlet.query.filter_by(id=portlet_id).first()
+
+    @classmethod
+    def by_user_and_position(self, user, position):
+        """Get all portlets that are visible to a user."""
+        portlets = Portlet.query.filter(Portlet.position == position) \
+            .order_by(Portlet.weight.desc())
+
+        def any_group(groups1, groups2):
+            for group1 in groups1:
+                if group1 in groups2:
+                    return True
+            return False
+        return [p for p in portlets if any_group(user.groups, p.groups)]
+
+    @classmethod
+    def get_all(class_, order_by='position', filter_by=None, limit=100):
+        """Return all Portlets.
+
+        filter_by: dict -> {'name': 'foo'}
+
+        By default, order by Portlet.position.
+        """
+        Portlet = class_
+        q = Portlet.query
+        q = q.order_by(getattr(Portlet, order_by))
+        if filter_by:
+            q = q.filter_by(**filter_by)
+        q = q.limit(limit)
+        return q.all()

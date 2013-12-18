@@ -6,6 +6,7 @@ from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import Authenticated
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import User
 
 import logging
@@ -58,6 +59,8 @@ class AuditLogFactory(object):
     ]
 
     def __init__(self, request):
+        if request.get('PATH_INFO') == '/audit-log/':
+            raise HTTPFound(location=request.route_path('audit_log'))
         self.request = request
 
     def __getitem__(self, key):
@@ -66,5 +69,25 @@ class AuditLogFactory(object):
             entry.__parent__ = self
             entry.__name__ = key
             return entry
+        else:
+            raise KeyError
+
+
+class PortletFactory(object):
+    __acl__ = [
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+    ]
+
+    def __init__(self, request):
+        if request.get('PATH_INFO') == '/portlets/':
+            raise HTTPFound(location=request.route_path('portlets'))
+        self.request = request
+
+    def __getitem__(self, key):
+        portlet = Portlet.by_id(key)
+        if portlet:
+            portlet.__parent__ = self
+            portlet.__name__ = key
+            return portlet
         else:
             raise KeyError

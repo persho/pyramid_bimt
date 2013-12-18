@@ -3,6 +3,8 @@
 
 from pyramid_layout.layout import layout_config
 from pyramid_layout.panel import panel_config
+from pyramid_bimt.models import Portlet
+from pyramid_bimt.models import PortletPositions
 
 import os
 
@@ -54,3 +56,33 @@ def navbar(context, request):
 @panel_config(name='sidebar')
 def sidebar(context, request):
     return 'sidebar placeholder'
+
+
+@panel_config(name='above_content_portlets')
+def above_content_portlets(context, request):
+    if request.user:
+        portlets = Portlet.by_user_and_position(
+            request.user, PortletPositions.above_content.name)
+        if portlets:
+            return u''.join([portlet.html for portlet in portlets])
+    return ''
+
+
+@panel_config(name='below_sidebar_portlets')
+def below_sidebar_portlets(context, request):
+    if request.user:
+        portlets = Portlet.by_user_and_position(
+            request.user, PortletPositions.below_sidebar.name)
+        if portlets:
+            return u''.join([portlet.html for portlet in portlets])
+    return ''
+
+
+@panel_config(name='above_footer_portlets')
+def above_footer_portlets(context, request):
+    if request.user:
+        portlets = Portlet.by_user_and_position(
+            request.user, PortletPositions.above_footer.name)
+        if portlets:
+            return u''.join([portlet.html for portlet in portlets])
+    return ''

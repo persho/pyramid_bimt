@@ -7,6 +7,7 @@ from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid_basemodel import Session
 from pyramid_bimt.acl import AuditLogFactory
+from pyramid_bimt.acl import PortletFactory
 from pyramid_bimt.acl import RootFactory
 from pyramid_bimt.acl import UserFactory
 from pyramid_bimt.acl import groupfinder
@@ -81,6 +82,15 @@ def add_routes_audit_log(config):
     )
 
 
+def add_routes_portlet(config):
+    config.add_route('portlets', '/portlets', factory=PortletFactory)
+    config.add_route('portlet_add', '/portlets/add', factory=PortletFactory)
+    config.add_route(
+        'portlet_edit', '/portlets/{portlet_id}/edit',
+        factory=PortletFactory, traverse='/{portlet_id}'
+    )
+
+
 def add_routes_other(config):
     config.add_route('jvzoo', '/jvzoo')
     config.add_route('raise_js_error', '/raise-error/js')
@@ -109,6 +119,7 @@ def configure(config, settings={}):
     add_routes_auth(config)
     add_routes_user(config)
     add_routes_audit_log(config)
+    add_routes_portlet(config)
     add_routes_other(config)
 
     # Run a venusian scan to pick up the declarative configuration.
