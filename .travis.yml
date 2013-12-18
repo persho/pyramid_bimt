@@ -2,24 +2,12 @@ language: python
 python:
   - 2.7
 
-env:
-  global:
-  - secure: |-
-      YTvnghR+9P9jN+cxAvfUekStim0ncA9PzA3evSCUhDruvcG+UfarpdjB65O/oujGfa
-      uSjRwr1NmkR6/r0k96/LA9EyKdzVqNr/v+SVaWeVmzPva1h29jWJu4CIZqjwqyYqSy
-      eSZuV9+dxQL7CXny6FwI5qG/CZwtMAACyh1lyVg=  # COVERALLS TOKEN
-
 install:
  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
  - make .installed.cfg
 
 script:
- - make coverage
- - bin/code-analysis
-
-after_success:
- - pip install python-coveralls==2.4.0
- - coveralls
+ - make tests
 
 deploy:
   provider: pypi

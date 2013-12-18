@@ -33,7 +33,7 @@ def expire_subscriptions():
                     logger.info(msg)
 
 
-def main(argv=sys.argv):  # pragma: no cover
+def main(argv=sys.argv):
 
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
@@ -46,5 +46,5 @@ def main(argv=sys.argv):  # pragma: no cover
     logger.info('Expire subscription script finished.')
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == '__main__':
     main()

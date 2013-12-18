@@ -57,7 +57,7 @@ class AuditLogAddEntryForm(FormView):
         app_assets.need()
         form_assets.need()
         result = super(AuditLogAddEntryForm, self).__call__()
-        if isinstance(result, dict):
+        if isinstance(result, dict):  # pragma: no cover
             result['title'] = self.title
         return result
 
