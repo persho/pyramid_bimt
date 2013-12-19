@@ -20,7 +20,7 @@ install:
 script:
  - make tests
 
-after_script:
+after_success:
   - make docs
   - sudo apt-get install s3cmd
   - echo "access_key=$AWS_ACCESS_KEY_ID" >> .s3cfg
