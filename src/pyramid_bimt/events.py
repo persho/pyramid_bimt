@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Provides events triggered on user creation, login, logout, etc."""
 
 from pyramid_basemodel import Session
 from zope.interface import Attribute

@@ -1,11 +1,16 @@
-:orphan:
-
 Changelog
 =========
 
 
 0.3.3 (unreleased)
 ------------------
+
+- Added lots of documentation. Read it!.
+  [zupo]
+
+- Sphinx docs are now auto-uploaded to docs.niteoweb.com on every successful
+  Travis build.
+  [zupo]
 
 - [DB MIGRATION REQUIRED] Add the Portlets feature, available on ``/portlets``.
   [matejc]

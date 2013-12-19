@@ -1,0 +1,38 @@
+@import url("agogo.css");
+
+
+div.admonition.note {
+    background-color: #eeeeec;
+}
+
+div.admonition.warning {
+    background-color: rgb(243, 235, 205);
+    border-left: 3px solid rgb(224, 204, 98);
+}
+
+div.document li.toctree-l1 {
+    margin-bottom: 0;
+}
+
+div.document ul {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+th.field-name {
+    padding-right: 0.5em;
+}
+
+em.property {
+    font-size: 90%;
+}
+
+tt.descname {
+    font-size: 130%;
+    color: #ce5c00;
+}
+
+dl.classmethod, dl.class, dl.method {
+    margin-top: 1em;
+    margin-bottom: 2em;
+}

@@ -54,6 +54,7 @@ setup(
     ],
     extras_require={
         'test': [
+            'Sphinx',
             'coverage',
             'fanstatic [cssmin,jsmin]',
             'flake8',
