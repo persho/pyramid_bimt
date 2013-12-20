@@ -21,7 +21,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
             'mail.default_sender': 'test_sender'
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
         configure(self.config)
         add_home_view(self.config)
         app = self.config.make_wsgi_app()
@@ -124,7 +124,7 @@ def compare_message(self, other):
 class TestUserView(unittest.TestCase):
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(groups=True, users=True)
 
     def tearDown(self):
         Session.remove()
@@ -147,7 +147,7 @@ class TestUserViewFunctional(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
@@ -195,7 +195,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
@@ -269,7 +269,7 @@ class TestAuditLogView(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
         configure(self.config)
         self.request = testing.DummyRequest()
         app = self.config.make_wsgi_app()
@@ -329,7 +329,7 @@ class TestLogoutView(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
         configure(self.config)
 
     def tearDown(self):

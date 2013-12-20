@@ -41,7 +41,7 @@ def _make_portlet(name='foo', groups=None, position='top', weight=0):
 class TestPortletModel(unittest.TestCase):
 
     def setUp(self):
-        initTestingDB(empty=True)
+        initTestingDB()
         self.config = testing.setUp()
 
     def tearDown(self):
@@ -84,7 +84,7 @@ class TestPortletById(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB(empty=True)
+        initTestingDB()
 
     def tearDown(self):
         Session.remove()
@@ -105,7 +105,7 @@ class TestByUserAndPosition(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB(empty=True)
+        initTestingDB()
 
     def tearDown(self):
         Session.remove()
@@ -165,7 +165,7 @@ class TestGetAll(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB(empty=True)
+        initTestingDB()
 
     def tearDown(self):
         Session.remove()
@@ -216,7 +216,7 @@ class TestPortletsFunctional(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB()
+        initTestingDB(groups=True, users=True)
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)

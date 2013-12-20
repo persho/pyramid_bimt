@@ -11,7 +11,7 @@ import unittest
 class TestUserView(unittest.TestCase):
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(groups=True, users=True)
 
     def tearDown(self):
         Session.remove()

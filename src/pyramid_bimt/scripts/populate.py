@@ -8,7 +8,6 @@ from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
-from pyramid_bimt.security import encrypt
 from sqlalchemy import engine_from_config
 
 import inspect
@@ -16,6 +15,11 @@ import os
 import re
 import sys
 import transaction
+
+# This is a result of calling encrypt('secret'), and we have it pre-computed
+# here so we don't have to compute it on every test setUp
+SECRET_ENC = u'$6$rounds=90000$hig2KnPEdjRThLyK$UzWLANWcJzO6YqphWT5nbSC4'\
+    'RkYKLIvSbAT/XnsO4m6xtr5qsw5d4glhJWzonIqpBocwXiS9qMpia46woVSBc0'
 
 
 def default_audit_log_event_types():
@@ -40,30 +44,36 @@ def default_audit_log_event_types():
     return types
 
 
-def add_default_content():
-
+def add_audit_log_event_types():
+    """Init the Audit Log event types."""
     with transaction.manager:
-
-        # Init the Audit Log event types
         types = default_audit_log_event_types()
         for type_ in types:
             Session.add(type_)
         Session.flush()
 
-        # Init the admins group
+
+def add_groups():
+    """Init the 'admins' and 'users' group."""
+    with transaction.manager:
         admins = Group(name='admins')
         Session.add(admins)
         Session.flush()
 
-        # Init the users group
         users = Group(name='users')
         Session.add(users)
         Session.flush()
 
-        # Init the admin user account
+
+def add_users():
+    """Init the 'admin@bar.com' and 'one@bar.com' user accounts."""
+    with transaction.manager:
+        admins = Group.by_name('admins')
+        users = Group.by_name('users')
+
         admin = User(
             email=u'admin@bar.com',
-            password=encrypt('secret'),
+            password=SECRET_ENC,
             fullname=u'Admin',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
@@ -74,12 +84,19 @@ def add_default_content():
         # Init the normal user account
         one = User(
             email=u'one@bar.com',
-            password=encrypt('secret'),
+            password=SECRET_ENC,
             fullname=u'One Bar',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         one.groups.append(users)
         Session.add(one)
+
+
+def add_default_content():  # pragma: no cover (bw compat only)
+
+    add_audit_log_event_types()
+    add_groups()
+    add_users()
 
 
 def main(argv=sys.argv):

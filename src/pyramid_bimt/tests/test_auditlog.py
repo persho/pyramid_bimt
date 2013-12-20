@@ -21,7 +21,7 @@ class TestAuditLogEventType(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -86,7 +86,7 @@ class TestAuditLogEventType(unittest.TestCase):
 class TestAuditLogEntryModel(unittest.TestCase):
 
     def setUp(self):
-        initTestingDB(empty=True)
+        initTestingDB()
         self.config = testing.setUp()
 
     def tearDown(self):
@@ -104,7 +104,7 @@ class TestEntryById(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB(empty=True)
+        initTestingDB()
 
     def tearDown(self):
         Session.remove()

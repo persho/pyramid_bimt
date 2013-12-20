@@ -19,7 +19,7 @@ class TestUserCreatedEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -54,7 +54,7 @@ class TestUserLoggedInEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -89,7 +89,7 @@ class TestUserLoggedOutEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -124,7 +124,7 @@ class TestUserChangedPasswordEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -159,7 +159,7 @@ class TestUserDisabledEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -194,7 +194,7 @@ class TestUserEnabledEvent(unittest.TestCase):
 
     def setUp(self):
         testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
