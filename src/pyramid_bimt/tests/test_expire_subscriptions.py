@@ -61,7 +61,7 @@ class TestExpireSubscriptionsIntegration(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True, users=True)
 
     def tearDown(self):
         Session.remove()

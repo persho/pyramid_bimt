@@ -99,7 +99,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
         add_routes_auth(self.config)
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True)
 
     def tearDown(self):
         Session.remove()
@@ -269,7 +269,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB()
+        initTestingDB(auditlog_types=True, groups=True)
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
