@@ -107,7 +107,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
     def _make_user(
         self,
-        email='foo@bms.com',
+        email='foo@bar.com',
         billing_email=None,
         enabled=True,
     ):
@@ -127,9 +127,9 @@ class TestJVZooViewIntegration(unittest.TestCase):
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     def test_existing_user_new_subscription_payment(self, verify_POST, mocked_date):  # noqa
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(email='foo@bms.com')
+        user = self._make_user(email='foo@bar.com')
         post = {
-            'ccustemail': 'FOO@bms.com',
+            'ccustemail': 'FOO@bar.com',
             'ctransaction': 'BILL',
             'ctransreceipt': 123,
 
@@ -155,9 +155,9 @@ class TestJVZooViewIntegration(unittest.TestCase):
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     def test_existing_user_cancel_subscription(self, verify_POST, mocked_date):
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(email='foo@bms.com')
+        user = self._make_user(email='foo@bar.com')
         post = {
-            'ccustemail': 'FOO@bms.com',
+            'ccustemail': 'FOO@bar.com',
             'ctransaction': 'RFND',
             'ctransreceipt': 123,
         }
@@ -182,9 +182,9 @@ class TestJVZooViewIntegration(unittest.TestCase):
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     def test_existing_user_billing_email_and_rejoin(self, verify_POST, mocked_date):  # noqa
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(billing_email='bar@bms.com', enabled=False)
+        user = self._make_user(billing_email='bar@bar.com', enabled=False)
         post = {
-            'ccustemail': 'BAR@bms.com',
+            'ccustemail': 'BAR@bar.com',
             'ctransaction': 'SALE',
             'ctransreceipt': 123,
         }
@@ -211,11 +211,11 @@ class TestJVZooViewIntegration(unittest.TestCase):
     def test_new_user(self, generate, verify_POST, mocked_date):
         from pyramid_bimt.views.jvzoo import JVZooView
         post = {
-            'ccustemail': 'BAR@bms.com',
+            'ccustemail': 'BAR@bar.com',
             'ctransaction': 'SALE',
             'ccustname': 'Foo Bär',
             'ctransreceipt': 123,
-            'ctransaffiliate': 'aff@bms.com',
+            'ctransaffiliate': 'aff@bar.com',
         }
         mocked_date.today.return_value = date(2013, 12, 30)
         verify_POST.return_value = True
@@ -224,7 +224,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         resp = JVZooView(request).jvzoo()
         self.assertEqual(resp, 'Done.')
 
-        user = User.by_email('bar@bms.com')
+        user = User.by_email('bar@bar.com')
         self.assertEqual(user.enabled, True)
         self.assertEqual(user.valid_to, date(2014, 1, 6))
 
@@ -249,7 +249,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(mailer.outbox[0].subject, u'Welcome to BIMT!')
         self.assertIn('Hello Foo Bär'.decode('utf-8'), mailer.outbox[0].html)
-        self.assertIn('u: bar@bms.com', mailer.outbox[0].html)
+        self.assertIn('u: bar@bar.com', mailer.outbox[0].html)
         self.assertIn('p: secret', mailer.outbox[0].html)
         self.assertIn('BIMT Team', mailer.outbox[0].html)
         self.assertIn(

@@ -87,11 +87,11 @@ If you want, you can deploy the entire app to your own Heroku account:
     $ heroku login
     $ heroku keys:add
     $ heroku create --stack cedar
-    $ heroku apps:rename my-own-bms-app
+    $ heroku apps:rename my-own-app
     $ git push heroku master  # upload code
     $ heroku addons:add heroku-postgresql:dev
     $ heroku pg:promote <HEROKU_POSTGRESQL_URL>
-    $ heroku run 'python -m bms.scripts.populate'  # populate db
+    $ heroku run 'python -m <APP>.scripts.populate'  # populate db
     $ heroku restart  # restart the app so DB changes take effect
     $ heroku logs -t  # see what's going on
     $ heroku open  # open deployed app in your browser
@@ -182,7 +182,7 @@ Scheduled maintenance scripts with Heroku Scheduler
 """""""""""""""""""""""""""""""""""""""""""""""""""
 
 To daily check for user's with expired membership, we use the Heroku Scheduler
-to run the ``pythn -m pyramid_bimt.scripts.expire_subscriptions`` command on a
+to run the ``python -m pyramid_bimt.scripts.expire_subscriptions`` command on a
 daily basis:
 
 .. code-block:: bash

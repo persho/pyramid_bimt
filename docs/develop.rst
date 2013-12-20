@@ -24,7 +24,7 @@ Prepare the environment:
 
     # fetch latest code
     $ git clone https://github.com/niteoweb/<APP>.git
-    $ cd bms
+    $ cd <APP>
 
     # build development environment
     $ make
