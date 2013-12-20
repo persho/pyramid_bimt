@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.3.3 (unreleased)
-------------------
+0.4 (2013-12-20)
+----------------
 
 - Added lots of documentation. Read it!.
   [zupo]
