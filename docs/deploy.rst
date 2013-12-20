@@ -204,5 +204,84 @@ Off-site PostgreSQL backups
 """""""""""""""""""""""""""
 
 Besides onsite backups, we also need off-site backups in case something
-happens to Heroku, configure them by using the `pgbackups-archive-app
-<https://github.com/kbaum/pgbackups-archive-app>`_.
+happens to Heroku. Configure them by using the `pgbackups-archive-app
+<https://github.com/kbaum/pgbackups-archive-app>`_:
+
+.. code-block:: bash
+
+    # create app
+    $ cd /tmp
+    $ git clone https://github.com/kbaum/pgbackups-archive-app.git
+    $ cd pgbackups-archive-app
+    $ heroku login
+    $ heroku create --stack cedar
+    $ heroku apps:rename bimt-<APP>-backups
+
+    # required add-ons
+    $ heroku addons:add scheduler:standard
+    $ heroku addons:add pgbackups
+
+    # configure scheduler
+    $ heroku addons:open scheduler
+    # add a new job:
+      * task: rake pgbackups:archive
+      * dyno size: 1x
+      * frequency: daily
+      * next run: 6am
+
+    # set environment variables
+    $ heroku config:add PGBACKUPS_AWS_ACCESS_KEY_ID="AKIAJLKTIPADANP5S6JQ"
+    $ heroku config:add PGBACKUPS_AWS_SECRET_ACCESS_KEY="<in 1Password>"
+    $ heroku config:add PGBACKUPS_BUCKET="bimt-<APP>-backups"
+    $ heroku config:add PGBACKUPS_REGION="us-east-1"
+    $ heroku config:add PGBACKUPS_DATABASE_URL="<main app's DATABASE_URL>"
+
+    # start the backups app
+    $ git push heroku master
+    $ heroku restart
+
+Once the Heroku app is up & running, you need to prepare Amazon S3 to keep your
+backups. Amazon S3 is managed via https://console.aws.amazon.com/.
+
+First, you need to create a `Bucket` to store your backups on S3. Select ``S3``
+under ``Services`` in `Amazon AWS Console` and click ``Create Bucket``. Name
+it ``bimt-<APP>-backups``.
+
+Then click ``Properties`` -> ``Lifecycle`` -> ``Add rule``:
+
+* Enabled: true
+* Name: Archive to Glacier
+* Apply to Entire Bucket: true
+* Time Period Format: Days from creation date
+* Move to Glacier: 30 days from object's creation date
+
+Backups are uploaded as the ``bimt-backups`` user. Make sure the user exists
+and and that it has the user policy defined below. Your new bucket needs to
+be on the list of resources:
+
+.. code-block:: json
+
+    {
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "s3:ListAllMyBuckets",
+          "Resource": "arn:aws:s3:::*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:ListBucket",
+            "s3:ListObject",
+            "s3:PutObject"
+          ],
+          "Resource": [
+            "arn:aws:s3:::bimt-<APP1>-backups",
+            "arn:aws:s3:::bimt-<APP1>-backups/*",
+            "arn:aws:s3:::bimt-<APP2>-backups",
+            "arn:aws:s3:::bimt-<APP2>-backups/*"
+          ]
+        }
+      ]
+    }
+
