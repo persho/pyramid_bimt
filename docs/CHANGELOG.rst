@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.4.1 (unreleased)
+0.4.1 (2013-12-22)
 ------------------
 
 - This package now provides base resources for robot-framework tests in apps,
