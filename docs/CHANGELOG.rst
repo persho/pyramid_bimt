@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-0.5 (unreleased)
-----------------
+0.4.1 (unreleased)
+------------------
 
-- Nothing changed yet.
+- This package now provides base resources for robot-framework tests in apps,
+  along with robot-framework tests for login/logout/password-reset.
+  [zupo]
 
 
 0.4 (2013-12-20)

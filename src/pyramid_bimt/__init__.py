@@ -5,6 +5,7 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
+from pyramid.settings import asbool
 from pyramid_basemodel import Session
 from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.acl import PortletFactory
@@ -122,8 +123,17 @@ def configure(config, settings={}):
     add_routes_portlet(config)
     add_routes_other(config)
 
+    # enable views that we need in Robot tests
+    ignores = ['pyramid_bimt.tests']
+    if asbool(settings.get('robot_testing', 'false')):  # pragma: no cover
+        config.add_route('robot_commands', '/robot/{command}')
+        config.add_tween('pyramid_bimt.testing.inject_js_errorlogger')
+        config.add_tween('pyramid_bimt.testing.log_notfound')
+    else:
+        ignores.append('pyramid_bimt.testing')
+
     # Run a venusian scan to pick up the declarative configuration.
-    config.scan('pyramid_bimt', ignore='pyramid_bimt.tests')
+    config.scan('pyramid_bimt', ignore=ignores)
 
 
 def check_required_settings(config):
