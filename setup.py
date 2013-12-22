@@ -61,6 +61,7 @@ setup(
             'mock',
             'nose',
             'nose-selecttests',
+            'simplejson',
             'unittest2',
             'webtest',
             'zope.testing',
