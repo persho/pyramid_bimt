@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.4.3 (unreleased)
+0.4.3 (2013-12-23)
 ------------------
 
 - Provide ${APP_NAME}, ${APP_TITLE} and ${APP_DOMAIN} global variables in robot
