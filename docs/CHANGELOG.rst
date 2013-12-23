@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.4.2 (unreleased)
+0.4.2 (2013-12-23)
 ------------------
 
 - Fix for emails path in robot tests.
