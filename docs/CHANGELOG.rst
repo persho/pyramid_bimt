@@ -5,7 +5,8 @@ Changelog
 0.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix for emails path in robot tests.
+  [zupo]
 
 
 0.4.1 (2013-12-22)
