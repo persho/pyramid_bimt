@@ -5,7 +5,9 @@ Changelog
 0.4.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Provide ${APP_NAME}, ${APP_TITLE} and ${APP_DOMAIN} global variables in robot
+  tests we can have better tests.
+  [zupo]
 
 
 0.4.2 (2013-12-23)

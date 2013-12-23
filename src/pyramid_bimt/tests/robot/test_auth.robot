@@ -25,6 +25,9 @@ Scenario: User resets its password
      And I input text  name=email  one@bar.com
      And I click button  Reset password
     Then page should contain  A new password was sent to your email.
-     And last email should contain  Hi One Bar
-     And last email should contain  your new password for Big Media Scraper is
-     And last email should contain  http://localhost:8080/login
+     And last email should contain  From: info@${APP_DOMAIN}
+     And last email should contain  To: one@bar.com
+     And last email should contain  Subject: ${APP_TITLE} Password Reset
+     And last email should contain encoded  Hi One Bar
+     And last email should contain encoded  your new password for ${APP_TITLE} is
+     And last email should contain encoded  http://localhost:8080/login
