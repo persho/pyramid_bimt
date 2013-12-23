@@ -2,6 +2,7 @@
 
 Library         HttpLibrary.HTTP
 Library         OperatingSystem
+Library         String
 Documentation   A resource file containing the application specific keywords
 ...             that create our own domain specific language. This resource
 ...             implements keywords for testing HTML version of the test
@@ -19,6 +20,20 @@ Suite Setup
     Reset Javascript Exception count
     Open browser  ${APP_URL}  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
     Set window size   1024  768
+
+
+    ${app_name}=  Get API result  app_name
+    @{app_name}=  Split String  ${app_name}  "
+    Set Suite Variable  ${APP_NAME}  @{app_name}[1]
+
+    ${app_title}=  Get API result  app_title
+    @{app_title}=  Split String  ${app_title}  "
+    Set Suite Variable  ${APP_TITLE}  @{app_title}[1]
+
+    ${app_domain}=  Get API result  app_domain
+    @{app_domain}=  Split String  ${app_domain}  "
+    Set Suite Variable  ${APP_DOMAIN}  @{app_domain}[1]
+
     Register Keyword To Run On Failure  Take screenshot and dump source
 
 Suite Teardown
@@ -123,9 +138,13 @@ I log out
 
 Last email should contain
     [Arguments]  ${value}
-    ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
     Wait Until Created  ${MAIL_DIR}
     @{mails}=       List Files In Directory  ${MAIL_DIR}
     ${mail_path}=   Join Path  ${MAIL_DIR}  @{mails}[-1]
     ${mail}=        Get File  ${mail_path}
-    Should Contain  ${mail}  ${value_encoded}
+    Should Contain  ${mail}  ${value}
+
+Last email should contain encoded
+    [Arguments]  ${value}
+    ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
+    Last email should contain  ${value_encoded}

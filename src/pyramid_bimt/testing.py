@@ -107,6 +107,18 @@ class RobotAPI(object):  # pragma: no cover
             data = None
         return cmd(data)
 
+    def cmd_app_name(self, data):
+        """Return app name."""
+        return self.request.registry.settings['bimt.app_name']
+
+    def cmd_app_title(self, data):
+        """Return app title."""
+        return self.request.registry.settings['bimt.app_title']
+
+    def cmd_app_domain(self, data):
+        """Return app domain."""
+        return self.request.registry.settings['bimt.app_domain']
+
     def cmd_list_notfound(self, data):
         """List 404-not-found errors."""
         status = 'ok'
