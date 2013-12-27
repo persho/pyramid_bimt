@@ -9,6 +9,62 @@ We follow `plone.api's style guide
 it & use it.
 
 
+Ticket workflow
+---------------
+
+Our Plan.io account contains `a list of open BIMT issues
+<https://niteoweb.plan.io/projects/big-im-toolbox/issues?query_id=1>`_. Start
+from the top and find the first ticket in state ``New`` that does not yet have
+an :term:`Assignee`. Click on it, read the description and see if it contains
+everything you need to start working on it. If not, assign it to the
+:term:`Reporter` and ask for more info in the comments. If the ticket has all
+you need to start working on it, do the following:
+
+* assign it to yourself,
+* transition it to state ``In Progress`` so other developers know this issue
+  is being worked on and we don't stomp on each others' feet.
+
+Based on our :ref:`git workflow <ploneapi:git_workflow>` all work must happen
+in separate git branches.
+
+Once you are happy with your implementation, you are ready to submit a
+:term:`Pull Request` to get your work merged into master and deployed into
+production.
+
+.. code-block:: bash
+
+    $ git checkout master  # go to master branch
+    $ git checkout -b <BRANCH_NAME>  # create a feature branch
+
+    # change code here
+
+    $ git add -p && git commit  # commit changes
+    $ git push origin <BRANCH_NAME>  # push branch to GitHub
+
+To submit a `Pull Request` go to
+https://github.com/niteoweb/<PROJECT>/tree/<BRANCH_NAME>. There you should see
+a ``Pull Request`` button. Click on it, write some text what you did and
+anything else you would like to tell the one who will merge your branch, and
+finally click ``Send pull request``.
+
+Now wait that someone comes by and reviews/merges your branch (don't do it
+yourself, even if you have permissions to do so). You can poke people in IRC to
+review it. Once the `Pull Request` is merged, your changes are immediately
+pushed to production.
+
+At this point, go back to your ticket on Plan.io and update it like so:
+
+ * assign it to the Reporter
+ * transition it to state ``Deployed``
+ * log time spent working on the ticket
+
+The Reporter can now go to the production server, check if everything works
+as it should and either:
+
+ * close the ticket
+ * transition it back to state ``New`` and add more requests for changes
+
+
 Additional conventions
 ----------------------
 
@@ -50,7 +106,7 @@ Route naming conventions
 To be consistent throughout the codebase always use the following approach
 to name your routes::
 
-    * "route path"    :"route_path"             -- "description"
+    * "route name"    :"route_path"             -- "description"
     * <object>s       :/<object>s               -- list of objects
     * <object>_view   :/<object>s/<id>          -- view of object with id of <id>
     * <object>_edit   :/<object>s/<id>/edit     -- edit of object with id of <id>

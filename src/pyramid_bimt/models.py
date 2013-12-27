@@ -315,7 +315,7 @@ class AuditLogEventType(Base):
         :param name: ID of the ``AuditLogEventType`` you want to get.
         :type name: int
 
-        :return: ``AuditLogEventType`` object of the given name
+        :return: ``AuditLogEventType`` object of the given id
         :rtype: instance of ``AuditLogEventType``
         """
         return Session.query(AuditLogEventType).filter_by(id=id).first()
