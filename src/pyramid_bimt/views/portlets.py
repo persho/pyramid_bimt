@@ -115,7 +115,7 @@ class PortletEditForm(FormView):
 
         Session.flush()  # this is needed, so that we get portlet.id NOW
         return HTTPFound(
-            location=self.request.route_url('portlets'))
+            location=self.request.route_path('portlets'))
 
     def appstruct(self):
         params_groups = self.request.params.get('groups')

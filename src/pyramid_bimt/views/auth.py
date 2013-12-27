@@ -92,7 +92,7 @@ class LoginForm(FormView):
                 body=PASSWORD_RESET_EMAIL_BODY.format(
                     fullname=user.fullname,
                     password=password,
-                    login_url=self.request.route_url('login'),
+                    login_url=self.request.route_path('login'),
                     app_title=self.request.registry.settings['bimt.app_title']
                 ),
             )
@@ -133,5 +133,5 @@ def forbidden_redirect(context, request):
     :result: Redirect to the login form.
     :rtype: pyramid.httpexceptions.HTTPFound
     """
-    location = request.route_url('login', _query={'came_from': request.url})
+    location = request.route_path('login', _query={'came_from': request.url})
     return HTTPFound(location=location)

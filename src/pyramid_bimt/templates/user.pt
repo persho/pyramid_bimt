@@ -2,7 +2,7 @@
 
   <div metal:fill-slot="content" id="content">
 
-    <a href="${request.route_url('users')}">Back to Users overview</a>
+    <a href="${request.route_path('users')}">Back to Users overview</a>
     <h1>${user.email}</h1>
     <table class="table">
       <tr><th>Full Name</th><td>${user.fullname}</td><th>
