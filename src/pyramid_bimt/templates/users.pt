@@ -13,7 +13,7 @@
             <th>Modified</th>
             <th>Enable/Disable</th>
             <th data-sort-disabled="true">
-              <a class="btn btn-xs btn-success" href="${request.route_url('user_add')}">
+              <a class="btn btn-xs btn-success" href="${request.route_path('user_add')}">
                 <span class="glyphicon glyphicon-plus-sign"></span> Add
               </a>
             </th>
@@ -23,30 +23,30 @@
           <tr tal:repeat="user users">
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_url('user', user_id=user.id)}">${user.id}</a>
+                 href="${request.route_path('user', user_id=user.id)}">${user.id}</a>
             </td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_url('user', user_id=user.id)}">${user.fullname}</a>
+                 href="${request.route_path('user', user_id=user.id)}">${user.fullname}</a>
             </td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_url('user', user_id=user.id)}">${user.email}</a>
+                 href="${request.route_path('user', user_id=user.id)}">${user.email}</a>
             </td>
             <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
             <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
             <td tal:condition="not user.enabled">
-              <a class="btn btn-xs btn-success" href="${request.route_url('user_enable', user_id=user.id)}">
+              <a class="btn btn-xs btn-success" href="${request.route_path('user_enable', user_id=user.id)}">
                 <span class="glyphicon glyphicon-play"></span> Enable
               </a>
             </td>
             <td tal:condition="user.enabled">
-              <a class="btn btn-xs btn-danger" href="${request.route_url('user_disable', user_id=user.id)}">
+              <a class="btn btn-xs btn-danger" href="${request.route_path('user_disable', user_id=user.id)}">
                 <span class="glyphicon glyphicon-pause"></span> Disable
               </a>
             </td>
             <td>
-              <a class="btn btn-xs btn-primary" href="${request.route_url('user_edit', user_id=user.id)}">
+              <a class="btn btn-xs btn-primary" href="${request.route_path('user_edit', user_id=user.id)}">
                 <span class="glyphicon glyphicon-edit"></span> Edit
               </a>
             </td>

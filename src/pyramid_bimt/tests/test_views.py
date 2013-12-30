@@ -184,9 +184,9 @@ class TestUserViewFunctional(unittest.TestCase):
             userid='admin@bar.com', permissive=True)
         resp = self.testapp.get('/users', status=200)
 
-        self.assertIn('href="http://localhost/users/1"', resp.text)
-        self.assertIn('href="http://localhost/users/1/edit"', resp.text)
-        self.assertIn('href="http://localhost/users/add"', resp.text)
+        self.assertIn('href="/users/1"', resp.text)
+        self.assertIn('href="/users/1/edit"', resp.text)
+        self.assertIn('href="/users/add"', resp.text)
 
 
 class TestEditUserViewFunctional(unittest.TestCase):
@@ -364,7 +364,7 @@ class TestForbiddenRedirect(unittest.TestCase):
         request = testing.DummyRequest(layout_manager=mock.Mock())
         self.assertEqual(
             forbidden_redirect(None, request).location,
-            request.route_url('login', _query={'came_from': request.url}),
+            request.route_path('login', _query={'came_from': request.url}),
         )
 
 

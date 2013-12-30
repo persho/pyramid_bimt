@@ -164,7 +164,7 @@ class UserEditForm(FormView):
 
         Session.flush()  # this is needed, so that we get user.id NOW
         return HTTPFound(
-            location=self.request.route_url('user', user_id=user.id))
+            location=self.request.route_path('user', user_id=user.id))
 
     def appstruct(self):
         params_groups = self.request.params.get('groups')

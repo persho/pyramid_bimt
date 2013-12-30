@@ -11,7 +11,7 @@
           <th>User</th>
           <th>Comment</th>
           <th data-sort-disabled="true">
-            <a class="btn btn-xs btn-success" href="${request.route_url('audit_log_add')}">
+            <a class="btn btn-xs btn-success" href="${request.route_path('audit_log_add')}">
               <span class="glyphicon glyphicon-plus-sign"></span> Add
             </a>
           </th>
@@ -25,10 +25,10 @@
                ${entry.event_type.title}
               </span>
           </td>
-          <td><a href="${request.route_url('user', user_id=entry.user.id)}">${entry.user.email}</a></td>
+          <td><a href="${request.route_path('user', user_id=entry.user.id)}">${entry.user.email}</a></td>
           <td>${entry.comment}</td>
           <td>
-            <a class="btn btn-xs btn-danger" href="${request.route_url('audit_log_delete', entry_id=entry.id)}">
+            <a class="btn btn-xs btn-danger" href="${request.route_path('audit_log_delete', entry_id=entry.id)}">
               <span class="glyphicon glyphicon-remove-sign"></span> Delete
             </a>
           </td>

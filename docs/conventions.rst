@@ -82,3 +82,26 @@ Testing Unicode fields
 
 Whenever you are interacting with Unicode fields in your tests, use umlauts
 (``foö``, ``bär``, etc.) to catch any encoding/decoding errors early.
+
+
+Generating URLs
+"""""""""""""""
+
+Pyramid provides two ways to generate URLs for our route based views:
+
+* :meth:`route_url <pyramid.request.Request.route_url>`
+* :meth:`route_path <pyramid.request.Request.route_path>`
+
+In general, the :meth:`route_path <pyramid.request.Request.route_path>` method
+should always be preferred over
+:meth:`route_url <pyramid.request.Request.route_url>`. The main benefit from
+this is that the URLs are protocol agnostic and work always in both `http` and
+`https` environments. Additionally, using only the paths will save bytes from
+the generated HTML documents.
+
+Some exceptions exists to the above when
+:meth:`route_url <pyramid.request.Request.route_url>` should be used instead,
+namely:
+
+* emails
+* API calls with callbacks
