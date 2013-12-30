@@ -33,3 +33,18 @@ Definitions of basic terms
     alembic
         A tool for automatic DB migrations:
         http://alembic.readthedocs.org/en/latest/
+
+    Pull Request
+        An action on GitHub indicating that a developer submits his/her changes
+        into review. If Pull Request is merged into master, developer's changes
+        are immediately deployed to production. We always use Pull Requests to
+        introduce changes into our codebase.
+
+    Reporter
+        The person who reports/creates a ticket on Plan.io and is responsible
+        of verifying work (closing the ticket) once changes for the ticket are
+        deployed to production.
+
+    Assignee
+        The person who is currently working on an issue, or who's input is
+        required.
