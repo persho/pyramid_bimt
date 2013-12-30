@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for pyramid_bimt views."""
 
+from datetime import date
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid_basemodel import Session
@@ -213,6 +214,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         form = resp.forms['useredit']
         form['email'] = u'TEST@xyz.xyz'
         form['fullname'] = u'Test Xyz'
+        form['valid_to'] = date.today()
         resp = form.submit('save')
 
         self.assertEqual(resp.status, '302 Found')
@@ -233,6 +235,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         form = resp.forms['useredit']
         form['fullname'] = u'One Two'
         form['email'] = u'TWO@bar.com'
+        form['valid_to'] = date.today()
         resp = form.submit('save')
 
         self.assertEqual(resp.status, '302 Found')
@@ -253,6 +256,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         form = resp.forms['useredit']
         form['fullname'] = u'One Two'
         form['email'] = u'TWO@bar.com'
+        form['valid_to'] = date.today()
         form.set('Group', u'not a group', index=0)
         resp = form.submit('save')
 

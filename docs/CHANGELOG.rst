@@ -5,7 +5,8 @@ Changelog
 0.4.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added valid_to field to user edit and add forms
+  [ferewuz]
 
 
 0.4.3 (2013-12-23)

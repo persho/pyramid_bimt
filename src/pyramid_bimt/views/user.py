@@ -2,6 +2,7 @@
 """Views for loggin in, logging out, etc."""
 
 from colanderalchemy import SQLAlchemySchemaNode
+from datetime import date
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
@@ -102,6 +103,9 @@ class UserEditSchema(colander.MappingSchema):
         colander.String(),
         widget=deform.widget.TextInputWidget()
     )
+    valid_to = colander.SchemaNode(
+        colander.Date(),
+    )
     groups = colander.SchemaNode(
         colander.Sequence(),
         colander.SchemaNode(
@@ -148,6 +152,7 @@ class UserEditForm(FormView):
             user = self.edited_user
             user.email = appstruct['email'].lower()
             user.fullname = appstruct['fullname']
+            user.valid_to = appstruct['valid_to']
             user.groups = [Group.by_name(name) for name in appstruct['groups']]
             self.request.session.flash(
                 u'User {} has been modified.'.format(user.email))
@@ -156,6 +161,7 @@ class UserEditForm(FormView):
             user = User(
                 email=appstruct['email'].lower(),
                 fullname=appstruct['fullname'],
+                valid_to=appstruct['valid_to'],
                 groups=[Group.by_name(name) for name in appstruct['groups']]
             )
             Session.add(user)
@@ -180,6 +186,10 @@ class UserEditForm(FormView):
             'fullname': self.request.params.get(
                 'fullname',
                 self.edited_user.fullname if self.edited_user else u''
+            ),
+            'valid_to': self.request.params.get(
+                'valid_to',
+                self.edited_user.valid_to if self.edited_user else date.today()
             ),
             'groups': groups
         }
