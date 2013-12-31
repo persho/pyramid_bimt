@@ -2,8 +2,14 @@ Changelog
 =========
 
 
-0.4.4 (unreleased)
+0.4.4 (2013-12-31)
 ------------------
+
+- Provide a base ``FormView`` class that apps can reuse to build form views.
+  [zupo]
+
+- Support for masked input fields.
+  [zupo]
 
 - Added valid_to field to user edit and add forms
   [ferewuz]
