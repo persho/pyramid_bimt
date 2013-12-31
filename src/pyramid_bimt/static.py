@@ -9,6 +9,7 @@ from js.deform import deform_form_css
 from js.deform import deform_js
 from js.jquery import jquery
 from js.jquery_datatables import jquery_datatables_js
+from js.jquery_maskedinput import jquery_maskedinput
 from js.modernizr import modernizr
 from pkg_resources import resource_filename
 from pyramid.threadlocal import get_current_registry
@@ -79,6 +80,7 @@ table_assets = Group([
 
 form_assets = Group([
     deform_js,
+    jquery_maskedinput,
     Resource(
         library=lib_deform,
         relpath='pickadate/picker.date.js',
