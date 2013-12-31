@@ -5,7 +5,8 @@ Changelog
 0.4.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix login URL in password reset email.
+  [zupo]
 
 
 0.4.4 (2013-12-31)
