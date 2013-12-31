@@ -1,25 +1,10 @@
 <metal:block use-macro="main_template">
 
-    <metal:block fill-slot="css">
-      <tal:block repeat="css_link css_links|[]">
-        <link rel="stylesheet"
-              href="${request.static_url(css_link)}"
-              type="text/css" />
-      </tal:block>
-    </metal:block>
+  <div metal:fill-slot="content" id="content">
 
-    <div metal:fill-slot="content" id="content">
+    <h1>${title}</h1>
+    <form tal:replace="structure form" />
 
-      <h1>${title}</h1>
-      <form tal:replace="structure form" />
-
-    </div>
-
-    <metal:block fill-slot="js">
-      <script src="${request.static_url('deform:static/scripts/deform.js')}" type="text/javascript"></script>
-      <script src="${request.static_url('deform:static/pickadate/picker.js')}" type="text/javascript"></script>
-      <script src="${request.static_url('deform:static/pickadate/picker.date.js')}" type="text/javascript"></script>
-      <script src="${request.static_url('deform:static/pickadate/picker.time.js')}" type="text/javascript"></script>
-    </metal:block fill-slot="js">
+  </div>
 
 </metal:block>

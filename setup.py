@@ -43,6 +43,7 @@ setup(
         'js.deform',
         'js.jquery',
         'js.jquery_datatables',
+        'js.jquery_maskedinput',
         'passlib',
         'pyramid',
         'pyramid_basemodel',

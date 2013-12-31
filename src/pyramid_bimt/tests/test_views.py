@@ -4,11 +4,14 @@
 from datetime import date
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.security import ACLAllowed
+from pyramid.security import ACLDenied
 from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
 
+import colander
 import mock
 import unittest
 import webtest
@@ -427,3 +430,58 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(
             result['settings'], [('a', '1'), ('b', '2'), ('c', '3')]
         )
+
+
+class TestFormView(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest()
+
+        from pyramid_bimt.views import FormView
+        self.view = FormView(self.request)
+
+        self.view.title = 'Foo Form'
+        self.view.schema = colander.MappingSchema()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    @mock.patch('pyramid_bimt.views.app_assets')
+    @mock.patch('pyramid_bimt.views.form_assets')
+    def test_assets(self, form_assets, app_assets):
+        self.view()
+        app_assets.need.assert_called_with()
+        form_assets.need.assert_called_with()
+
+    def test_title(self):
+        result = self.view()
+        self.assertEqual(result['title'], 'Foo Form')
+
+    def test_skip_schema_node_with_no_permission_set(self):
+        class Schema(colander.MappingSchema):
+            foo = colander.SchemaNode(colander.Int())
+        self.view.schema = Schema()
+        result = self.view()
+        self.assertIn('<input type="text" name="foo"', result['form'])
+
+    @mock.patch('pyramid_bimt.views.has_permission')
+    def test_remove_denied_schema_node(self, has_permission):
+        has_permission.return_value = ACLDenied
+
+        class Schema(colander.MappingSchema):
+            foo = colander.SchemaNode(colander.Int(), edit_permission='admin')
+
+        self.view.schema = Schema()
+        result = self.view()
+        self.assertNotIn('<input type="text" name="foo"', result['form'])
+
+    @mock.patch('pyramid_bimt.views.has_permission')
+    def test_keep_allowed_schema_node(self, has_permission):
+        has_permission.return_value = ACLAllowed
+
+        class Schema(colander.MappingSchema):
+            foo = colander.SchemaNode(colander.Int(), edit_permission='admin')
+
+        self.view.schema = Schema()
+        result = self.view()
+        self.assertIn('<input type="text" name="foo"', result['form'])

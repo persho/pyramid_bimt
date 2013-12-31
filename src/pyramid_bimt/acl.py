@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""TODO:"""
+"""Access Control Level groupfinder and factories."""
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import ALL_PERMISSIONS
