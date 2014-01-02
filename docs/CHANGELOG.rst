@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.4.5 (unreleased)
+0.4.5 (2014-01-02)
 ------------------
 
 - Better support for ColanderAlchemy schemas in FormView.
