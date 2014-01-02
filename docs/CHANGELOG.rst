@@ -5,6 +5,9 @@ Changelog
 0.4.5 (unreleased)
 ------------------
 
+- Better support for ColanderAlchemy schemas in FormView.
+  [zupo]
+
 - Fix login URL in password reset email.
   [zupo]
 

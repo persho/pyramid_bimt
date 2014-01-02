@@ -4,12 +4,14 @@
 from datetime import date
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
-from pyramid.security import ACLAllowed
-from pyramid.security import ACLDenied
+from pyramid_basemodel import Base
+from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
+from sqlalchemy import Column
+from sqlalchemy import String
 
 import colander
 import mock
@@ -457,31 +459,38 @@ class TestFormView(unittest.TestCase):
         result = self.view()
         self.assertEqual(result['title'], 'Foo Form')
 
-    def test_skip_schema_node_with_no_permission_set(self):
+    def test_render_colander_schema(self):
         class Schema(colander.MappingSchema):
             foo = colander.SchemaNode(colander.Int())
         self.view.schema = Schema()
         result = self.view()
         self.assertIn('<input type="text" name="foo"', result['form'])
 
-    @mock.patch('pyramid_bimt.views.has_permission')
-    def test_remove_denied_schema_node(self, has_permission):
-        has_permission.return_value = ACLDenied
+    def test_render_colanderalchemy_schema(self):
 
-        class Schema(colander.MappingSchema):
-            foo = colander.SchemaNode(colander.Int(), edit_permission='admin')
+        class Foo(Base, BaseMixin):
+            __tablename__ = 'foos'
+            foo = Column(String)
 
-        self.view.schema = Schema()
-        result = self.view()
-        self.assertNotIn('<input type="text" name="foo"', result['form'])
+            @staticmethod
+            def allowed_fields(self, mode):
+                return ['foo', ]
 
-    @mock.patch('pyramid_bimt.views.has_permission')
-    def test_keep_allowed_schema_node(self, has_permission):
-        has_permission.return_value = ACLAllowed
-
-        class Schema(colander.MappingSchema):
-            foo = colander.SchemaNode(colander.Int(), edit_permission='admin')
-
-        self.view.schema = Schema()
+        self.view.sqla_schema_class = Foo
         result = self.view()
         self.assertIn('<input type="text" name="foo"', result['form'])
+
+    def test_no_allowed_fields_raises_error(self):
+
+        class Bar(Base, BaseMixin):
+            __tablename__ = 'bars'
+            bar = Column(String)
+
+            @staticmethod
+            def allowed_fields(self, mode):
+                return []
+
+        self.view.sqla_schema_class = Bar
+        with self.assertRaises(KeyError) as cm:
+            self.view()
+        cm.exception.message = 'ValueError: No allowed fields found.'
