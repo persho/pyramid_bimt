@@ -92,7 +92,7 @@ class LoginForm(FormView):
                 body=PASSWORD_RESET_EMAIL_BODY.format(
                     fullname=user.fullname,
                     password=password,
-                    login_url=self.request.route_path('login'),
+                    login_url=self.request.route_url('login'),
                     app_title=self.request.registry.settings['bimt.app_title']
                 ),
             )
