@@ -8,3 +8,4 @@ BIMT API
     user.rst
     portlets.rst
     scripts.rst
+    js.rst

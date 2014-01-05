@@ -184,7 +184,7 @@ account:
 .. code-block:: bash
 
     $ heroku config:set MAILGUN_SMTP_LOGIN=postmaster@<APP_DOMAIN>.com
-    $ heroku config:set MAILGUN_SMTP_PASSWORD=postmaster@bigarticlescraper.com
+    $ heroku config:set MAILGUN_SMTP_PASSWORD=<PASSWORD>
 
 
 

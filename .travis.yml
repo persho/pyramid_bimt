@@ -14,6 +14,7 @@ env:
       ji2Q0k+EVkzurHwWxECukfbYkc2u1OrtHlWnAok=  # AWS_SECRET_KEY
 
 install:
+ - npm install jshint -g
  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
  - make .installed.cfg
 

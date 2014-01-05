@@ -41,7 +41,7 @@ bin/python:
 	@touch $@
 
 tests: .installed.cfg
-	@bin/nosetests -s --with-coverage --cover-package=pyramid_bimt \
+	@bin/nosetests --with-coverage --cover-package=pyramid_bimt \
 		--cover-min-percentage=100
 	@bin/flake8 setup.py
 	@bin/code-analysis
