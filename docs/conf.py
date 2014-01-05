@@ -218,6 +218,8 @@ intersphinx_mapping = {
         'http://pythonhosted.org/passlib/', None),
     'deform': (
         'http://docs.pylonsproject.org/projects/deform/en/latest/', None),
+    'pyramiddeform': (
+        'https://pyramid_deform.readthedocs.org/en/latest/', None),
     'ploneapi': (
         'http://ploneapi.readthedocs.org/en/1.0.0-rc.1/', None),
 }

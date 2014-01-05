@@ -459,6 +459,12 @@ class TestFormView(unittest.TestCase):
         result = self.view()
         self.assertEqual(result['title'], 'Foo Form')
 
+    def test_hide_sidebar(self):
+        self.request.layout_manager = mock.Mock()
+        self.view.hide_sidebar = True
+        self.view()
+        self.request.layout_manager.layout.hide_sidebar = True
+
     def test_render_colander_schema(self):
         class Schema(colander.MappingSchema):
             foo = colander.SchemaNode(colander.Int())

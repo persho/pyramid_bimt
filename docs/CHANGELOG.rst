@@ -5,6 +5,9 @@ Changelog
 0.4.6 (unreleased)
 ------------------
 
+- Allow forms based on FormView to hide the sidebar.
+  [zupo]
+
 - Add JS support for showing passwords on a click.
   [zupo]
 
