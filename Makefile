@@ -11,7 +11,7 @@ coverage: htmlcov/index.html
 htmlcov/index.html: src/pyramid_bimt/*.py src/pyramid_bimt/scripts/*.py  \
 		src/pyramid_bimt/views/*.py src/pyramid_bimt/tests/*.py bin/coverage
 	@bin/nosetests -s --with-coverage --cover-package=pyramid_bimt
-	@bin/coverage html -i
+	@bin/coverage html -i --omit "*/eggs/*,*/site-packages/*,lib/*"
 	@touch $@
 	@echo "Coverage report was generated at '$@'."
 
