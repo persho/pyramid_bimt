@@ -28,7 +28,7 @@ Changelog
 - Support for masked input fields.
   [zupo]
 
-- Added valid_to field to user edit and add forms
+- Added valid_to field to user edit and add forms.
   [ferewuz]
 
 
