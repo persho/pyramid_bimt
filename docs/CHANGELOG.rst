@@ -5,7 +5,8 @@ Changelog
 0.4.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add JS support for showing passwords on a click.
+  [zupo]
 
 
 0.4.5 (2014-01-02)
