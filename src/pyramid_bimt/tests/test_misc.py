@@ -18,6 +18,8 @@ class TestCheckSettings(unittest.TestCase):
             'script_location': '',
             'session.secret': '',
             'sqlalchemy.url': '',
+            'bimt.pricing_page_url': '',
+            'bimt.user_reminders': '',
         }
         self.config_full = testing.setUp(settings=self.settings_full)
 

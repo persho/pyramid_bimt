@@ -23,6 +23,8 @@ REQUIRED_SETTINGS = [
     'bimt.app_name',
     'bimt.app_title',
     'bimt.disabled_user_redirect_path',
+    'bimt.pricing_page_url',
+    'bimt.user_reminders',
     'script_location',
     'session.secret',
     'sqlalchemy.url',

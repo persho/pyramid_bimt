@@ -1,0 +1,35 @@
+<table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">
+    <tr>
+        <td>
+      <table align="left" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+          <td class="body">
+            <!-- begin body -->
+            <p>
+            Hello again ${fullname},<br>
+            <br>
+            second retry for your subscription to ${app_title} has also failed. This is the last reminder before service cancellation.<br>
+            <br>
+            Please make sure you have a verified Credit Card in your PayPal account or sufficient balance. If you have and still cannot pay, please contact PayPal and let them know of the issue.<br>
+            <br>
+            Let us know if we can be of any help.<br>
+            <br>
+            </p>
+            <!-- end body -->
+          </td>
+        </tr>
+      </table>
+        </td>
+    </tr>
+  <tr>
+    <td>
+      <br/>
+      ---<br/><br/>
+      This is a system email from ${app_title}.<br/>
+      <br/>
+      Follow us on <a href="https://twitter.com/BigIMToolbox">Twitter</a> for latest updates or visit <a href="http://www.bigimtoolbox.com/">Big IM Toolbox</a> for product news.<br/>
+      <br/>
+      NiteoWeb Ltd, All Rights Reserved<br/>
+    </td>
+  </tr>
+</table>
