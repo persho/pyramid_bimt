@@ -5,6 +5,11 @@ Changelog
 0.4.6 (unreleased)
 ------------------
 
+- Payment reminders feature. Apps need to:
+  * Set ``bimt.pricing_page_url`` to pricing page to be send along with some emails.
+  * Set ``bimt.user_reminders``, currently there are 4 templates: ``first``, ``second``, ``third`` and final ``fourth``. Example: ``{"first": {"months": 1, "days": 3}, "second": {"months": 0, "days": 17}}``
+  * Add a daily scheduled task to run the ``reminder_emails`` script.
+
 - Allow forms based on FormView to hide the sidebar.
   [zupo]
 
