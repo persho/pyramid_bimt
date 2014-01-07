@@ -73,6 +73,10 @@ I Select radio button
     [Arguments]  ${selector}  ${value}
     Select Radio Button  ${selector}  ${value}
 
+I Select From Dropdown
+    [Arguments]  ${selector}  ${value}
+    Select From List  ${selector}  ${value}
+
 I Select checkbox
     [Arguments]  ${value}
     Select Checkbox  css=input[value="${value}"]
@@ -88,6 +92,10 @@ Checkbox is not selected
 Checkbox is selected
     [Arguments]  ${value}
     Checkbox Should Be Selected  css=input[value="${value}"]
+
+I go to
+    [Arguments]  ${location}
+    Go to  ${location}
 
 I go to Login Form
     Go to  http://localhost:8080/login
