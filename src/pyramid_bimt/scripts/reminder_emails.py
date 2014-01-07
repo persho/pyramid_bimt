@@ -38,9 +38,6 @@ EMAIL_TEMPLATES = [
 
 
 def get_reminder_template(user, today, named_deltas):
-    if not user.enabled:
-        return None
-
     for name, delta in named_deltas.items():
         if today - delta == user.valid_to:
             for template in EMAIL_TEMPLATES:
@@ -78,7 +75,7 @@ def reminder_emails(date, settings, dry_run=True):
     for k, v in json.loads(deltas_json).items():
         named_deltas.update({k: relativedelta(**v)})
 
-    for user in User.get_all():
+    for user in User.get_enabled():
         template = get_reminder_template(user, date, named_deltas)
         if template:
             if not dry_run:  # pragma: no cover

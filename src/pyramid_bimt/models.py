@@ -254,6 +254,11 @@ class User(Base, BaseMixin):
         q = q.limit(limit)
         return q
 
+    @classmethod
+    def get_enabled(self):
+        users = Group.by_name('users')
+        return User.query.filter(User.groups.contains(users)).all()
+
 
 class AuditLogEventType(Base):
     """A class representing an Audit log event type."""
