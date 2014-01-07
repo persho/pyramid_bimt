@@ -7,6 +7,21 @@ Definitions of basic terms
         Internet Marketing, advertising and marketing efforts that use the Web
         and email to drive sales.
 
+    JV
+        The term refers to a number of Internet Marketers working together in
+        order to benefit one another. Each of the marketers involved in the
+        joint venture has something unique to contribute in terms of resources
+        (someone brings a good product, the other a sizable customer base).
+        Bringing these resources together in the form of a joint venture
+        provides huge benefits to each of the parties involved in terms of
+        exposure, response, profits, and sales.
+
+    WSO
+        Short for `Warrior Special Offer` a special offer for members of the
+        Warrior Forum, the biggest IM forum. WSO is a great way for the initial
+        launch of a new (beta) product as it gives you a good initial exposure
+        for a small price.
+
     BIMT
         Big IM Toolbox, a collection of web apps for Internet Marketers.
 
