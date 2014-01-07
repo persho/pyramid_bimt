@@ -73,21 +73,29 @@ I Select radio button
     [Arguments]  ${selector}  ${value}
     Select Radio Button  ${selector}  ${value}
 
+I Select From Dropdown
+    [Arguments]  ${selector}  ${value}
+    Select From List  ${selector}  ${value}
+
 I Select checkbox
     [Arguments]  ${value}
-    Select Checkbox  css=input[value="${value}"]
+    Select Checkbox  css=input[name="${value}"]
 
 I Unselect checkbox
     [Arguments]  ${value}
-    Unselect Checkbox  css=input[value="${value}"]
+    Unselect Checkbox  css=input[name="${value}"]
 
 Checkbox is not selected
     [Arguments]  ${value}
-    Checkbox Should Not Be Selected  css=input[value="${value}"]
+    Checkbox Should Not Be Selected  css=input[name="${value}"]
 
 Checkbox is selected
     [Arguments]  ${value}
-    Checkbox Should Be Selected  css=input[value="${value}"]
+    Checkbox Should Be Selected  css=input[name="${value}"]
+
+I go to
+    [Arguments]  ${location}
+    Go to  ${location}
 
 I go to Login Form
     Go to  http://localhost:8080/login

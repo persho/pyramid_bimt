@@ -11,6 +11,9 @@ Changelog
 - Add JS support for showing passwords on a click.
   [zupo]
 
+- Fix to robot test resources
+  [ferewuz]
+
 
 0.4.5 (2014-01-02)
 ------------------
