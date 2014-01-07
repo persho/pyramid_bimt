@@ -70,7 +70,7 @@ def send_reminder_email(
 
 
 def reminder_emails(date, settings, dry_run=True):
-    deltas_json = settings['bimt.user_reminders']
+    deltas_json = settings['bimt.payment_reminders']
     if not dry_run:  # pragma: no cover
         mailer = mailer_factory_from_settings(settings)
 

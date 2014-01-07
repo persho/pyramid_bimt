@@ -15,11 +15,11 @@ class TestCheckSettings(unittest.TestCase):
             'bimt.app_name': 'bimt',
             'bimt.app_title': 'BIMT',
             'bimt.disabled_user_redirect_path': '',
+            'bimt.payment_reminders': '',
+            'bimt.pricing_page_url': '',
             'script_location': '',
             'session.secret': '',
             'sqlalchemy.url': '',
-            'bimt.pricing_page_url': '',
-            'bimt.user_reminders': '',
         }
         self.config_full = testing.setUp(settings=self.settings_full)
 

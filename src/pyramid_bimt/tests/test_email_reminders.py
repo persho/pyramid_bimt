@@ -127,7 +127,7 @@ class TestReminderEmailsIntegration(unittest.TestCase):
                        '"second": {"months": 0, "days": 17}, '
                        '"third": {"months": 0, "days": 10}}')
         settings = {
-            'bimt.user_reminders': deltas_json,
+            'bimt.payment_reminders': deltas_json,
             'bimt.app_title': 'Test App',
             'mail.default_sender': 'default@sender.email',
             'bimt.pricing_page_url': 'http://pricing.url/',
