@@ -79,19 +79,19 @@ I Select From Dropdown
 
 I Select checkbox
     [Arguments]  ${value}
-    Select Checkbox  css=input[name="${value}"]
+    Select Checkbox  css=input[value="${value}"]
 
 I Unselect checkbox
     [Arguments]  ${value}
-    Unselect Checkbox  css=input[name="${value}"]
+    Unselect Checkbox  css=input[value="${value}"]
 
 Checkbox is not selected
     [Arguments]  ${value}
-    Checkbox Should Not Be Selected  css=input[name="${value}"]
+    Checkbox Should Not Be Selected  css=input[value="${value}"]
 
 Checkbox is selected
     [Arguments]  ${value}
-    Checkbox Should Be Selected  css=input[name="${value}"]
+    Checkbox Should Be Selected  css=input[value="${value}"]
 
 I go to
     [Arguments]  ${location}
