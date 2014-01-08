@@ -115,10 +115,21 @@ It's configured with:
 
 .. code-block:: bash
 
-    $ heroku addons:add deployhooks:irc \
+    $ heroku addons:add deployhooks:irc
         --server=irc.freenode.org
         --room=niteoweb
         --message="{{user}} deployed {{app}} to {{url}}"
+
+While we're at it, let's also configure IRC notifications from GitHub:
+
+.. code-block:: bash
+
+    $ gem install gcli
+    $ gcli authorize
+    $ gcli hook create niteoweb bnh
+        --events=pull_request
+        --name=irc
+        --config=server:irc.freenode.net port:7000 room:"#niteoweb" ssl:1 message_without_join:1
 
 
 Log aggregation in Papertrail
