@@ -3,7 +3,7 @@ Changelog
 
 
 0.4.7 (unreleased)
---------------
+------------------
 
 - Nothing changed yet.
 
