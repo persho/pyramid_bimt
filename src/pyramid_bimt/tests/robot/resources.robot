@@ -181,3 +181,11 @@ User is strike through and disabled
 User is enabled
     [Arguments]  ${email}
     Page Should Contain Element  xpath=//*[.="${email}"]/../../td/a[contains(.,"Disable")]
+
+I click delete audit log entry
+    [Arguments]  ${value}
+    Click Element  xpath=//*[.="${value}"]/../td/a[contains(.,"Delete")]
+
+I click sort by
+    [Arguments]  ${value}
+    Click Element  xpath=//*[.="${value}"]
