@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.4.6 (unreleased)
+0.4.6 (2014-01-08)
 ------------------
 
 - Payment reminders feature. Apps need to:
