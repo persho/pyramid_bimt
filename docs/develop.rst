@@ -165,3 +165,38 @@ Review it, remove commented stuff and test::
     Alembic is smart enough to auto-generate upgrade/downgrade code for adding
     and removing tables and columns. However, most of other migration tasks
     require that you manually write migration code.
+
+
+Using a git checkout of pyramid_bimt on an app build on Travis
+--------------------------------------------------------------
+
+Use-case: you are developing a new feature inside a branch in an app. Your code
+depends on latest (unreleased) changes in ``pyramid_bimt``. You need these
+changes to run tests on Travis.
+
+We have a read-only user ``bimt`` on GitHub. Use this user to clone
+``pyramid_bimt`` inside an app's Travis build, like so:
+
+#. [First time only] Add ``bimt`` user's password as an encrypted environment
+   variable in Travis:
+
+   .. code-block:: bash
+
+       $ travis encrypt BIMT_GITHUB_PASSWORD=<SECRET> --add
+
+#. Add the following snippet to ``buildout.d/travis.cfg``:
+
+   .. code-block:: ini
+
+       parts += environment
+       extensions += mr.developer
+       auto-checkout = pyramid-bimt
+
+       [sources]
+       pyramid-bimt = git https://bimt:${environment:BIMT_GITHUB_PASSWORD}@github.com/niteoweb/pyramid_bimt.git
+
+       [environment]
+       recipe = collective.recipe.environment
+
+#. If you need code that is in a branch inside the ``pyramid_bimt`` repo, then
+   append ``branch=yourbranch`` to the line in ``[sources]`` above.
