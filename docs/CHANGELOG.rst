@@ -2,11 +2,12 @@ Changelog
 =========
 
 
-0.4.7 (unreleased)
-------------------
+0.5 (unreleased)
+--------------
 
-- Nothing changed yet.
-
+- [DB MIGRATION REQUIRED]Last payment field added to users table, which will help us with payment
+  reminders
+  [ferewuz]
 
 0.4.6 (2014-01-08)
 ------------------

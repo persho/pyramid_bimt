@@ -89,6 +89,7 @@ class JVZooView(object):
                 validity = self.request.registry.settings[
                     'bimt.jvzoo_trial_period']
                 user.valid_to = date.today() + timedelta(days=validity)
+                user.last_payment = date.today()
                 user.enable()
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
@@ -99,6 +100,7 @@ class JVZooView(object):
                 validity = self.request.registry.settings[
                     'bimt.jvzoo_regular_period']
                 user.valid_to = date.today() + timedelta(days=validity)
+                user.last_payment = date.today()
                 user.enable()
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
