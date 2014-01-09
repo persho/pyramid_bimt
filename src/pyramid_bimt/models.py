@@ -162,6 +162,15 @@ class User(Base, BaseMixin):
         )},
     )
 
+    #: (optional) Date on which user made his latest payment
+    last_payment = Column(
+        Date,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='Last payment',
+        )},
+    )
+
     def get_property(self, key, default=_marker):
         """TODO
 
