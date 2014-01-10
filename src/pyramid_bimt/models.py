@@ -7,6 +7,7 @@ from flufl.enum import Enum
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
+from pyramid_bimt.exc import WorkflowError
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import DateTime
@@ -203,31 +204,85 @@ class User(Base, BaseMixin):
 
     @property
     def enabled(self):
-        """True if User is in 'users' group, False otherwise."""
-        return 'users' in [g.name for g in self.groups]
+        """True if User is in 'enabled' group, False otherwise."""
+        return 'enabled' in [g.name for g in self.groups]
 
     def enable(self):
-        """Enable User by putting it in the 'users' group.
+        """Enable User by putting it in the 'enabled' group.
 
         :return: True if user was enabled, False if nothing changed.
         :rtype: bool
         """
         if not self.enabled:
-            users = Group.by_name('users')
-            self.groups.append(users)
+            enabled = Group.by_name('enabled')
+            self.groups.append(enabled)
             return True
         else:
             return False
 
+    @property
+    def trial(self):
+        """True if User is in 'trial' group, False otherwise."""
+        return 'trial' in [g.name for g in self.groups]
+
+    def set_trial(self):
+        """Set User as tral user by putting it in the 'trial' group.
+            Raises exception if user is not enabled and moved to trial
+        :return: True if user was set as trial, False if nothing changed.
+        :rtype: bool
+        """
+
+        if self.enabled:
+            if not self.trial:
+                trial = Group.by_name('trial')
+                self.groups.append(trial)
+                return True
+            else:
+                return False
+        else:
+            raise WorkflowError(
+                'User cannot be moved to trial group if not enabled'
+            )
+
+    @property
+    def regular(self):
+        """True if User is in 'regular' group, False otherwise."""
+        return 'regular' in [g.name for g in self.groups]
+
+    def set_regular(self):
+        """Set User as tral user by putting it in the 'regular' group.
+            Raises exception if user is not enabled and moved to regular
+        :return: True if user was set as regular, False if nothing changed.
+        :rtype: bool
+        """
+
+        if self.enabled:
+            if not self.regular:
+                regular = Group.by_name('regular')
+                self.groups.append(regular)
+                return True
+            else:
+                return False
+        else:
+            raise WorkflowError(
+                'User cannot be moved to regular group if not enabled'
+            )
+
     def disable(self):
-        """Disable User by removing it from the 'users' group.
+        """Disable User by removing it from the 'enabled' group.
 
         :return: True if user was disabled, False if nothing changed.
         :rtype: bool
         """
         if self.enabled:
-            users = Group.by_name('users')
-            self.groups.remove(users)
+            enabled = Group.by_name('enabled')
+            self.groups.remove(enabled)
+            if self.trial:
+                trial = Group.by_name('trial')
+                self.groups.remove(trial)
+            elif self.regular:
+                regular = Group.by_name('regular')
+                self.groups.remove(regular)
             return True
         else:
             return False
@@ -265,8 +320,8 @@ class User(Base, BaseMixin):
 
     @classmethod
     def get_enabled(self):
-        users = Group.by_name('users')
-        return User.query.filter(User.groups.contains(users)).all()
+        enabled = Group.by_name('enabled')
+        return User.query.filter(User.groups.contains(enabled)).all()
 
 
 class AuditLogEventType(Base):

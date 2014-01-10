@@ -54,14 +54,22 @@ def add_audit_log_event_types():
 
 
 def add_groups():
-    """Init the 'admins' and 'users' group."""
+    """Init the 'admins', 'enabled', 'trial', 'regular' groups."""
     with transaction.manager:
         admins = Group(name='admins')
         Session.add(admins)
         Session.flush()
 
-        users = Group(name='users')
-        Session.add(users)
+        enabled = Group(name='enabled')
+        Session.add(enabled)
+        Session.flush()
+
+        trial = Group(name='trial')
+        Session.add(trial)
+        Session.flush()
+
+        regular = Group(name='regular')
+        Session.add(regular)
         Session.flush()
 
 
@@ -69,7 +77,7 @@ def add_users():
     """Init the 'admin@bar.com' and 'one@bar.com' user accounts."""
     with transaction.manager:
         admins = Group.by_name('admins')
-        users = Group.by_name('users')
+        enabled = Group.by_name('enabled')
 
         admin = User(
             email=u'admin@bar.com',
@@ -78,7 +86,7 @@ def add_users():
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         admin.groups.append(admins)
-        admin.groups.append(users)
+        admin.groups.append(enabled)
         Session.add(admin)
 
         # Init the normal user account
@@ -88,7 +96,7 @@ def add_users():
             fullname=u'One Bar',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
-        one.groups.append(users)
+        one.groups.append(enabled)
         Session.add(one)
 
 

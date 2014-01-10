@@ -97,3 +97,18 @@ class TestCheckSettings(unittest.TestCase):
             check_required_settings(self.config_full)
 
         self.assertIn('bimt.jvzoo_regular_period', cm.exception.message)
+
+
+class TestExceptions(unittest.TestCase):
+    def setUp(self):
+        testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_workflow_exception(self):
+        from pyramid_bimt.exc import WorkflowError
+
+        we = WorkflowError(msg='test message')
+        self.assertEqual(we.__str__(), 'test message')
+
