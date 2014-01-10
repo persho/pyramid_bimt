@@ -156,3 +156,36 @@ Last email should contain encoded
     [Arguments]  ${value}
     ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
     Last email should contain  ${value_encoded}
+
+I add group
+    [Arguments]  ${group}
+    Click Element  xpath=//*[@id="deformField4-seqAdd"]
+    Input Text  xpath=//*[@id="deformField4-orderable"]/div[last()]/div[1]/input[1]  ${group}
+
+I remove group
+    [Arguments]  ${group}
+    Click Element  xpath=//*[@value="${group}"]/../../*/*[@title="Remove"]
+
+I click disable user
+    [Arguments]  ${email}
+    Click Element  xpath=//*[.="${email}"]/../../td/a[contains(.,"Disable")]
+
+I click enable user
+    [Arguments]  ${email}
+    Click Element  xpath=//*[.="${email}"]/../../td/a[contains(.,"Enable")]
+
+User is strike through and disabled
+    [Arguments]  ${email}
+    Page Should Contain Element  xpath=//*[.="${email}" and @style="text-decoration: line-through"]/../../td/a[contains(.,"Enable")]
+
+User is enabled
+    [Arguments]  ${email}
+    Page Should Contain Element  xpath=//*[.="${email}"]/../../td/a[contains(.,"Disable")]
+
+I click delete audit log entry
+    [Arguments]  ${value}
+    Click Element  xpath=//*[.="${value}"]/../td/a[contains(.,"Delete")]
+
+I click sort by
+    [Arguments]  ${value}
+    Click Element  xpath=//*[.="${value}"]
