@@ -5,8 +5,22 @@ Changelog
 0.5 (unreleased)
 --------------
 
-- [DB MIGRATION REQUIRED]Last payment field added to users table, which will help us with payment
-  reminders
+- Sanity check view added that checks if all users are correctly divided into
+  groups and sends mail on selected address with results. View can be used by
+  admins or called externally. At external call secret needs to added to
+  request.
+  Apps need to:
+  * Set ``mail.info_addres`` where the sanity checks will be sent to
+  * Set ``bimt.app_secret`` which will be used for calls to view from script
+  [ferewuz]
+
+- [DB MIGRATION REQUIRED] Groups overhaul. 'users' group changed to 'enabled',
+  'trial' and 'regular' groups added, jvzoo logic changed to divide users in
+  different groups.
+  [ferewuz]
+
+- [DB MIGRATION REQUIRED] Last payment field added to users table, which will
+  help us with payment reminders.
   [ferewuz]
 
 0.4.6 (2014-01-08)

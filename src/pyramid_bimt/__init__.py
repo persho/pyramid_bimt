@@ -21,10 +21,12 @@ import sys
 REQUIRED_SETTINGS = [
     'authtkt.secret',
     'bimt.app_name',
+    'bimt.app_secret',
     'bimt.app_title',
     'bimt.disabled_user_redirect_path',
     'bimt.payment_reminders',
     'bimt.pricing_page_url',
+    'mail.info_address',
     'script_location',
     'session.secret',
     'sqlalchemy.url',
@@ -99,6 +101,7 @@ def add_routes_other(config):
     config.add_route('raise_js_error', '/raise-error/js')
     config.add_route('raise_http_error', '/raise-error/{error_code}')
     config.add_route('config', '/config')
+    config.add_route('bimt_sanity_check', '/bimt-sanity-check')
 
 
 def configure(config, settings={}):

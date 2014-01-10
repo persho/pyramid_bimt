@@ -1,0 +1,25 @@
+<table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">
+    <tr>
+        <td>
+      <table align="left" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+          <td class="body">
+            <!-- begin body -->
+            <p tal:condition="not:errors">
+                Everything in order, all user groups set correctly!
+            </p>
+            <p tal:condition="errors">
+                Your application has the following errors:
+            </p>
+            <table tal:condition="errors">
+                <tr tal:repeat="error errors">
+                    <td tal:content='error'/>
+                </tr>
+            </table>
+            <!-- end body -->
+          </td>
+        </tr>
+      </table>
+        </td>
+    </tr>
+</table>
