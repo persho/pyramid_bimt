@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 """misc and tool views, etc."""
 
-from datetime import date
 from datetime import datetime
 from pyramid.httpexceptions import exception_response
-from pyramid.renderers import render
 from pyramid.view import view_config
 from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
-from pyramid_mailer import mailer_factory_from_settings
-from pyramid_mailer.message import Message
 
 import os
 
@@ -59,53 +55,42 @@ def config(request):
 
 
 @view_config(
-    route_name='bimt_sanity_check',
+    route_name='sanity_check',
+    permission='admin',
     layout='default',
-    renderer='pyramid_bimt:templates/form.pt',
+    renderer='pyramid_bimt:templates/sanity_view.pt',
 )
 def bimt_sanity_check(request):
     app_assets.need()
-    secret = request.registry.settings.get('bimt.app_secret')
-    if (('secret' in request.GET and request.GET['secret'] == secret)
-            or
-            (request.user and 'admins' in [g.name for g in request.user.groups])):  # noqa
-        send_sanity_mail(request)
-        return {
-            'title': 'Sanity check',
-            'form': '<p>Sanity check finished and mail sent</p>'
-        }
+    errors = get_user_errors()
     return {
-        'title': 'Not Allowed',
-        'form': '<p>Not Allowed</p>'
+        'errors': errors
     }
 
 
-def send_sanity_mail(request):
+def get_user_errors():
+    """
+    Errors for all users in our application
 
-    settings = request.registry.settings
-    mailer = mailer_factory_from_settings(settings)
-    recipient_address = settings.get('mail.info_address')
+    :returns: errors for all users
+    :rtype:   list
+    """
     errors = []
     for user in User.get_all():
         errors = errors + check_user(user)
-    body = render(
-        'pyramid_bimt:templates/bimt_sanity_mail.pt',
-        {'errors': errors}
-    )
-    if errors:
-        subject = 'Bimt sanity check errors on day: {}'.format(date.today())
-    else:
-        subject = 'Bimt sanity check is OK!'
-    message = Message(
-        subject=subject,
-        sender=settings['mail.default_sender'],
-        recipients=[recipient_address, ],
-        body=body,
-    )
-    mailer.send(message)
+    return errors
 
 
 def check_user(user):
+    """
+    Get errors related to user's membership in different groups.
+
+    :param    user: user to be checked
+    :type     user: User
+
+    :returns: Errors for that user
+    :rtype:   list
+    """
     errors = []
     if not user.enabled:
         if user.trial:

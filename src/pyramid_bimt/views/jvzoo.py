@@ -91,7 +91,7 @@ class JVZooView(object):
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.last_payment = date.today()
                 user.enable()
-                user.set_trial()
+                user.make_trial()
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(
@@ -103,7 +103,7 @@ class JVZooView(object):
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.last_payment = date.today()
                 user.enable()
-                user.set_regular()
+                user.make_regular()
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(

@@ -225,8 +225,8 @@ class User(Base, BaseMixin):
         """True if User is in 'trial' group, False otherwise."""
         return 'trial' in [g.name for g in self.groups]
 
-    def set_trial(self):
-        """Set User as tral user by putting it in the 'trial' group.
+    def make_trial(self):
+        """Set User as trial user by putting it in the 'trial' group.
             Raises exception if user is not enabled and moved to trial
         :return: True if user was set as trial, False if nothing changed.
         :rtype: bool
@@ -249,8 +249,8 @@ class User(Base, BaseMixin):
         """True if User is in 'regular' group, False otherwise."""
         return 'regular' in [g.name for g in self.groups]
 
-    def set_regular(self):
-        """Set User as tral user by putting it in the 'regular' group.
+    def make_regular(self):
+        """Set User as trial user by putting it in the 'regular' group.
             Raises exception if user is not enabled and moved to regular
         :return: True if user was set as regular, False if nothing changed.
         :rtype: bool
@@ -275,14 +275,7 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if self.enabled:
-            enabled = Group.by_name('enabled')
-            self.groups.remove(enabled)
-            if self.trial:
-                trial = Group.by_name('trial')
-                self.groups.remove(trial)
-            elif self.regular:
-                regular = Group.by_name('regular')
-                self.groups.remove(regular)
+            self.groups = []
             return True
         else:
             return False

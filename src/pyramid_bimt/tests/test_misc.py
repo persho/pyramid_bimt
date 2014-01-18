@@ -122,37 +122,52 @@ class TestSanityCheck(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.views.misc.send_sanity_mail')
-    def test_sanity_check_secret(self, mail):
+    @mock.patch('pyramid_bimt.views.misc.get_user_errors')
+    def test_sanity_check(self, errors):
         from pyramid_bimt.views.misc import bimt_sanity_check
-
+        errors.return_value = ['error1', 'error2']
         req = mock.Mock()
-        req.GET = {'secret': 'secret'}
-        req.registry.settings = {'bimt.app_secret': 'secret'}
-        view = bimt_sanity_check(req)
-        self.assertEqual(view['title'], 'Sanity check')
-        self.assertEqual(
-            view['form'],
-            '<p>Sanity check finished and mail sent</p>'
-        )
-
-    @mock.patch('pyramid_bimt.views.misc.send_sanity_mail')
-    def test_sanity_check_admin(self, mail):
-        from pyramid_bimt.views.misc import bimt_sanity_check
-
-        req = mock.Mock()
-        req.GET = {}
-        req.user = mock.Mock()
         group = mock.Mock()
         group.name.return_value = 'admins'
         req.user.groups = [group, ]
-
         view = bimt_sanity_check(req)
-        self.assertEqual(view['title'], 'Not Allowed')
-        self.assertEqual(
-            view['form'],
-            '<p>Not Allowed</p>'
-        )
+        self.assertEqual(view['errors'], ['error1', 'error2'])
+
+    @mock.patch('pyramid_bimt.views.misc.get_user_errors')
+    def test_sanity_check_empty(self, errors):
+        from pyramid_bimt.views.misc import bimt_sanity_check
+        errors.return_value = []
+        req = mock.Mock()
+        group = mock.Mock()
+        group.name.return_value = 'admins'
+        req.user.groups = [group, ]
+        view = bimt_sanity_check(req)
+        self.assertEqual(view['errors'], [])
+
+    @mock.patch('pyramid_bimt.views.misc.check_user')
+    @mock.patch('pyramid_bimt.views.misc.User')
+    def test_get_users_errors(self, user, check_user):
+        from pyramid_bimt.views.misc import get_user_errors
+        user.get_all.return_value = ['user1', 'user2', 'user3']
+        check_user.side_effect = [['error1'], [], ['error3']]
+
+        self.assertEqual(get_user_errors(), ['error1', 'error3'])
+
+    @mock.patch('pyramid_bimt.views.misc.check_user')
+    @mock.patch('pyramid_bimt.views.misc.User')
+    def test_get_users_errors_empty(self, user, check_user):
+        from pyramid_bimt.views.misc import get_user_errors
+        user.get_all.return_value = ['user1', 'user2', 'user3']
+        check_user.side_effect = [[], [], []]
+
+        self.assertEqual(get_user_errors(), [])
+
+    @mock.patch('pyramid_bimt.views.misc.User')
+    def test_get_users_errors_no_users(self, user):
+        from pyramid_bimt.views.misc import get_user_errors
+        user.get_all.return_value = []
+
+        self.assertEqual(get_user_errors(), [])
 
     def test_check_user_enabled_trial(self):
         from pyramid_bimt.views.misc import check_user
@@ -210,52 +225,44 @@ class TestSanityCheck(unittest.TestCase):
             'User 1 is both trial and regular!'
         )
 
-    @mock.patch('pyramid_bimt.views.misc.Message')
-    @mock.patch('pyramid_bimt.views.misc.check_user')
-    @mock.patch('pyramid_bimt.views.misc.User')
-    @mock.patch('pyramid_bimt.views.misc.mailer_factory_from_settings')
-    def test_send_sanity_mail_errors(self, mailer, user, check_user, msg):
-        from pyramid_bimt.views.misc import send_sanity_mail
+    @mock.patch('pyramid_bimt.scripts.sanity_email.Message')
+    @mock.patch('pyramid_bimt.scripts.sanity_email.get_user_errors')
+    @mock.patch('pyramid_bimt.scripts.sanity_email.mailer_factory_from_settings')  # noqa
+    def test_send_sanity_mail_errors(self, mailer, user_errors, msg):
+        from pyramid_bimt.scripts.sanity_email import send_sanity_mail
         from datetime import date
-        user.get_all.return_value = ['user1', 'user2']
-        check_user.side_effect = [['error1', ], ['error2', ]]
+        user_errors.return_value = ['error1', 'error2']
 
-        req = mock.Mock()
-        req.registry.settings = {
-            'mail.info_address': 'info@bar.com',
-            'mail.default_sender': 'sender@bar.com'
+        settings = {
+            'mail.default_sender': 'info@bar.com'
         }
-        send_sanity_mail(req)
+        send_sanity_mail(settings)
 
         msg_body = '<table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">\n    <tr>\n        <td>\n      <table align="left" cellpadding="0" cellspacing="0" width="600">\n        <tr>\n          <td class="body">\n            <!-- begin body -->\n            \n            <p>\n                Your application has the following errors:\n            </p>\n            <table>\n                <tr>\n                    <td>error1</td>\n                </tr>\n                <tr>\n                    <td>error2</td>\n                </tr>\n            </table>\n            <!-- end body -->\n          </td>\n        </tr>\n      </table>\n        </td>\n    </tr>\n</table>\n'  # noqa
 
         msg.assert_called_with(
             body=msg_body,
-            sender='sender@bar.com',
+            sender='info@bar.com',
             recipients=['info@bar.com', ],
             subject='Bimt sanity check errors on day: {}'.format(date.today())
             )
 
-    @mock.patch('pyramid_bimt.views.misc.Message')
-    @mock.patch('pyramid_bimt.views.misc.check_user')
-    @mock.patch('pyramid_bimt.views.misc.User')
-    @mock.patch('pyramid_bimt.views.misc.mailer_factory_from_settings')
-    def test_send_sanity_mail_ok(self, mailer, user, check_user, msg):
-        from pyramid_bimt.views.misc import send_sanity_mail
-        user.get_all.return_value = ['user1', 'user2']
-        check_user.side_effect = [[], []]
+    @mock.patch('pyramid_bimt.scripts.sanity_email.Message')
+    @mock.patch('pyramid_bimt.scripts.sanity_email.get_user_errors')
+    @mock.patch('pyramid_bimt.scripts.sanity_email.mailer_factory_from_settings')  # noqa
+    def test_send_sanity_mail_errors_ok(self, mailer, user_errors, msg):
+        from pyramid_bimt.scripts.sanity_email import send_sanity_mail
+        user_errors.return_value = []
 
-        req = mock.Mock()
-        req.registry.settings = {
-            'mail.info_address': 'info@bar.com',
-            'mail.default_sender': 'sender@bar.com'
+        settings = {
+            'mail.default_sender': 'info@bar.com'
         }
-        send_sanity_mail(req)
+        send_sanity_mail(settings)
 
         msg_body = '<table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">\n    <tr>\n        <td>\n      <table align="left" cellpadding="0" cellspacing="0" width="600">\n        <tr>\n          <td class="body">\n            <!-- begin body -->\n            <p>\n                Everything in order, all user groups set correctly!\n            </p>\n            \n            \n            <!-- end body -->\n          </td>\n        </tr>\n      </table>\n        </td>\n    </tr>\n</table>\n'  # noqa
         msg.assert_called_with(
             body=msg_body,
-            sender='sender@bar.com',
+            sender='info@bar.com',
             recipients=['info@bar.com', ],
             subject='Bimt sanity check is OK!'
             )

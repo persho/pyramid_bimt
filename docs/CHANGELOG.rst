@@ -7,11 +7,7 @@ Changelog
 
 - Sanity check view added that checks if all users are correctly divided into
   groups and sends mail on selected address with results. View can be used by
-  admins or called externally. At external call secret needs to added to
-  request.
-  Apps need to:
-  * Set ``mail.info_addres`` where the sanity checks will be sent to
-  * Set ``bimt.app_secret`` which will be used for calls to view from script
+  admins or script called externally.
   [ferewuz]
 
 - [DB MIGRATION REQUIRED] Groups overhaul. 'users' group changed to 'enabled',

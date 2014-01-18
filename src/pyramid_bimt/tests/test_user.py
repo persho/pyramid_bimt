@@ -57,9 +57,9 @@ class TestUserModel(unittest.TestCase):
         from pyramid_bimt.models import User
         user = User.by_email('one@bar.com')
         self.assertFalse(user.trial)
-        self.assertTrue(user.set_trial())
+        self.assertTrue(user.make_trial())
         self.assertTrue(user.trial)
-        self.assertFalse(user.set_trial())
+        self.assertFalse(user.make_trial())
 
         self.assertTrue(user.disable())
         self.assertFalse(user.trial)
@@ -72,15 +72,15 @@ class TestUserModel(unittest.TestCase):
         self.assertFalse(user.enabled)
         self.assertFalse(user.trial)
         with self.assertRaises(WorkflowError):
-            user.set_trial()
+            user.make_trial()
 
     def test_user_regular(self):
         from pyramid_bimt.models import User
         user = User.by_email('one@bar.com')
         self.assertFalse(user.regular)
-        self.assertTrue(user.set_regular())
+        self.assertTrue(user.make_regular())
         self.assertTrue(user.regular)
-        self.assertFalse(user.set_regular())
+        self.assertFalse(user.make_regular())
 
         self.assertTrue(user.disable())
         self.assertFalse(user.regular)
@@ -93,4 +93,4 @@ class TestUserModel(unittest.TestCase):
         self.assertFalse(user.enabled)
         self.assertFalse(user.regular)
         with self.assertRaises(WorkflowError):
-            user.set_regular()
+            user.make_regular()
