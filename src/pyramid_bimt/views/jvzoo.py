@@ -8,6 +8,7 @@ from pyramid.view import view_config
 from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
+from pyramid_bimt.models import Group
 from pyramid_bimt.models import Session
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
@@ -91,7 +92,7 @@ class JVZooView(object):
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.last_payment = date.today()
                 user.enable()
-                user.make_trial()
+                user.groups.append(Group.by_name('trial'))
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(
@@ -103,7 +104,6 @@ class JVZooView(object):
                 user.valid_to = date.today() + timedelta(days=validity)
                 user.last_payment = date.today()
                 user.enable()
-                user.make_regular()
                 logger.info('JVZoo enabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserEnabled(self.request, user, comment.format(

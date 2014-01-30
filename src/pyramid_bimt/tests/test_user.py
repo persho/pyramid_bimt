@@ -3,6 +3,7 @@
 
 from pyramid import testing
 from pyramid_basemodel import Session
+from pyramid_bimt.models import Group
 from pyramid_bimt.testing import initTestingDB
 
 import unittest
@@ -53,44 +54,21 @@ class TestUserModel(unittest.TestCase):
         self.assertIsNotNone(User.get_enabled())
         self.assertEquals(len(User.get_enabled()), 2)
 
+    def test_user_enable_disabled(self):
+        from pyramid_bimt.models import User
+        user = User.by_email('one@bar.com')
+        self.assertTrue(user.enabled)
+
+        user.disable()
+        self.assertFalse(user.enabled)
+
+        user.enable()
+        self.assertTrue(user.enabled)
+
     def test_user_trial(self):
         from pyramid_bimt.models import User
         user = User.by_email('one@bar.com')
         self.assertFalse(user.trial)
-        self.assertTrue(user.make_trial())
+
+        user.groups.append(Group.by_name('trial'))
         self.assertTrue(user.trial)
-        self.assertFalse(user.make_trial())
-
-        self.assertTrue(user.disable())
-        self.assertFalse(user.trial)
-
-    def test_user_trial_not_enabled(self):
-        from pyramid_bimt.exc import WorkflowError
-        from pyramid_bimt.models import User
-        user = User.by_email('one@bar.com')
-        user.disable()
-        self.assertFalse(user.enabled)
-        self.assertFalse(user.trial)
-        with self.assertRaises(WorkflowError):
-            user.make_trial()
-
-    def test_user_regular(self):
-        from pyramid_bimt.models import User
-        user = User.by_email('one@bar.com')
-        self.assertFalse(user.regular)
-        self.assertTrue(user.make_regular())
-        self.assertTrue(user.regular)
-        self.assertFalse(user.make_regular())
-
-        self.assertTrue(user.disable())
-        self.assertFalse(user.regular)
-
-    def test_user_regular_not_enabled(self):
-        from pyramid_bimt.exc import WorkflowError
-        from pyramid_bimt.models import User
-        user = User.by_email('one@bar.com')
-        user.disable()
-        self.assertFalse(user.enabled)
-        self.assertFalse(user.regular)
-        with self.assertRaises(WorkflowError):
-            user.make_regular()

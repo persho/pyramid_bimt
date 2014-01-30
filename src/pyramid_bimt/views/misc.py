@@ -4,7 +4,6 @@
 from datetime import datetime
 from pyramid.httpexceptions import exception_response
 from pyramid.view import view_config
-from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
 
 import os
@@ -52,61 +51,3 @@ def config(request):
         'environ': environ,
         'settings': settings
     }
-
-
-@view_config(
-    route_name='sanity_check',
-    permission='admin',
-    layout='default',
-    renderer='pyramid_bimt:templates/sanity_view.pt',
-)
-def bimt_sanity_check(request):
-    app_assets.need()
-    errors = get_user_errors()
-    return {
-        'errors': errors
-    }
-
-
-def get_user_errors():
-    """
-    Errors for all users in our application
-
-    :returns: errors for all users
-    :rtype:   list
-    """
-    errors = []
-    for user in User.get_all():
-        errors = errors + check_user(user)
-    return errors
-
-
-def check_user(user):
-    """
-    Get errors related to user's membership in different groups.
-
-    :param    user: user to be checked
-    :type     user: User
-
-    :returns: Errors for that user
-    :rtype:   list
-    """
-    errors = []
-    if not user.enabled:
-        if user.trial:
-            errors.append(
-                'User {0} is disabled but in trial group!'.format(user.id)
-            )
-        if user.regular:
-            errors.append(
-                'User {0} is disabled but in regular group!'.format(user.id)
-            )
-    if user.enabled and not (user.trial or user.regular):
-        errors.append(
-            'User {0} is enabled but not trial or regular!'.format(user.id)
-        )
-    if user.trial and user.regular:
-        errors.append(
-            'User {0} is both trial and regular!'.format(user.id)
-        )
-    return errors

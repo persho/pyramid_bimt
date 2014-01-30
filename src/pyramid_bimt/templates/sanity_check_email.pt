@@ -5,15 +5,15 @@
         <tr>
           <td class="body">
             <!-- begin body -->
-            <p tal:condition="not:errors">
-                Everything in order, all user groups set correctly!
+            <p tal:condition="not:warnings">
+                Everything in order, nothing to report.
             </p>
-            <p tal:condition="errors">
-                Your application has the following errors:
+            <p tal:condition="warnings">
+                The following warnings were found:
             </p>
-            <table tal:condition="errors">
-                <tr tal:repeat="error errors">
-                    <td tal:content='error'/>
+            <table tal:condition="warnings">
+                <tr tal:repeat="warning warnings">
+                    <td tal:content="warning" />
                 </tr>
             </table>
             <!-- end body -->

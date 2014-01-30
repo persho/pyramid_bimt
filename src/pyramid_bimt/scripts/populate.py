@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 """Populate the DB with default content."""
 
-from pyramid_basemodel import Base
+from pyramid.paster import bootstrap
 from pyramid_basemodel import Session
 from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
-from sqlalchemy import engine_from_config
 
-import inspect
-import os
-import re
+import argparse
 import sys
+import inspect
+import re
 import transaction
 
 # This is a result of calling encrypt('secret'), and we have it pre-computed
@@ -50,27 +49,19 @@ def add_audit_log_event_types():
         types = default_audit_log_event_types()
         for type_ in types:
             Session.add(type_)
-        Session.flush()
 
 
 def add_groups():
-    """Init the 'admins', 'enabled', 'trial', 'regular' groups."""
+    """Init the 'admins', 'enabled', 'trial' groups."""
     with transaction.manager:
         admins = Group(name='admins')
         Session.add(admins)
-        Session.flush()
 
         enabled = Group(name='enabled')
         Session.add(enabled)
-        Session.flush()
 
         trial = Group(name='trial')
         Session.add(trial)
-        Session.flush()
-
-        regular = Group(name='regular')
-        Session.add(regular)
-        Session.flush()
 
 
 def add_users():
@@ -108,19 +99,19 @@ def add_default_content():  # pragma: no cover (bw compat only)
 
 
 def main(argv=sys.argv):
+    parser = argparse.ArgumentParser(
+        usage='bin/py -m '
+        'pyramid_bimt.scripts.expire_subscriptions etc/production.ini',
+    )
+    parser.add_argument(
+        'config', type=str, metavar='<config>',
+        help='Pyramid application configuration file.')
 
-    db_url = os.environ.get('DATABASE_URL')
-    if not db_url:
-        print 'DATABASE_URL not set, using default SQLite db.'  # noqa
-        db_url = 'sqlite:///./bimt-app.db'
-
-    settings = {'sqlalchemy.url': db_url}
-    engine = engine_from_config(settings, 'sqlalchemy.')
-    Session.configure(bind=engine)
-    Base.metadata.create_all(engine)
-
+    env = bootstrap(parser.parse_args().config)
     add_default_content()
-    print 'DB populated with dummy data: {0}'.format(db_url)  # noqa
+
+    env['closer']()
+    print 'DB populated with dummy data.'  # noqa
 
 
 if __name__ == '__main__':

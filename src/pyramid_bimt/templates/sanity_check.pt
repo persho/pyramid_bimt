@@ -10,7 +10,7 @@
 
     </table>
     <p tal:condition="not:errors">
-        No errors, everything set correctly!
+        Everything in order, nothing to report.
     </p>
 
 

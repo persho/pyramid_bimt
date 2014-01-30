@@ -7,7 +7,6 @@ from flufl.enum import Enum
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
-from pyramid_bimt.exc import WorkflowError
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import DateTime
@@ -214,59 +213,10 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if not self.enabled:
-            enabled = Group.by_name('enabled')
-            self.groups.append(enabled)
+            self.groups.append(Group.by_name('enabled'))
             return True
         else:
             return False
-
-    @property
-    def trial(self):
-        """True if User is in 'trial' group, False otherwise."""
-        return 'trial' in [g.name for g in self.groups]
-
-    def make_trial(self):
-        """Set User as trial user by putting it in the 'trial' group.
-            Raises exception if user is not enabled and moved to trial
-        :return: True if user was set as trial, False if nothing changed.
-        :rtype: bool
-        """
-
-        if self.enabled:
-            if not self.trial:
-                trial = Group.by_name('trial')
-                self.groups.append(trial)
-                return True
-            else:
-                return False
-        else:
-            raise WorkflowError(
-                'User cannot be moved to trial group if not enabled'
-            )
-
-    @property
-    def regular(self):
-        """True if User is in 'regular' group, False otherwise."""
-        return 'regular' in [g.name for g in self.groups]
-
-    def make_regular(self):
-        """Set User as trial user by putting it in the 'regular' group.
-            Raises exception if user is not enabled and moved to regular
-        :return: True if user was set as regular, False if nothing changed.
-        :rtype: bool
-        """
-
-        if self.enabled:
-            if not self.regular:
-                regular = Group.by_name('regular')
-                self.groups.append(regular)
-                return True
-            else:
-                return False
-        else:
-            raise WorkflowError(
-                'User cannot be moved to regular group if not enabled'
-            )
 
     def disable(self):
         """Disable User by removing it from the 'enabled' group.
@@ -275,10 +225,15 @@ class User(Base, BaseMixin):
         :rtype: bool
         """
         if self.enabled:
-            self.groups = []
+            self.groups.remove(Group.by_name('enabled'))
             return True
         else:
             return False
+
+    @property
+    def trial(self):
+        """True if User is in 'trial' group, False otherwise."""
+        return 'trial' in [g.name for g in self.groups]
 
     @classmethod
     def by_id(self, user_id):

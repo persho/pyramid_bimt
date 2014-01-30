@@ -141,7 +141,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         resp = JVZooView(request).jvzoo()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, True)
-        self.assertEqual(user.regular, True)
+        self.assertEqual(user.trial, False)
         self.assertEqual(user.valid_to, date(2014, 1, 30))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
