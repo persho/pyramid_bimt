@@ -3,7 +3,7 @@ Changelog
 
 
 0.5 (unreleased)
---------------
+----------------
 
 - Sanity check view added that checks if all users are correctly divided into
   groups and sends mail on selected address with results. View can be used by

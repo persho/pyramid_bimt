@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""misc and tool views, etc."""
+"""Miscellaneous helpers and tools views."""
 
 from datetime import datetime
 from pyramid.httpexceptions import exception_response
