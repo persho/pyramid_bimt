@@ -8,6 +8,13 @@ Changelog
 - Email API key with credentials to new user (created by jvzoo).
   [matejc]
 
+- Hard-coded payment reminders removed in favor of TTW mailings. Apps can now
+  remove what they needed to add in 0.4.6.
+  [zupo]
+
+- Support creation of scheduled mailings via the web UI.
+  [zupo]
+
 
 0.5.3 (2014-03-08)
 ------------------
