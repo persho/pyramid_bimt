@@ -25,10 +25,6 @@ docs/html/index.html: README.rst docs/*.rst src/pyramid_bimt/*.py bin/sphinx-bui
 bin/sphinx-build: .installed.cfg
 	@touch $@
 
-db: .installed.cfg
-	@if [ -f pyramid_bimt-app.db ]; then rm -rf pyramid_bimt-app.db; fi;
-	@bin/py -m pyramid_bimt.scripts.populate
-
 .installed.cfg: bin/buildout buildout.cfg buildout.d/*.cfg setup.py
 	bin/buildout $(options)
 
@@ -55,6 +51,6 @@ release: .installed.cfg
 clean:
 	@rm -rf .coverage .installed.cfg .mr.developer.cfg .Python bin build \
 		develop-eggs dist docs/html htmlcov lib include man parts \
-		src/pyramid_bimt.egg-info pyramid_bimt-app.db
+		src/pyramid_bimt.egg-info
 
 .PHONY: all docs tests clean

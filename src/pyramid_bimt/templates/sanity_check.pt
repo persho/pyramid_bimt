@@ -1,0 +1,21 @@
+<metal:block use-macro="main_template">
+
+  <div metal:fill-slot="content" id="content">
+
+    <table tal:condition="errors" class="table">
+
+        <tr tal:repeat="error errors">
+            <td tal:content="error" />
+        </tr>
+
+    </table>
+    <p tal:condition="not:errors">
+        Everything in order, nothing to report.
+    </p>
+
+
+
+
+  </div>
+
+</metal:block>

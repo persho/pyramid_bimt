@@ -3,12 +3,13 @@
 
 from pyramid import testing
 from pyramid_basemodel import Session
+from pyramid_bimt.models import Group
 from pyramid_bimt.testing import initTestingDB
 
 import unittest
 
 
-class TestUserView(unittest.TestCase):
+class TestUserModel(unittest.TestCase):
     def setUp(self):
         testing.setUp()
         initTestingDB(groups=True, users=True)
@@ -47,3 +48,27 @@ class TestUserView(unittest.TestCase):
         self.assertEquals(User.get_all().count(), 2)
         self.assertIsNotNone(User.get_all(filter_by={'email': 'one@bar.com'}))
         self.assertEquals(User.get_all(filter_by={'email': 'foo'}).count(), 0)
+
+    def test_user_get_enabled(self):
+        from pyramid_bimt.models import User
+        self.assertIsNotNone(User.get_enabled())
+        self.assertEquals(len(User.get_enabled()), 2)
+
+    def test_user_enable_disabled(self):
+        from pyramid_bimt.models import User
+        user = User.by_email('one@bar.com')
+        self.assertTrue(user.enabled)
+
+        user.disable()
+        self.assertFalse(user.enabled)
+
+        user.enable()
+        self.assertTrue(user.enabled)
+
+    def test_user_trial(self):
+        from pyramid_bimt.models import User
+        user = User.by_email('one@bar.com')
+        self.assertFalse(user.trial)
+
+        user.groups.append(Group.by_name('trial'))
+        self.assertTrue(user.trial)

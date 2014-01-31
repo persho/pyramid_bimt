@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""misc and tool views, etc."""
+"""Miscellaneous helpers and tools views."""
 
-from pyramid_bimt.static import app_assets
+from datetime import datetime
 from pyramid.httpexceptions import exception_response
 from pyramid.view import view_config
-from datetime import datetime
+from pyramid_bimt.static import app_assets
 
 import os
 

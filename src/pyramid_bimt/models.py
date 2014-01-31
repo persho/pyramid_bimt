@@ -203,34 +203,37 @@ class User(Base, BaseMixin):
 
     @property
     def enabled(self):
-        """True if User is in 'users' group, False otherwise."""
-        return 'users' in [g.name for g in self.groups]
+        """True if User is in 'enabled' group, False otherwise."""
+        return 'enabled' in [g.name for g in self.groups]
 
     def enable(self):
-        """Enable User by putting it in the 'users' group.
+        """Enable User by putting it in the 'enabled' group.
 
         :return: True if user was enabled, False if nothing changed.
         :rtype: bool
         """
         if not self.enabled:
-            users = Group.by_name('users')
-            self.groups.append(users)
+            self.groups.append(Group.by_name('enabled'))
             return True
         else:
             return False
 
     def disable(self):
-        """Disable User by removing it from the 'users' group.
+        """Disable User by removing it from the 'enabled' group.
 
         :return: True if user was disabled, False if nothing changed.
         :rtype: bool
         """
         if self.enabled:
-            users = Group.by_name('users')
-            self.groups.remove(users)
+            self.groups.remove(Group.by_name('enabled'))
             return True
         else:
             return False
+
+    @property
+    def trial(self):
+        """True if User is in 'trial' group, False otherwise."""
+        return 'trial' in [g.name for g in self.groups]
 
     @classmethod
     def by_id(self, user_id):
@@ -265,8 +268,8 @@ class User(Base, BaseMixin):
 
     @classmethod
     def get_enabled(self):
-        users = Group.by_name('users')
-        return User.query.filter(User.groups.contains(users)).all()
+        enabled = Group.by_name('enabled')
+        return User.query.filter(User.groups.contains(enabled)).all()
 
 
 class AuditLogEventType(Base):

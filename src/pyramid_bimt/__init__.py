@@ -99,6 +99,7 @@ def add_routes_other(config):
     config.add_route('raise_js_error', '/raise-error/js')
     config.add_route('raise_http_error', '/raise-error/{error_code}')
     config.add_route('config', '/config')
+    config.add_route('sanity_check', '/sanity-check')
 
 
 def configure(config, settings={}):

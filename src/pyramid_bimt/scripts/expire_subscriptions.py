@@ -2,18 +2,15 @@
 """Find users with expired `valid_to` and disable them."""
 
 from datetime import date
+from pyramid.paster import bootstrap
 from pyramid_basemodel import Session
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import User
-from sqlalchemy import engine_from_config
 
-import logging
-import os
+import argparse
 import sys
 import transaction
-
-logger = logging.getLogger(__name__)
 
 
 def expire_subscriptions():
@@ -30,20 +27,23 @@ def expire_subscriptions():
                             'UserDisabled').id,
                         comment=msg,
                     ))
-                    logger.info(msg)
+                    print msg  # noqa
 
 
 def main(argv=sys.argv):
+    parser = argparse.ArgumentParser(
+        usage='bin/py -m '
+        'pyramid_bimt.scripts.expire_subscriptions etc/production.ini',
+    )
+    parser.add_argument(
+        'config', type=str, metavar='<config>',
+        help='Pyramid application configuration file.')
 
-    db_url = os.environ.get('DATABASE_URL')
-    if not db_url:
-        raise KeyError('DATABASE_URL not set, please set it.')
-
-    settings = {'sqlalchemy.url': db_url}
-    engine = engine_from_config(settings, 'sqlalchemy.')
-    Session.configure(bind=engine)
+    env = bootstrap(parser.parse_args().config)
     expire_subscriptions()
-    logger.info('Expire subscription script finished.')
+
+    env['closer']()
+    print 'Expire subscription script finished.'  # noqa
 
 
 if __name__ == '__main__':

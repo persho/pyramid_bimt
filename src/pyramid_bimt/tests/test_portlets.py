@@ -287,7 +287,7 @@ class TestPortletsFunctional(unittest.TestCase):
         form['html'] = u'<p>Bär</p>'
 
         form.get('checkbox', index=1).checked = True
-        self.assertEqual(form.get('checkbox', index=1).value, u'users')
+        self.assertEqual(form.get('checkbox', index=1).value, u'enabled')
 
         form['deformField3'] = u'above_footer'
 
@@ -297,7 +297,7 @@ class TestPortletsFunctional(unittest.TestCase):
         # assert portlet was modified
         self.assertIn("""<td>1</td>
           <td>portlet-bar</td>
-          <td>admins, users</td>
+          <td>admins, enabled</td>
           <td>above_footer</td>""", resp.text)
 
         resp = self.testapp.get('/login', status=200)

@@ -13,10 +13,12 @@ class TestCheckSettings(unittest.TestCase):
         self.settings_full = {
             'authtkt.secret': '',
             'bimt.app_name': 'bimt',
+            'bimt.app_secret': '',
             'bimt.app_title': 'BIMT',
             'bimt.disabled_user_redirect_path': '',
             'bimt.payment_reminders': '',
             'bimt.pricing_page_url': '',
+            'mail.info_address': '',
             'script_location': '',
             'session.secret': '',
             'sqlalchemy.url': '',

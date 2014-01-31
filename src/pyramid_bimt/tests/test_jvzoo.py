@@ -141,6 +141,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         resp = JVZooView(request).jvzoo()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, True)
+        self.assertEqual(user.trial, False)
         self.assertEqual(user.valid_to, date(2014, 1, 30))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
@@ -196,6 +197,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         resp = JVZooView(request).jvzoo()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, True)
+        self.assertEqual(user.trial, True)
         self.assertEqual(user.valid_to, date(2014, 1, 6))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
@@ -228,6 +230,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
         user = User.by_email('bar@bar.com')
         self.assertEqual(user.enabled, True)
+        self.assertEqual(user.trial, True)
         self.assertEqual(user.valid_to, date(2014, 1, 6))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
@@ -296,6 +299,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         user = User.by_email('john.smith@email.com')
         self.assertEqual(user.fullname, 'John Smith')
         self.assertEqual(user.affiliate, 'affiliate@email.com')
+        self.assertEqual(user.trial, True)
         self.assertEqual(user.valid_to, date.today() + timedelta(days=4))
         self.assertEqual(user.last_payment, date.today())
         self.assertTrue(user.enabled)
