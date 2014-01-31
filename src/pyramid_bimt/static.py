@@ -57,6 +57,15 @@ fontawesome = Resource(
     depends=[bootstrap],
 )
 
+bootbox_js = Resource(
+    library=lib_bimt,
+    relpath='bootbox.js',
+    minified='bootbox.min.js',
+    minifier='jsmin',
+    depends=[bootstrap],
+    bottom=True,
+)
+
 bimt_assets = Group([
     jquery,
     bootstrap,
@@ -64,6 +73,7 @@ bimt_assets = Group([
     fontawesome,
     bimt_js,
     bimt_css,
+    bootbox_js,
 ])
 
 base_assets = bimt_assets

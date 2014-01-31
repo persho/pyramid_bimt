@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for pyramid_bimt views."""
+"""Tests for the User model."""
 
 from datetime import date
 from pyramid import testing

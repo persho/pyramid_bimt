@@ -192,6 +192,46 @@ class TestPortletFactory(unittest.TestCase):
         self.assertEqual(cm.exception.location, '/portlets')
 
 
+class TestMailingFactory(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest()
+
+        from pyramid_bimt.acl import MailingFactory
+        self.factory = MailingFactory(self.request)
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_init(self):
+        self.assertIsNotNone(self.factory)
+        self.assertEqual(self.factory.request, self.request)
+
+    @mock.patch('pyramid_bimt.acl.Mailing')
+    def test_non_existing_mailing(self, Mailing):
+        Mailing.by_id.return_value = None
+        with self.assertRaises(KeyError):
+            self.factory[0]
+
+    @mock.patch('pyramid_bimt.acl.Mailing')
+    def test_existing_mailing(self, Mailing):
+        mailing = mock.Mock()
+        Mailing.by_id.return_value = mailing
+        self.assertEqual(self.factory['foo'], mailing)
+        self.assertEqual(self.factory['foo'].__parent__, self.factory)
+        self.assertEqual(self.factory['foo'].__name__, 'foo')
+
+    def test_redirect_to_nonslash(self):
+        from pyramid_bimt import add_routes_mailing
+        add_routes_mailing(self.config)
+        self.request['PATH_INFO'] = '/mailings/'
+        with self.assertRaises(HTTPFound) as cm:
+            from pyramid_bimt.acl import MailingFactory
+            MailingFactory(self.request)
+        self.assertEqual(cm.exception.location, '/mailings')
+
+
 class TestAuditLogFactory(unittest.TestCase):
 
     def setUp(self):

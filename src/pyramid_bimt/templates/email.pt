@@ -1,0 +1,27 @@
+<table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">
+  <tr>
+    <td>
+      <table align="left" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+          <td class="body">
+            <p>Hello ${fullname},</p>
+            <div tal:replace="structure: body" />
+            <p>
+              Best wishes,<br>
+              <?python from pyramid.threadlocal import get_current_registry ?>
+              ${get_current_registry().settings['bimt.app_title']} Team
+            </p>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <br/>
+      ---<br/><br/>
+      <a href="http://twitter.com/bigimtoolbox">Follow us on Twitter</a> for latest updates and <a href="http://blog.bigimtoolbox.com/">visit our blog</a> for news.<br/><br/>
+      <?python from datetime import date ?>
+      © ${date.today().year} NiteoWeb Ltd., All Rights Reserved
+    </td>
+  </tr>
+</table>

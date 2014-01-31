@@ -178,19 +178,38 @@ class JVZooView(object):
         """Send a welcome email to the user, containing login credentials."""
         app_title = self.request.registry.settings['bimt.app_title']
         mailer = get_mailer(self.request)
+        if user.get_property('api_key', None):
+            api_key = u"""
+            <p>
+              Here is your API key for integrating with other services: <br />
+              API key: {}
+            </p>
+            """.format(user.get_property('api_key'))
+        else:
+            api_key = ''
+
+        body = u"""
+            <p>
+              Here are your login details for the membership area:<br>
+              u: {username}<br>
+              p: {password}
+            </p>
+            {api_key}
+            <p>
+              Login to the members' area:<br>
+              <a href="{login_url}">{login_url}</a>
+            </p>
+        """.format(
+            username=user.email,
+            password=password,
+            api_key=api_key,
+            login_url=self.request.route_url('login'),
+        )
+
         mailer.send(Message(
-            subject=u'Welcome to {}!'.format(app_title),
             recipients=[user.email, ],
+            subject=u'Welcome to {}!'.format(app_title),
             html=render(
-                'pyramid_bimt:templates/email_welcome.pt',
-                {
-                    'fullname': user.fullname,
-                    'username': user.email,
-                    'api_key': user.get_property('api_key', default=None),
-                    'password': password,
-                    'login_url': self.request.route_url('login'),
-                    'app_title': app_title,
-                    'year': date.today().year,
-                },
-            ),
-        ))
+                'pyramid_bimt:templates/email.pt',
+                {'fullname': user.fullname, 'body': body},
+            )))

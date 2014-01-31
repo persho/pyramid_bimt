@@ -1,0 +1,33 @@
+<metal:block use-macro="main_template">
+
+    <div metal:fill-slot="content" id="content">
+      <h1>Mailings (${len(mailings)})</h1>
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Groups</th>
+          <th>Trigger</th>
+          <th>Days</th>
+          <th>
+            <a class="btn btn-xs btn-success" href="${request.route_path('mailing_add')}">
+              <span class="glyphicon glyphicon-plus-sign"></span> Add
+            </a>
+          </th>
+        </tr>
+        <tr tal:repeat="mailing mailings">
+          <td>${mailing.id}</td>
+          <td>${mailing.name}</td>
+          <td>${", ".join([g.name for g in mailing.groups])}</td>
+          <td>${triggers[mailing.trigger].value}</td>
+          <td>${str(mailing.days)}</td>
+          <td>
+            <a class="btn btn-xs btn-primary" href="${request.route_path('mailing_edit', mailing_id=mailing.id)}">
+              <span class="glyphicon glyphicon-edit"></span> Edit
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+</metal:block>

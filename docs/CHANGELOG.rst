@@ -8,6 +8,19 @@ Changelog
 - Email API key with credentials to new user (created by jvzoo).
   [matejc]
 
+- Fix scheduled scripts: they did not run and did not send out emails.
+  [zupo]
+
+- Provide and document using a standard template for emails.
+  [zupo]
+
+- Ship ``bootbox.js`` with this package so we can have simple confirmation
+  modals for form submissions.
+  [zupo]
+
+- Hide confidential information on ``/config`` with the `secret span` approach.
+  [zupo]
+
 - Hard-coded payment reminders removed in favor of TTW mailings. Apps can now
   remove what they needed to add in 0.4.6.
   [zupo]

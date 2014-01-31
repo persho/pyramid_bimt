@@ -9,6 +9,7 @@ from pyramid.settings import asbool
 from pyramid_basemodel import Session
 from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.acl import GroupFactory
+from pyramid_bimt.acl import MailingFactory
 from pyramid_bimt.acl import PortletFactory
 from pyramid_bimt.acl import RootFactory
 from pyramid_bimt.acl import UserFactory
@@ -100,6 +101,15 @@ def add_routes_portlet(config):
     )
 
 
+def add_routes_mailing(config):
+    config.add_route('mailing_list', '/mailings', factory=MailingFactory)
+    config.add_route('mailing_add', '/mailing/add', factory=MailingFactory)
+    config.add_route(
+        'mailing_edit', '/mailing/{mailing_id}/edit',
+        factory=MailingFactory, traverse='/{mailing_id}'
+    )
+
+
 def add_routes_other(config):
     config.add_route('jvzoo', '/jvzoo')
     config.add_route('raise_js_error', '/raise-error/js')
@@ -131,6 +141,7 @@ def configure(config, settings={}):
     add_routes_group(config)
     add_routes_audit_log(config)
     add_routes_portlet(config)
+    add_routes_mailing(config)
     add_routes_other(config)
 
     # enable views that we need in Robot tests

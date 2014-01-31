@@ -7,6 +7,7 @@ from pyramid.security import Allow
 from pyramid.security import Authenticated
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import User
 
@@ -110,5 +111,25 @@ class PortletFactory(object):
             portlet.__parent__ = self
             portlet.__name__ = key
             return portlet
+        else:
+            raise KeyError
+
+
+class MailingFactory(object):
+    __acl__ = [
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+    ]
+
+    def __init__(self, request):
+        if request.get('PATH_INFO') == '/mailings/':
+            raise HTTPFound(location=request.route_path('mailing_list'))
+        self.request = request
+
+    def __getitem__(self, key):
+        mailing = Mailing.by_id(key)
+        if mailing:
+            mailing.__parent__ = self
+            mailing.__name__ = key
+            return mailing
         else:
             raise KeyError

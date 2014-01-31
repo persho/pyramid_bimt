@@ -91,7 +91,6 @@ class LoginForm(FormView):
             message = Message(
                 subject='{} Password Reset'.format(
                     self.request.registry.settings['bimt.app_title']),
-                sender=self.request.registry.settings['mail.default_sender'],
                 recipients=[user.email, ],
                 body=PASSWORD_RESET_EMAIL_BODY.format(
                     fullname=user.fullname,

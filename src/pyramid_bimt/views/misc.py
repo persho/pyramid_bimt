@@ -49,5 +49,14 @@ def config(request):
     return {
         'title': 'Config',
         'environ': environ,
-        'settings': settings
+        'settings': settings,
+        'secrets': [
+            'BROKER_URL',
+            'CELERY_RESULT_BACKEND',
+            'authtkt.secret',
+            'bimt.jvzoo_secret_key',
+            'session.secret',
+            'DATABASE_URL',
+            'SENTRY_DSN',
+        ]
     }

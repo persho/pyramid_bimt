@@ -23,10 +23,9 @@ def send_email(settings, request):
         subject = '{} sanity check OK'.format(settings['bimt.app_title'])
 
     mailer = get_mailer(request)
-    mailer.send(Message(
+    mailer.send_immediately(Message(
+        recipients=['maintenance@niteoweb.com', ],
         subject=subject,
-        sender=settings['mail.default_sender'],
-        recipients=[settings['mail.default_sender'], ],
         html=render(
             'pyramid_bimt:templates/sanity_check_email.pt',
             {'warnings': warnings},

@@ -10,3 +10,12 @@ BIMT API
     portlets.rst
     scripts.rst
     js.rst
+    emails.rst
+
+
+BIMT data model
+---------------
+
+.. figure:: images/schema.png
+    :align: center
+

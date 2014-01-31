@@ -19,7 +19,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
             'bimt.disabled_user_redirect_path': '/settings',
-            'mail.default_sender': 'test_sender'
+            'mail.default_sender': 'test_sender',
         }
         self.config = testing.setUp(settings=settings)
         initTestingDB(auditlog_types=True, groups=True, users=True)
@@ -92,7 +92,6 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('A new password was sent to your email.', resp.text)
         message = Message(
             subject='{} Password Reset'.format('BIMT'),
-            sender='test_sender',
             recipients=['one@bar.com', ],
             body='test',
         )
