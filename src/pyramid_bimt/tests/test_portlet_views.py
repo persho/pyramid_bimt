@@ -104,16 +104,10 @@ class TestPortletAdd(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_appstruct_default_values(self):
-        self.assertEqual(self.view.appstruct(), {
-            'name': '',
-            'groups': [],
-            'position': '',
-            'weight': 0,
-            'html': '',
-        })
+    def test_appstruct_empty_request(self):
+        self.assertEqual(self.view.appstruct(), {})
 
-    def test_appstruct_request_params(self):
+    def test_appstruct_full_request(self):
         for key, value in self.APPSTRUCT.items():
             self.request.params[key] = value
 
@@ -158,17 +152,11 @@ class TestPortletEdit(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_appstruct_default_values(self):
+    def test_appstruct_empty_context(self):
         self.request.context = Portlet()
-        self.assertEqual(self.view.appstruct(), {
-            'name': '',
-            'groups': [],
-            'position': '',
-            'weight': 0,
-            'html': u'',
-        })
+        self.assertEqual(self.view.appstruct(), {})
 
-    def test_appstruct_context_params(self):
+    def test_appstruct_full_context(self):
         self.request.context = Portlet.by_id(1)
         self.assertEqual(self.view.appstruct(), {
             'name': 'dummy',

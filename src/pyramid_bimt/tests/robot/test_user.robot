@@ -12,26 +12,26 @@ Suite Teardown  Suite Teardown
 *** Test Cases ***
 
 Scenario: Add new user
-    I log in as admin
-    Go to  http://localhost:8080/user/add
-    Input Text  name=email  user@xyz.xyz
-    Input Text  name=fullname  User Xyz
-    I add group  enabled
-    I add group  admins
-    I click button  Save
-    Location Should Be  http://localhost:8080/user/3
-    Page Should Contain  User "user@xyz.xyz" added.
+    Given I log in as admin
+     When I go to  http://localhost:8080/user/add
+      And I input text  name=email  user@xyz.xyz
+      And I input text  name=fullname  User Xyz
+      And I select checkbox admins
+      And I select checkbox enabled
+      And I click button  Submit
+     Then location should be  http://localhost:8080/user/3
+      And page should contain  User "user@xyz.xyz" added.
 
 Scenario: Edit user
-    I log in as admin
-    Go to  http://localhost:8080/user/3/edit
-    Input Text  name=email  ovca@xyz.xyz
-    Input Text  name=fullname  Ovca Xyz
-    I remove group  admins
-    I click button  Save
-    Location Should Be  http://localhost:8080/user/3
-    Page Should Contain  User "ovca@xyz.xyz" modified.
-    Page Should Contain  Ovca Xyz
+    Given I log in as admin
+     When I go to  http://localhost:8080/user/3/edit
+      And I input text  name=email  ovca@xyz.xyz
+      And I input text  name=fullname  Ovca Xyz
+      And I unselect checkbox admins
+      And I click button  Save
+     Then location should be  http://localhost:8080/user/3
+      And page should contain  User "ovca@xyz.xyz" modified.
+      And page should contain  Ovca Xyz
 
 Scenario: Disable user
     I log in as admin
@@ -46,3 +46,18 @@ Scenario: Enable user
     I click enable user  ovca@xyz.xyz
     User is enabled  ovca@xyz.xyz
     Page Should Contain  User "ovca@xyz.xyz" enabled.
+
+
+*** Keywords ***
+
+I select checkbox admins
+    Select Checkbox  css=input[value="1"]
+
+I select checkbox enabled
+    Select Checkbox  css=input[value="2"]
+
+I unselect checkbox admins
+    Unselect Checkbox  css=input[value="1"]
+
+I unselect checkbox enabled
+    Unselect Checkbox  css=input[value="2"]

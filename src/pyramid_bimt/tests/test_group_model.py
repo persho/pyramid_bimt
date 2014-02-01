@@ -10,8 +10,8 @@ from sqlalchemy.exc import IntegrityError
 import unittest
 
 
-def _make_group(name='foo'):
-    group = Group(name=name)
+def _make_group(name='foo', **kwargs):
+    group = Group(name=name, **kwargs)
     Session.add(group)
     return group
 
@@ -73,6 +73,27 @@ class TestGroupByName(unittest.TestCase):
     def test_valid_name(self):
         _make_group(name='foo')
         group = Group.by_name('foo')
+        self.assertEqual(group.name, 'foo')
+
+
+class TestGroupByProductID(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_invalid_product_id(self):
+        self.assertEqual(Group.by_product_id(1), None)
+        self.assertEqual(Group.by_product_id('foo'), None)
+        self.assertEqual(Group.by_product_id(None), None)
+
+    def test_valid_product_id(self):
+        _make_group(name='foo', product_id=1)
+        group = Group.by_product_id(1)
         self.assertEqual(group.name, 'foo')
 
 

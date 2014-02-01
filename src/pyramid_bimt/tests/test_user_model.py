@@ -4,18 +4,11 @@
 from datetime import date
 from pyramid import testing
 from pyramid_basemodel import Session
-from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
 from sqlalchemy.exc import IntegrityError
 
 import unittest
-
-
-def _make_group(name='foo'):
-    group = Group(name=name)
-    Session.add(group)
-    return group
 
 
 def _make_user(email='foo@bar.com', **kwargs):

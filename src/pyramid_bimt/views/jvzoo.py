@@ -30,7 +30,7 @@ class UserActions(Enum):
 
 
 TYPES_TO_ACTIONS = {
-    'SALE': UserActions.enable,   # first payment, trial subscription
+    'SALE': UserActions.enable,   # first payment
     'BILL': UserActions.enable,   # regular recurring payments
     'RFND': UserActions.disable,  # refund
     'CGBK': UserActions.disable,  # charge-back
@@ -63,7 +63,7 @@ class JVZooView(object):
             if not user:
                 user = User.by_billing_email(email)
 
-            comment = u'{} by JVZoo, transaction id: {}, type: {}'
+            comment = u'{} by JVZoo, transaction id: {}, type: {}, note: {}'
             trans_id = self.request.POST.get('ctransreceipt', u'unknown')
             trans_type = self.request.POST['ctransaction']
 
@@ -81,41 +81,63 @@ class JVZooView(object):
                 Session.add(user)
                 self.request.registry.notify(
                     UserCreated(self.request, user, comment.format(
-                        u'Created', trans_id, trans_type)))
+                        u'Created', trans_id, trans_type, '')))
                 self.send_welcome_email(user, password)
                 logger.info('JVZoo created new user: {}'.format(user.email))
 
+            group = Group.by_product_id(
+                int(self.request.POST['cproditem']))
+            if not group:
+                raise ValueError(
+                    'Cannot find group with product_id "{}"'.format(
+                        self.request.POST['cproditem']))
+
             # perform different actions for different transaction types
             if trans_type == 'SALE':
-                validity = self.request.registry.settings[
-                    'bimt.jvzoo_trial_period']
-                user.valid_to = date.today() + timedelta(days=validity)
+                if group.trial_validity:
+                    trial = True
+                    validity = timedelta(days=group.trial_validity)
+                    user.groups.append(Group.by_name('trial'))
+                else:
+                    trial = False
+                    validity = timedelta(days=group.validity)
+
+                user.valid_to = date.today() + validity
                 user.last_payment = date.today()
+                user.groups.append(group)
                 user.enable()
-                user.groups.append(Group.by_name('trial'))
-                logger.info('JVZoo enabled user: {}'.format(user.email))
+
+                msg = comment.format(
+                    u'Enabled', trans_id, trans_type, '{} until {}'.format(
+                        'trial' if trial else 'regular', user.valid_to))
+                logger.info(msg)
                 self.request.registry.notify(
-                    UserEnabled(self.request, user, comment.format(
-                        u'Enabled', trans_id, trans_type)))
+                    UserEnabled(self.request, user, msg))
 
             elif trans_type == 'BILL':
-                validity = self.request.registry.settings[
-                    'bimt.jvzoo_regular_period']
-                user.valid_to = date.today() + timedelta(days=validity)
+                user.valid_to = date.today() + timedelta(days=group.validity)
                 user.last_payment = date.today()
+                user.groups.append(group)
+                user.groups.remove(Group.by_name('trial'))
                 user.enable()
-                logger.info('JVZoo enabled user: {}'.format(user.email))
+
+                msg = comment.format(
+                    u'Enabled', trans_id, trans_type, 'regular until {}'.format(  # noqa
+                        user.valid_to))
+                logger.info(msg)
                 self.request.registry.notify(
-                    UserEnabled(self.request, user, comment.format(
-                        u'Enabled', trans_id, trans_type)))
+                    UserEnabled(self.request, user, msg))
 
             elif trans_type in ['RFND', 'CGBK', 'INSF']:
+                groups_comment = 'removed from groups: {}'.format(
+                    ', '.join([g.name for g in user.groups]))
                 user.valid_to = date.today()
-                user.disable()
+                user.groups = []
+
                 logger.info('JVZoo disabled user: {}'.format(user.email))
                 self.request.registry.notify(
                     UserDisabled(self.request, user, comment.format(
-                        u'Disabled', trans_id, trans_type)))
+                        u'Disabled', trans_id, trans_type, groups_comment)))
 
             else:
                 raise ValueError(

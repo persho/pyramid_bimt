@@ -2,7 +2,6 @@
 """Views for loggin in, logging out, etc."""
 
 from colanderalchemy import SQLAlchemySchemaNode
-from datetime import date
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
@@ -144,17 +143,12 @@ class UserAdd(FormView):
             location=self.request.route_path('user_view', user_id=user.id))
 
     def appstruct(self):
-        return {
-            'email': self.request.params.get('email', ''),
-            'password': self.request.params.get('password', ''),
-            'fullname': self.request.params.get('fullname', u''),
-            'affiliate': self.request.params.get('affiliate', u''),
-            'billing_email': self.request.params.get('billing_email', ''),
-            'valid_to': self.request.params.get('valid_to', date.today()),
-            'last_payment': self.request.params.get('last_payment', None),
-            'groups': self.request.params.get('groups', []),
-            'properties': self.request.params.get('properties', []),
-        }
+        appstruct = dict()
+        for field in self.fields + ['groups', 'properties']:
+            if self.request.params.get(field) is not None:
+                appstruct[field] = self.request.params[field]
+
+        return appstruct
 
 
 @view_config(
@@ -171,12 +165,12 @@ class UserEdit(UserAdd):
     def save_success(self, appstruct):
         user = self.request.context
 
-        user.email = appstruct['email']
-        user.fullname = appstruct['fullname']
-        user.affiliate = appstruct['affiliate']
-        user.billing_email = appstruct['billing_email']
-        user.valid_to = appstruct['valid_to']
-        user.last_payment = appstruct['last_payment']
+        user.email = appstruct.get('email')
+        user.fullname = appstruct.get('fullname')
+        user.affiliate = appstruct.get('affiliate')
+        user.billing_email = appstruct.get('billing_email')
+        user.valid_to = appstruct.get('valid_to')
+        user.last_payment = appstruct.get('last_payment')
 
         user.groups = [Group.by_id(group_id) for group_id in appstruct['groups']]  # noqa
 
@@ -192,15 +186,24 @@ class UserEdit(UserAdd):
                 'user_view', user_id=user.id))
 
     def appstruct(self):
-        groups = self.request.context.groups or []
-        return {
-            'email': self.request.context.email or '',
-            'fullname': self.request.context.fullname or u'',
-            'affiliate': self.request.context.affiliate or u'',
-            'billing_email': self.request.context.billing_email or '',
-            'valid_to': self.request.context.valid_to or date.today(),
-            'last_payment': self.request.context.last_payment or None,
-            'groups': [str(g.id) for g in groups],
-            'properties': [{'key': prop.key, 'value': prop.value}
-                           for prop in self.request.context.properties],
-        }
+        context = self.request.context
+        appstruct = dict()
+        for field in self.fields:
+            if (
+                hasattr(context, field) and
+                getattr(context, field) is not None
+            ):
+                appstruct[field] = getattr(context, field)
+
+        if context.groups:
+            appstruct['groups'] = [str(g.id) for g in context.groups]
+
+        if context.properties:
+            appstruct['properties'] = [
+                {'key': prop.key, 'value': prop.value}
+                for prop in context.properties
+            ]
+        else:
+            del appstruct['properties']
+
+        return appstruct

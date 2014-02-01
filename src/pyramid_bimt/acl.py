@@ -6,6 +6,7 @@ from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import Authenticated
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import Group
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import User
 
@@ -49,6 +50,26 @@ class UserFactory(object):
             user.__parent__ = self
             user.__name__ = key
             return user
+        else:
+            raise KeyError
+
+
+class GroupFactory(object):
+    __acl__ = [
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+    ]
+
+    def __init__(self, request):
+        if request.get('PATH_INFO') == '/groups/':
+            raise HTTPFound(location=request.route_path('group_list'))
+        self.request = request
+
+    def __getitem__(self, key):
+        group = Group.by_id(key)
+        if group:
+            group.__parent__ = self
+            group.__name__ = key
+            return group
         else:
             raise KeyError
 

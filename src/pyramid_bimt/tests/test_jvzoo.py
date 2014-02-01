@@ -7,6 +7,7 @@ from pyramid import testing
 from pyramid_basemodel import Session
 from pyramid_bimt import add_routes_auth
 from pyramid_bimt import configure
+from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
 
@@ -15,13 +16,22 @@ import unittest
 import webtest
 
 
+def _make_jvzoo_group():
+    group = Group(
+        name='monthly',
+        product_id=1,
+        validity=31,
+        trial_validity=7,
+    )
+    Session.add(group)
+    return group
+
+
 class TestJVZooView(unittest.TestCase):
 
     def setUp(self):
         settings = {
             'bimt.jvzoo_secret_key': 'secret',
-            'bimt.jvzoo_trial_period': 7,
-            'bimt.jvzoo_regular_period': 31,
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
@@ -61,15 +71,40 @@ class TestJVZooView(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     @mock.patch('pyramid_bimt.views.jvzoo.User')
-    def test_invalid_transaction_type(self, User, verify_POST):
+    @mock.patch('pyramid_bimt.views.jvzoo.Group')
+    def test_invalid_product_id(self, Group, User, verify_POST):
         from pyramid_bimt.views.jvzoo import JVZooView
         post = {
             'ccustemail': 'foo@bar.com',
-            'ctransaction': 'FOO',
+            'ctransaction': 'SALE',
+            'cproditem': 123,
         }
 
         verify_POST.return_value = True
         User.by_email = mock.Mock()
+        Group.by_product_id.return_value = None
+        request = testing.DummyRequest(post=post)
+        resp = JVZooView(request).jvzoo()
+        self.assertEqual(
+            resp,
+            'POST handling failed: ValueError: Cannot find group with '
+            'product_id "123"',
+        )
+
+    @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
+    @mock.patch('pyramid_bimt.views.jvzoo.User')
+    @mock.patch('pyramid_bimt.views.jvzoo.Group')
+    def test_invalid_transaction_type(self, Group, User, verify_POST):
+        from pyramid_bimt.views.jvzoo import JVZooView
+        post = {
+            'ccustemail': 'foo@bar.com',
+            'ctransaction': 'FOO',
+            'cproditem': 1,
+        }
+
+        verify_POST.return_value = True
+        User.by_email = mock.Mock()
+        Group.by_product_id.return_value = mock.Mock()
         request = testing.DummyRequest(post=post)
         resp = JVZooView(request).jvzoo()
         self.assertEqual(
@@ -92,14 +127,13 @@ class TestJVZooViewIntegration(unittest.TestCase):
     def setUp(self):
         settings = {
             'bimt.jvzoo_secret_key': 'secret',
-            'bimt.jvzoo_trial_period': 7,
-            'bimt.jvzoo_regular_period': 31,
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
         add_routes_auth(self.config)
         initTestingDB(auditlog_types=True, groups=True)
+        self.jvzoo_group = _make_jvzoo_group()
 
     def tearDown(self):
         Session.remove()
@@ -110,11 +144,13 @@ class TestJVZooViewIntegration(unittest.TestCase):
         email='foo@bar.com',
         billing_email=None,
         enabled=True,
+        **kwargs
     ):
         user = User(
             email=email,
             password=u'secret',
             billing_email=billing_email,
+            **kwargs
         )
         Session.add(user)
 
@@ -125,13 +161,19 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
-    def test_existing_user_new_subscription_payment(self, verify_POST, mocked_date):  # noqa
+    def test_existing_user_new_subscription_payment(
+        self, verify_POST, mocked_date
+    ):
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(email='foo@bar.com')
+        user = self._make_user(
+            email='foo@bar.com',
+            groups=[Group.by_name('enabled'), Group.by_name('trial')],
+        )
         post = {
             'ccustemail': 'FOO@bar.com',
             'ctransaction': 'BILL',
             'ctransreceipt': 123,
+            'cproditem': 1,
 
         }
         mocked_date.today.return_value = date(2013, 12, 30)
@@ -150,18 +192,26 @@ class TestJVZooViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserEnabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Enabled by JVZoo, transaction id: 123, type: BILL',
+            u'Enabled by JVZoo, transaction id: 123, type: BILL, note: '
+            u'regular until 2014-01-30',
         )
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     def test_existing_user_cancel_subscription(self, verify_POST, mocked_date):
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(email='foo@bar.com')
+        user = self._make_user(
+            email='foo@bar.com',
+            groups=[
+                Group.by_name('enabled'),
+                Group.by_name('trial'),
+                Group.by_name('monthly'),
+            ])
         post = {
             'ccustemail': 'FOO@bar.com',
             'ctransaction': 'RFND',
             'ctransreceipt': 123,
+            'cproditem': 1,
         }
         mocked_date.today.return_value = date(2013, 12, 30)
         verify_POST.return_value = True
@@ -177,18 +227,22 @@ class TestJVZooViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserDisabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Disabled by JVZoo, transaction id: 123, type: RFND',
+            u'Disabled by JVZoo, transaction id: 123, type: RFND, note: '
+            u'removed from groups: enabled, trial, monthly',
         )
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
-    def test_existing_user_billing_email_and_rejoin(self, verify_POST, mocked_date):  # noqa
+    def test_existing_user_billing_email_and_rejoin(
+        self, verify_POST, mocked_date
+    ):
         from pyramid_bimt.views.jvzoo import JVZooView
         user = self._make_user(billing_email='bar@bar.com', enabled=False)
         post = {
             'ccustemail': 'BAR@bar.com',
             'ctransaction': 'SALE',
             'ctransreceipt': 123,
+            'cproditem': 1,
         }
         mocked_date.today.return_value = date(2013, 12, 30)
         verify_POST.return_value = True
@@ -206,19 +260,22 @@ class TestJVZooViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserEnabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Enabled by JVZoo, transaction id: 123, type: SALE',
+            u'Enabled by JVZoo, transaction id: 123, type: SALE, '
+            u'note: trial until 2014-01-06',
         )
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     @mock.patch('pyramid_bimt.views.jvzoo.generate')
-    def test_new_user(self, generate, verify_POST, mocked_date):
+    def test_new_user_no_trial(self, generate, verify_POST, mocked_date):
         from pyramid_bimt.views.jvzoo import JVZooView
+        Group.by_name('monthly').trial_validity = None
         post = {
             'ccustemail': 'BAR@bar.com',
             'ctransaction': 'SALE',
             'ccustname': 'Foo Bär',
             'ctransreceipt': 123,
+            'cproditem': 1,
             'ctransaffiliate': 'aff@bar.com',
         }
         mocked_date.today.return_value = date(2013, 12, 30)
@@ -230,8 +287,8 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
         user = User.by_email('bar@bar.com')
         self.assertEqual(user.enabled, True)
-        self.assertEqual(user.trial, True)
-        self.assertEqual(user.valid_to, date(2014, 1, 6))
+        self.assertEqual(user.trial, False)
+        self.assertEqual(user.valid_to, date(2014, 1, 30))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
         self.assertEqual(len(user.audit_log_entries), 2)
@@ -240,14 +297,15 @@ class TestJVZooViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserCreated')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Created by JVZoo, transaction id: 123, type: SALE',
+            u'Created by JVZoo, transaction id: 123, type: SALE, note: ',
         )
 
         self.assertEqual(
             user.audit_log_entries[1].event_type.name, u'UserEnabled')
         self.assertEqual(
             user.audit_log_entries[1].comment,
-            u'Enabled by JVZoo, transaction id: 123, type: SALE',
+            u'Enabled by JVZoo, transaction id: 123, type: SALE, note: '
+            u'regular until 2014-01-30',
         )
 
         from pyramid_mailer import get_mailer
@@ -270,12 +328,11 @@ class TestJVZooViewFunctional(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
             'bimt.jvzoo_secret_key': 'secret',
-            'bimt.jvzoo_trial_period': 4,
-            'bimt.jvzoo_regular_period': 7,
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
         initTestingDB(auditlog_types=True, groups=True)
+        _make_jvzoo_group()
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
@@ -291,7 +348,8 @@ class TestJVZooViewFunctional(unittest.TestCase):
             'ctransaction': 'SALE',
             'ctransaffiliate': 'Affiliate@email.com',
             'ctransreceipt': 123,
-            'cverify': '43EE120C',
+            'cproditem': 1,
+            'cverify': 'F718EC5F',
         }
         resp = self.testapp.post('/jvzoo', params=post, status=200)
         self.assertEqual('Done.', resp.text)
@@ -300,7 +358,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         self.assertEqual(user.fullname, 'John Smith')
         self.assertEqual(user.affiliate, 'affiliate@email.com')
         self.assertEqual(user.trial, True)
-        self.assertEqual(user.valid_to, date.today() + timedelta(days=4))
+        self.assertEqual(user.valid_to, date.today() + timedelta(days=7))
         self.assertEqual(user.last_payment, date.today())
         self.assertTrue(user.enabled)
 
@@ -310,14 +368,15 @@ class TestJVZooViewFunctional(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserCreated')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Created by JVZoo, transaction id: 123, type: SALE',
+            u'Created by JVZoo, transaction id: 123, type: SALE, note: ',
         )
 
         self.assertEqual(
             user.audit_log_entries[1].event_type.name, u'UserEnabled')
         self.assertEqual(
             user.audit_log_entries[1].comment,
-            u'Enabled by JVZoo, transaction id: 123, type: SALE',
+            u'Enabled by JVZoo, transaction id: 123, type: SALE, note: trial until {}'.format(  # noqa
+                date.today() + timedelta(days=7)),
         )
 
         from pyramid_mailer import get_mailer

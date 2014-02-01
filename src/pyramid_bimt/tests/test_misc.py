@@ -27,9 +27,7 @@ class TestCheckSettings(unittest.TestCase):
 
         self.settings_full_production = self.settings_full.copy()
         self.settings_full_production.update({
-            'bimt.jvzoo_regular_period': '',
             'bimt.jvzoo_secret_key': '',
-            'bimt.jvzoo_trial_period': '',
             'bimt.piwik_site_id': '',
             'mail.default_sender': 'test@xyz.xyz',
             'mail.host': '',
@@ -98,4 +96,4 @@ class TestCheckSettings(unittest.TestCase):
         with self.assertRaises(KeyError) as cm:
             check_required_settings(self.config_full)
 
-        self.assertIn('bimt.jvzoo_regular_period', cm.exception.message)
+        self.assertIn('bimt.jvzoo_secret_key', cm.exception.message)

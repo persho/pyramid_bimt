@@ -5,6 +5,11 @@ Changelog
 0.5 (unreleased)
 ----------------
 
+- Support per-group definition of validity period and trial/regular. The
+  ``bimt.jvzoo_regular_period`` and ``bimt.jvzoo_regular_period`` settings are
+  now obsolete and should be removed from ``*.ini`` files.
+  [zupo]
+
 - The route naming policy was updated to be more consistent and clean.
   [zupo]
 
