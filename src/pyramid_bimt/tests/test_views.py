@@ -478,15 +478,12 @@ class TestFormView(unittest.TestCase):
             __tablename__ = 'foos'
             foo = Column(String)
 
-            @staticmethod
-            def allowed_fields(self, mode):
-                return ['foo', ]
-
         self.view.sqla_schema_class = Foo
+        self.view.sqla_fields = ['foo', ]
         result = self.view()
         self.assertIn('<input type="text" name="foo"', result['form'])
 
-    def test_no_allowed_fields_raises_error(self):
+    def test_use_allowed_fields_instead_of_sqla_fields(self):
 
         class Bar(Base, BaseMixin):
             __tablename__ = 'bars'
@@ -494,9 +491,47 @@ class TestFormView(unittest.TestCase):
 
             @staticmethod
             def allowed_fields(self, mode):
-                return []
+                return ['bar', ]
 
         self.view.sqla_schema_class = Bar
+        result = self.view()
+        self.assertIn('<input type="text" name="bar"', result['form'])
+
+    def test_no_fields_found(self):
+
+        class Baz(Base, BaseMixin):
+            __tablename__ = 'bazs'
+            foo = Column(String)
+
+            @staticmethod
+            def allowed_fields(self, mode):
+                return []
+
+        self.view.sqla_schema_class = Baz
         with self.assertRaises(KeyError) as cm:
             self.view()
         cm.exception.message = 'ValueError: No allowed fields found.'
+
+    def test_inject_relationship_field(self):
+
+        class FooSchema(colander.Schema):
+            foo = colander.SchemaNode(colander.String())
+
+        class Bar(object):
+
+            id = 1
+            name = 'bar'
+
+            @classmethod
+            def get_all(class_):
+                result = mock.Mock()
+                result.all.return_value = [class_(), ]
+                return result
+
+        schema = FooSchema()
+        self.view.inject_relationship_field(schema, Bar, 'foo')
+
+        self.assertEqual(len(schema.children), 2)
+        self.assertEqual(schema.children[1].name, 'foo')
+        self.assertEqual(schema.children[0].name, 'bars')
+        self.assertIsInstance(schema.children[0].typ, colander.Set)

@@ -9,8 +9,6 @@
           <th>Groups</th>
           <th>Position</th>
           <th>Weight</th>
-          <th>Modified</th>
-          <th>Status</th>
           <th>
             <a class="btn btn-xs btn-success" href="${request.route_path('portlet_add')}">
               <span class="glyphicon glyphicon-plus-sign"></span> Add
@@ -21,11 +19,8 @@
           <td>${portlet.id}</td>
           <td>${portlet.name}</td>
           <td>${", ".join([g.name for g in portlet.groups])}</td>
-          <td>${portlet.position}</td>
+          <td>${positions[portlet.position].value}</td>
           <td>${str(portlet.weight)}</td>
-          <td>${portlet.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
-          <td tal:condition="portlet.enabled">Enabled</td>
-          <td tal:condition="not portlet.enabled">Disabled</td>
           <td>
             <a class="btn btn-xs btn-primary" href="${request.route_path('portlet_edit', portlet_id=portlet.id)}">
               <span class="glyphicon glyphicon-edit"></span> Edit
