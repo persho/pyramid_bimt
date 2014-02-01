@@ -61,10 +61,10 @@ class UserView(object):
         user = self.context
         if user.enable():
             self.request.registry.notify(UserEnabled(self.request, user))
-            self.request.session.flash('User {} enabled.'.format(user.email))
+            self.request.session.flash('User "{}" enabled.'.format(user.email))
         else:
             self.request.session.flash(
-                'User {} already enabled, skipping.'.format(user.email))
+                'User "{}" already enabled, skipping.'.format(user.email))
         return HTTPFound(
             location=self.request.route_path('user_list')
         )
@@ -74,10 +74,11 @@ class UserView(object):
         user = self.context
         if user.disable():
             self.request.registry.notify(UserDisabled(self.request, user))
-            self.request.session.flash('User {} disabled.'.format(user.email))
+            self.request.session.flash(
+                'User "{}" disabled.'.format(user.email))
         else:
             self.request.session.flash(
-                'User {} already disabled, skipping.'.format(user.email))
+                'User "{}" already disabled, skipping.'.format(user.email))
         return HTTPFound(
             location=self.request.route_path('user_list')
         )
@@ -156,7 +157,7 @@ class UserEditForm(FormView):
             user.valid_to = appstruct['valid_to']
             user.groups = [Group.by_name(name) for name in appstruct['groups']]
             self.request.session.flash(
-                u'User {} has been modified.'.format(user.email))
+                u'User "{}" modified.'.format(user.email))
         else:
             # add user
             user = User(
@@ -167,7 +168,7 @@ class UserEditForm(FormView):
             )
             Session.add(user)
             self.request.session.flash(
-                u'User {} has been added.'.format(user.email))
+                u'User "{}" added.'.format(user.email))
 
         Session.flush()  # this is needed, so that we get user.id NOW
         return HTTPFound(

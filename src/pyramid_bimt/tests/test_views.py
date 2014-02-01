@@ -227,7 +227,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         resp = resp.follow()
 
         self.assertEqual(resp.status, '200 OK')
-        self.assertIn('User test@xyz.xyz has been added.', resp.text)
+        self.assertIn('User "test@xyz.xyz" added.', resp.text)
         self.assertIn('<td>test@xyz.xyz</td>', resp.text)
         self.assertIn('<td>Test Xyz</td>', resp.text)
 
@@ -248,7 +248,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         resp = resp.follow()
 
         self.assertEqual(resp.status, '200 OK')
-        self.assertIn('User two@bar.com has been modified.', resp.text)
+        self.assertIn('User "two@bar.com" modified.', resp.text)
         self.assertIn('<td>two@bar.com</td>', resp.text)
         self.assertIn('<td>One Two</td>', resp.text)
 
