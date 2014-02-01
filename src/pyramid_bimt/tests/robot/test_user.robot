@@ -38,7 +38,7 @@ Scenario: Disable user
     Go to  http://localhost:8080/users
     I click disable user  ovca@xyz.xyz
     User is strike through and disabled  ovca@xyz.xyz
-    Page Should Contain  User ovca@xyz.xyz disabled.
+    Page Should Contain  User "ovca@xyz.xyz" disabled.
 
 Scenario: Enable user
     I log in as admin
