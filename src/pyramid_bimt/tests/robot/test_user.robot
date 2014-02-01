@@ -20,7 +20,7 @@ Scenario: Add new user
     I add group  admins
     I click button  Save
     Location Should Be  http://localhost:8080/user/3
-    Page Should Contain  User user@xyz.xyz has been added.
+    Page Should Contain  User "user@xyz.xyz" added.
 
 Scenario: Edit user
     I log in as admin
@@ -30,7 +30,7 @@ Scenario: Edit user
     I remove group  admins
     I click button  Save
     Location Should Be  http://localhost:8080/user/3
-    Page Should Contain  User ovca@xyz.xyz has been modified.
+    Page Should Contain  User "ovca@xyz.xyz" modified.
     Page Should Contain  Ovca Xyz
 
 Scenario: Disable user
@@ -38,11 +38,11 @@ Scenario: Disable user
     Go to  http://localhost:8080/users
     I click disable user  ovca@xyz.xyz
     User is strike through and disabled  ovca@xyz.xyz
-    Page Should Contain  User ovca@xyz.xyz disabled.
+    Page Should Contain  User "ovca@xyz.xyz" disabled.
 
 Scenario: Enable user
     I log in as admin
     Go to  http://localhost:8080/users
     I click enable user  ovca@xyz.xyz
     User is enabled  ovca@xyz.xyz
-    Page Should Contain  User ovca@xyz.xyz enabled.
+    Page Should Contain  User "ovca@xyz.xyz" enabled.
