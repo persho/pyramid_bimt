@@ -23,15 +23,15 @@
           <tr tal:repeat="user users">
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_path('user', user_id=user.id)}">${user.id}</a>
+                 href="${request.route_path('user_view', user_id=user.id)}">${user.id}</a>
             </td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_path('user', user_id=user.id)}">${user.fullname}</a>
+                 href="${request.route_path('user_view', user_id=user.id)}">${user.fullname}</a>
             </td>
             <td>
               <a style="${'text-decoration: line-through' if not user.enabled else ''}"
-                 href="${request.route_path('user', user_id=user.id)}">${user.email}</a>
+                 href="${request.route_path('user_view', user_id=user.id)}">${user.email}</a>
             </td>
             <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
             <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>

@@ -50,22 +50,22 @@ def add_routes_auth(config):
 
 
 def add_routes_user(config):
-    config.add_route('users', '/users', factory=UserFactory)
-    config.add_route('user_add', '/users/add', factory=UserFactory)
+    config.add_route('user_list', '/users', factory=UserFactory)
+    config.add_route('user_add', '/user/add', factory=UserFactory)
     config.add_route(
-        'user', '/users/{user_id}',
+        'user_view', '/user/{user_id}',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_enable', '/users/{user_id}/enable',
+        'user_enable', '/user/{user_id}/enable',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_disable', '/users/{user_id}/disable',
+        'user_disable', '/user/{user_id}/disable',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_edit', '/users/{user_id}/edit',
+        'user_edit', '/user/{user_id}/edit',
         factory=UserFactory, traverse='/{user_id}'
     )
 
@@ -86,10 +86,10 @@ def add_routes_audit_log(config):
 
 
 def add_routes_portlet(config):
-    config.add_route('portlets', '/portlets', factory=PortletFactory)
-    config.add_route('portlet_add', '/portlets/add', factory=PortletFactory)
+    config.add_route('portlet_list', '/portlets', factory=PortletFactory)
+    config.add_route('portlet_add', '/portlet/add', factory=PortletFactory)
     config.add_route(
-        'portlet_edit', '/portlets/{portlet_id}/edit',
+        'portlet_edit', '/portlet/{portlet_id}/edit',
         factory=PortletFactory, traverse='/{portlet_id}'
     )
 

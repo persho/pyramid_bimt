@@ -34,8 +34,8 @@ The Big IM Toolbox Team
 
 @view_config(
     route_name='login',
-    renderer='pyramid_bimt:templates/form.pt',
     layout='default',
+    renderer='pyramid_bimt:templates/form.pt',
 )
 class LoginForm(FormView):
     schema = SQLAlchemySchemaNode(User, includes=['email', 'password'])
