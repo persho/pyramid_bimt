@@ -1,32 +1,30 @@
 <table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">
   <tr>
     <td>
-        <table align="left" cellpadding="0" cellspacing="0" width="600">
-          <tr>
-            <td class="body">
-              <!-- begin body -->
-              <div>
-                <p>Hello ${fullname},</p>
-                <p>thank you for your order!</p>
-                <p>
-                  Here are your login details for the membership area:<br>
-                  u: ${username}<br>
-                  p: ${password}
-                </p>
-                <p>
-                  Login to the members' area:<br>
-                  <a href="${login_url}">${login_url}</a>
-                </p>
-                <p>
-                  Best wishes,<br>
-                  ${app_title} Team
-                </p>
-              </div>
-              <!-- end body -->
-            </td>
-          </tr>
-        </table>
-      </td>
+      <table align="left" cellpadding="0" cellspacing="0" width="600">
+        <tr>
+          <td class="body">
+            <div>
+              <p>Hello ${fullname},</p>
+              <p>thank you for your order!</p>
+              <p>
+                Here are your login details for the membership area:<br>
+                u: ${username}<br>
+                p: ${password}
+              </p>
+              <p>
+                Login to the members' area:<br>
+                <a href="${login_url}">${login_url}</a>
+              </p>
+              <p>
+                Best wishes,<br>
+                ${app_title} Team
+              </p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
   </tr>
   <tr>
     <td>

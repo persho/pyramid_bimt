@@ -1,25 +1,25 @@
 <table cellpadding="0" cellspacing="0" width="100%" style="color: #000000; font-family: Arial, sans-serif; font-size: 13px; margin-bottom: 5px; text-align: left;" bgcolor="#ffffff">
-    <tr>
-        <td>
+  <tr>
+    <td>
       <table align="left" cellpadding="0" cellspacing="0" width="600">
         <tr>
           <td class="body">
-            <!-- begin body -->
+
             <p tal:condition="not:warnings">
-                Everything in order, nothing to report.
+              Everything in order, nothing to report.
             </p>
+
             <p tal:condition="warnings">
-                The following warnings were found:
+              The following warnings were found:
             </p>
             <table tal:condition="warnings">
-                <tr tal:repeat="warning warnings">
-                    <td tal:content="warning" />
-                </tr>
+              <tr tal:repeat="warning warnings">
+                <td tal:content="warning" />
+              </tr>
             </table>
-            <!-- end body -->
           </td>
         </tr>
       </table>
-        </td>
-    </tr>
+    </td>
+  </tr>
 </table>
