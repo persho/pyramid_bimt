@@ -21,16 +21,16 @@ import colander
 import deform
 
 
-@view_defaults(route_name='user', permission='admin')
+@view_defaults(permission='admin')
 class UserView(object):
     def __init__(self, context, request):
         self.request = request
         self.context = context
 
     @view_config(
-        route_name='users',
-        renderer='pyramid_bimt:templates/users.pt',
+        route_name='user_list',
         layout='default',
+        renderer='pyramid_bimt:templates/users.pt',
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
@@ -41,8 +41,9 @@ class UserView(object):
         }
 
     @view_config(
-        renderer='pyramid_bimt:templates/user.pt',
+        route_name='user_view',
         layout='default',
+        renderer='pyramid_bimt:templates/user.pt',
     )
     def view(self):
         app_assets.need()
@@ -56,7 +57,7 @@ class UserView(object):
         }
 
     @view_config(route_name='user_enable')
-    def user_enable(self):
+    def enable(self):
         user = self.context
         if user.enable():
             self.request.registry.notify(UserEnabled(self.request, user))
@@ -65,11 +66,11 @@ class UserView(object):
             self.request.session.flash(
                 'User {} already enabled, skipping.'.format(user.email))
         return HTTPFound(
-            location=self.request.route_path('users')
+            location=self.request.route_path('user_list')
         )
 
     @view_config(route_name='user_disable')
-    def user_disable(self):
+    def disable(self):
         user = self.context
         if user.disable():
             self.request.registry.notify(UserDisabled(self.request, user))
@@ -78,7 +79,7 @@ class UserView(object):
             self.request.session.flash(
                 'User {} already disabled, skipping.'.format(user.email))
         return HTTPFound(
-            location=self.request.route_path('users')
+            location=self.request.route_path('user_list')
         )
 
     view.schema = SQLAlchemySchemaNode(
@@ -118,9 +119,9 @@ class UserEditSchema(colander.MappingSchema):
 
 @view_config(
     route_name='user_edit',
-    renderer='pyramid_bimt:templates/form.pt',
     permission='admin',
     layout='default',
+    renderer='pyramid_bimt:templates/form.pt',
 )
 class UserEditForm(FormView):
     TITLE_EDIT = 'Edit User'
@@ -170,7 +171,7 @@ class UserEditForm(FormView):
 
         Session.flush()  # this is needed, so that we get user.id NOW
         return HTTPFound(
-            location=self.request.route_path('user', user_id=user.id))
+            location=self.request.route_path('user_view', user_id=user.id))
 
     def appstruct(self):
         params_groups = self.request.params.get('groups')
@@ -197,9 +198,9 @@ class UserEditForm(FormView):
 
 @view_config(
     route_name='user_add',
-    renderer='pyramid_bimt:templates/form.pt',
     permission='admin',
-    layout='default'
+    layout='default',
+    renderer='pyramid_bimt:templates/form.pt',
 )
 class UserAddForm(UserEditForm):
 

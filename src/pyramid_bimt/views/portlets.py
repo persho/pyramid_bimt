@@ -61,9 +61,9 @@ class PortletSchema(colander.Schema):
 
 @view_config(
     route_name='portlet_edit',
-    renderer='pyramid_bimt:templates/form.pt',
     permission='admin',
     layout='default',
+    renderer='pyramid_bimt:templates/form.pt',
 )
 class PortletEditForm(FormView):
     TITLE_EDIT = 'Edit Portlet'
@@ -115,7 +115,7 @@ class PortletEditForm(FormView):
 
         Session.flush()  # this is needed, so that we get portlet.id NOW
         return HTTPFound(
-            location=self.request.route_path('portlets'))
+            location=self.request.route_path('portlet_list'))
 
     def appstruct(self):
         params_groups = self.request.params.get('groups')
@@ -167,9 +167,9 @@ class PortletView(object):
         self.context = context
 
     @view_config(
-        route_name='portlets',
-        renderer='pyramid_bimt:templates/portlets.pt',
+        route_name='portlet_list',
         layout='default',
+        renderer='pyramid_bimt:templates/portlets.pt',
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True

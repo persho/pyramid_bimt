@@ -165,7 +165,7 @@ class TestUserViewFunctional(unittest.TestCase):
     def test_view_user(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
-        resp = self.testapp.get('/users/1', status=200)
+        resp = self.testapp.get('/user/1', status=200)
         self.assertIn('admin@bar.com', resp.text)
 
     def test_view_users(self):
@@ -178,21 +178,21 @@ class TestUserViewFunctional(unittest.TestCase):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
         # Ran 2 times, so we check what happens if already disabled
-        self.testapp.get('/users/1/disable', status=302)
-        self.testapp.get('/users/1/disable', status=302)
+        self.testapp.get('/user/1/disable', status=302)
+        self.testapp.get('/user/1/disable', status=302)
 
         # Ran 2 times, so we check what happens if already disabled
-        self.testapp.get('/users/1/enable', status=302)
-        self.testapp.get('/users/1/enable', status=302)
+        self.testapp.get('/user/1/enable', status=302)
+        self.testapp.get('/user/1/enable', status=302)
 
     def test_user_actions(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
         resp = self.testapp.get('/users', status=200)
 
-        self.assertIn('href="/users/1"', resp.text)
-        self.assertIn('href="/users/1/edit"', resp.text)
-        self.assertIn('href="/users/add"', resp.text)
+        self.assertIn('href="/user/1"', resp.text)
+        self.assertIn('href="/user/1/edit"', resp.text)
+        self.assertIn('href="/user/add"', resp.text)
 
 
 class TestEditUserViewFunctional(unittest.TestCase):
@@ -213,7 +213,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
     def test_add_user(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
-        resp = self.testapp.get('/users/add', status=200)
+        resp = self.testapp.get('/user/add', status=200)
         self.assertIn('<h1>Add User</h1>', resp.text)
 
         form = resp.forms['useredit']
@@ -234,7 +234,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
     def test_edit_user(self):
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/users/1/edit', status=200)
+        resp = self.testapp.get('/user/1/edit', status=200)
         self.assertIn('<h1>Edit User</h1>', resp.text)
 
         form = resp.forms['useredit']
@@ -255,7 +255,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
     def test_edit_user_no_group(self):
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/users/1/edit', status=200)
+        resp = self.testapp.get('/user/1/edit', status=200)
         self.assertIn('<h1>Edit User</h1>', resp.text)
 
         form = resp.forms['useredit']
@@ -269,7 +269,7 @@ class TestEditUserViewFunctional(unittest.TestCase):
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
         self.assertRaises(
-            HTTPNotFound, self.testapp.get, '/users/123456789/edit')
+            HTTPNotFound, self.testapp.get, '/user/123456789/edit')
 
 
 class TestAuditLogView(unittest.TestCase):

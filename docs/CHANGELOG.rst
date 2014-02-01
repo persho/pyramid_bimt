@@ -5,6 +5,9 @@ Changelog
 0.5 (unreleased)
 ----------------
 
+- The route naming policy was updated to be more consistent and clean.
+  [zupo]
+
 - Sanity check view added that checks if all users are correctly divided into
   groups and sends mail on selected address with results. View can be used by
   admins or script called externally.

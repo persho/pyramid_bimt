@@ -229,13 +229,13 @@ class TestPortletsFunctional(unittest.TestCase):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
         self.assertRaises(
-            HTTPNotFound, self.testapp.get, '/portlets/123456789/edit')
+            HTTPNotFound, self.testapp.get, '/portlet/123456789/edit')
 
     def test_add_portlet(self):
         self.config.testing_securitypolicy(
             userid='admin@bar.com', permissive=True)
 
-        resp = self.testapp.get('/portlets/add', status=200)
+        resp = self.testapp.get('/portlet/add', status=200)
         self.assertIn('<h1>Add Portlet</h1>', resp.text)
 
         # add portlet
@@ -281,7 +281,7 @@ class TestPortletsFunctional(unittest.TestCase):
         transaction.commit()
 
         # edit portlet
-        resp = self.testapp.get('/portlets/1/edit', status=200)
+        resp = self.testapp.get('/portlet/1/edit', status=200)
         form = resp.forms['portletedit']
         form['name'] = 'portlet-bar'
         form['html'] = u'<p>Bär</p>'

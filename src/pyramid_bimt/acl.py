@@ -40,7 +40,7 @@ class UserFactory(object):
 
     def __init__(self, request):
         if request.get('PATH_INFO') == '/users/':
-            raise HTTPFound(location=request.route_path('users'))
+            raise HTTPFound(location=request.route_path('user_list'))
         self.request = request
 
     def __getitem__(self, key):
@@ -80,7 +80,7 @@ class PortletFactory(object):
 
     def __init__(self, request):
         if request.get('PATH_INFO') == '/portlets/':
-            raise HTTPFound(location=request.route_path('portlets'))
+            raise HTTPFound(location=request.route_path('portlet_list'))
         self.request = request
 
     def __getitem__(self, key):

@@ -15,8 +15,8 @@ from pyramid_deform import FormView
 @view_config(
     route_name='audit_log',
     permission='admin',
-    renderer='pyramid_bimt:templates/audit_log.pt',
     layout='default',
+    renderer='pyramid_bimt:templates/audit_log.pt',
 )
 def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
@@ -40,9 +40,9 @@ def audit_log_delete(request):
 
 @view_config(
     route_name='audit_log_add',
-    renderer='pyramid_bimt:templates/form.pt',
     layout='default',
     permission='admin',
+    renderer='pyramid_bimt:templates/form.pt',
 )
 class AuditLogAddEntryForm(FormView):
     schema = SQLAlchemySchemaNode(

@@ -94,7 +94,7 @@ To be consistent throughout the codebase always use id/name/title in the
 following way:
 
 * id: **unique** database row id number, normally only used for DB maintenance
-  and as traversal parameters (``/users/<id>``).
+  and as traversal parameters (``/user/<id>``).
 * name: **unique** "string id" of an object, must be URL-friendly ASCII, used
   as a key to move values from views to templates and back, etc.
 * title: always unicode, used for user-friendly representation in the UI
@@ -106,12 +106,12 @@ Route naming conventions
 To be consistent throughout the codebase always use the following approach
 to name your routes::
 
-    * "route name"    :"route_path"             -- "description"
-    * <object>s       :/<object>s               -- list of objects
-    * <object>_view   :/<object>s/<id>          -- view of object with id of <id>
-    * <object>_edit   :/<object>s/<id>/edit     -- edit of object with id of <id>
-    * <object>_delete :/<object>s/<id>/delete   -- delete object with id of <id>
-    * <object>_add    :/<object>s/add           -- add a new object
+    * "route name"    :"route_path"            -- "description"
+    * <object>_list   :/<object>s              -- list of objects
+    * <object>_view   :/<object>/<id>          -- view of object with id of <id>
+    * <object>_edit   :/<object>/<id>/edit     -- edit of object with id of <id>
+    * <object>_delete :/<object>/<id>/delete   -- delete object with id of <id>
+    * <object>_add    :/<object>/add           -- add a new object
 
 
 Model getters conventions
