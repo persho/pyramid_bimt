@@ -6,6 +6,8 @@ from pyramid_basemodel import Session
 from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import Portlet
+from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
 
@@ -89,6 +91,21 @@ def add_users():
         )
         one.groups.append(enabled)
         Session.add(one)
+
+
+def add_portlets():
+    """Create a dummy portlet."""
+    with transaction.manager:
+        admins = Group.by_name('admins')
+
+        portlet = Portlet(
+            name='dummy',
+            groups=[admins, ],
+            position=PortletPositions.below_sidebar.name,
+            weight=-127,
+            html=u'You are admin.',
+        )
+        Session.add(portlet)
 
 
 def add_default_content():  # pragma: no cover (bw compat only)

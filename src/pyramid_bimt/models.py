@@ -10,6 +10,7 @@ from pyramid_basemodel import Session
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import DateTime
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
@@ -54,8 +55,30 @@ class Group(Base, BaseMixin):
     )
 
     @classmethod
+    def by_id(self, group_id):
+        """Get a Group by id."""
+        return Group.query.filter_by(id=group_id).first()
+
+    @classmethod
     def by_name(self, name):
-        return Group.query.filter(Group.name == name).first()
+        """Get a Group by name."""
+        return Group.query.filter_by(name=name).first()
+
+    @classmethod
+    def get_all(class_, order_by='name', filter_by=None, limit=1000):
+        """Return all groups.
+
+        filter_by: dict -> {'name': 'foo'}
+
+        By default, order by Group.name.
+        """
+        Group = class_
+        q = Group.query
+        q = q.order_by(getattr(Group, order_by))
+        if filter_by:
+            q = q.filter_by(**filter_by)
+        q = q.limit(limit)
+        return q
 
 
 class UserProperty(Base, BaseMixin):
@@ -496,21 +519,52 @@ class Portlet(Base, BaseMixin):
 
     __tablename__ = 'portlets'
 
-    name = Column(String, unique=True)
-
-    html = Column(Unicode, default=u'')
+    name = Column(
+        String,
+        unique=True,
+        info={'colanderalchemy': dict(
+            title='Name',
+            description='For internal use only, not visible to the user.',
+            validator=colander.Length(min=2, max=50),
+        )},
+    )
 
     groups = relationship(
-        'Group', secondary=portlet_group_table, backref='portlets')
+        'Group',
+        secondary=portlet_group_table,
+        backref='portlets',
+    )
 
-    position = Column(String)
+    position = Column(
+        SAEnum(*[p.name for p in PortletPositions], name='positions'),
+        info={'colanderalchemy': dict(
+            title='Position',
+            description='Choose where to show this portlet.',
+            widget=deform.widget.SelectWidget(
+                values=[(p.name, p.value) for p in PortletPositions]),
+        )},
+    )
 
-    weight = Column(Integer, default=0)
+    weight = Column(
+        Integer,
+        default=0,
+        info={'colanderalchemy': dict(
+            title='Weight',
+            description='The higher the number the higher the portlet will be '
+            'positioned (range from -128 to 127).',
+            validator=colander.Range(-128, 127),
+        )},
+    )
 
-    @property
-    def enabled(self):
-        """True if Portlet is in any of the groups, False otherwise."""
-        return len(self.groups) > 0
+    html = Column(
+        Unicode,
+        default=u'',
+        info={'colanderalchemy': dict(
+            title='HTML code',
+            description='The HTML code that will be shown for this portlet.',
+            widget=deform.widget.TextAreaWidget(rows=10),
+        )},
+    )
 
     @classmethod
     def by_id(self, portlet_id):
