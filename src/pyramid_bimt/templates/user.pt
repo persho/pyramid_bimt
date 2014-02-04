@@ -6,38 +6,39 @@
     <h1>${user.email}</h1>
     <table class="table">
       <tr><th>Full Name</th><td>${user.fullname}</td><th>
-      <tr><th>Email</th><td>${user.email}</td><th>
       <tr><th>Billing Email</th><td>${user.billing_email}</td><th>
       <tr><th>Subscription Valid To</th><td>${user.valid_to}</td><th>
+      <tr><th>Last Payment</th><td>${user.last_payment}</td><th>
       <tr><th>Affiliate</th><td>${user.affiliate}</td><th>
       <tr><th>Created</th><td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
       <tr><th>Modified</th><td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
       <tr><th>Groups</th><td>${', '.join([g.name for g in user.groups])}</td><th>
-      <tr>
-        <th>Audit Log</th>
-        <td>
-          <table class="table table-condensed">
-            <tr>
-              <th>Timestamp</th>
-              <th>Event Type</th>
-              <th>Comment</th>
-            </tr>
-            <tr tal:repeat="entry audit_log_entries">
-              <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
-              <td>${entry.event_type.title}</td>
-              <td>${entry.comment}</td>
-            </tr>
-          </table>
-        </td>
-      <th>
     </table>
 
-
     <h2>User Properties</h2>
-    <table class="table">
+    <p tal:condition="not: properties">No user properties found.</p>
+    <table class="table" tal:condition="properties">
       <tr tal:repeat="property properties">
         <th>${property.key}</th><td>${property.value}</td>
       </tr>
+    </table>
+
+    <h2>Audit Log</h2>
+    <table class="table table-striped table-hover datatable">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Event Type</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="entry audit_log_entries">
+          <td>${entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')}</td>
+          <td>${entry.event_type.title}</td>
+          <td>${entry.comment}</td>
+        </tr>
+      <tbody>
     </table>
 
   </div/>

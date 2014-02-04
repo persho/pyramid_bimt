@@ -71,6 +71,7 @@ def add_users():
     with transaction.manager:
         admins = Group.by_name('admins')
         enabled = Group.by_name('enabled')
+        trial = Group.by_name('trial')
 
         admin = User(
             email=u'admin@bar.com',
@@ -90,6 +91,7 @@ def add_users():
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         one.groups.append(enabled)
+        one.groups.append(trial)
         Session.add(one)
 
 

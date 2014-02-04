@@ -111,18 +111,6 @@ class User(Base, BaseMixin):
 
     __tablename__ = 'users'
 
-    #: shorthand for accessing user's groups
-    groups = relationship(
-        'Group', secondary=user_group_table, backref='users')
-
-    #: shorthand for accessing user's auditlog entries
-    audit_log_entries = relationship(
-        'AuditLogEntry', backref='user')
-
-    #: shorthand for accessing user's properties
-    properties = relationship(
-        'UserProperty', cascade='all,delete-orphan')
-
     #: used for logging in and system emails
     email = Column(
         String,
@@ -136,7 +124,6 @@ class User(Base, BaseMixin):
     #: encrypted with passlib
     password = Column(
         Unicode(120),
-        nullable=True,
         info={'colanderalchemy': dict(
             title='Password',
             widget=deform.widget.PasswordWidget(size=128),
@@ -146,7 +133,6 @@ class User(Base, BaseMixin):
     #: unicode fullname, used in UI and emails
     fullname = Column(
         Unicode(120),
-        nullable=True,
         info={'colanderalchemy': dict(
             title='Full name',
         )}
@@ -155,8 +141,6 @@ class User(Base, BaseMixin):
     #: email of the affiliate that referred this user
     affiliate = Column(
         Unicode,
-        unique=True,
-        nullable=True,
         info={'colanderalchemy': dict(
             title='Affiliate',
         )}
@@ -167,7 +151,6 @@ class User(Base, BaseMixin):
     billing_email = Column(
         String,
         unique=True,
-        nullable=True,
         info={'colanderalchemy': dict(
             title='Billing Email',
         )}
@@ -188,32 +171,57 @@ class User(Base, BaseMixin):
     #: (optional) Date on which user made his latest payment
     last_payment = Column(
         Date,
-        nullable=True,
         info={'colanderalchemy': dict(
             title='Last payment',
         )},
     )
 
-    def get_property(self, key, default=_marker):
-        """TODO
+    #: shorthand for accessing user's groups
+    groups = relationship(
+        'Group', secondary=user_group_table, backref='users')
 
+    #: shorthand for accessing user's properties
+    properties = relationship(
+        'UserProperty', cascade='all,delete-orphan')
+
+    #: shorthand for accessing user's auditlog entries
+    audit_log_entries = relationship(
+        'AuditLogEntry', backref='user')
+
+    def get_property(self, key, default=_marker):
+        """Get a User's property by key.
+
+        :param key: Key by which to find the property.
+        :type key: Unicode
         :param default: The return value if no property is found. Raises
             ValueError by default.
         :type default: anything
+        :return: value of the property
+        :rtype: Unicode
         """
         result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1:
             if default == _marker:
-                raise ValueError(u'Cannot find property "{}".'.format(key))
+                raise KeyError(u'Property "{}" not found.'.format(key))
             else:
                 return default
         return result.one().value
 
     def set_property(self, key, value, strict=False):
-        """TODO"""
+        """Set a User's property by key.
+
+        :param key: Key by which to save the property.
+        :type key: Unicode
+        :param value: Value of the property.
+        :type value: Unicode
+        :param strict: If True, raise an error if property of given key key
+            does not yet exists. In other words, update an existing property or
+            fail. False by default.
+        :type strict: bool
+        """
         result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1 and strict:
-            raise ValueError('Property "{}" not found.'.format(key))
+            raise KeyError('Property "{}" not found.'.format(key))
         elif result.count() < 1 and not strict:
             self.properties.append(UserProperty(key=key, value=value))
         else:
@@ -223,6 +231,11 @@ class User(Base, BaseMixin):
     def admin(self):
         """True if User is in 'admins' group, False otherwise."""
         return 'admins' in [g.name for g in self.groups]
+
+    @property
+    def trial(self):
+        """True if User is in 'trial' group, False otherwise."""
+        return 'trial' in [g.name for g in self.groups]
 
     @property
     def enabled(self):
@@ -252,11 +265,6 @@ class User(Base, BaseMixin):
             return True
         else:
             return False
-
-    @property
-    def trial(self):
-        """True if User is in 'trial' group, False otherwise."""
-        return 'trial' in [g.name for g in self.groups]
 
     @classmethod
     def by_id(self, user_id):
@@ -409,13 +417,6 @@ class AuditLogEntry(Base):
         primary_key=True,
     )
 
-    #: when was the entry triggered
-    timestamp = Column(
-        DateTime,
-        default=datetime.utcnow,
-        info={'colanderalchemy': dict(title='Timestamp')}
-    )
-
     #: id of user that triggered the entry
     user_id = Column(
         Integer,
@@ -436,6 +437,13 @@ class AuditLogEntry(Base):
             # TODO: Make values dynamic, not read at startup
             widget=event_types_choice_widget
         )}
+    )
+
+    #: when was the entry triggered
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow,
+        info={'colanderalchemy': dict(title='Timestamp')}
     )
 
     #: (optional) additional information about the entry
@@ -522,6 +530,7 @@ class Portlet(Base, BaseMixin):
     name = Column(
         String,
         unique=True,
+        nullable=False,
         info={'colanderalchemy': dict(
             title='Name',
             description='For internal use only, not visible to the user.',

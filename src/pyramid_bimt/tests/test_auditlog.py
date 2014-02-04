@@ -119,3 +119,59 @@ class TestEntryById(unittest.TestCase):
         _make_entry(comment=u'foö')
         entry = AuditLogEntry.by_id(1)
         self.assertEqual(entry.comment, u'foö')
+
+
+class TestEntryGetAll(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_no_servers(self):
+        entries = AuditLogEntry.get_all().all()
+        self.assertEqual(len(entries), 0)
+
+    def test_all_entries(self):
+        _make_entry()
+        _make_entry()
+        _make_entry()
+        entries = AuditLogEntry.get_all().all()
+        self.assertEqual(len(entries), 3)
+
+    def test_ordered_by_timestamp_by_default(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
+        entries = AuditLogEntry.get_all().all()
+        self.assertEqual(len(entries), 3)
+        self.assertEqual(entries[0].comment, 'baz')
+        self.assertEqual(entries[1].comment, 'bar')
+        self.assertEqual(entries[2].comment, 'foo')
+
+    def test_override_ordered_by(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
+        entries = AuditLogEntry.get_all(order_by='comment').all()
+        self.assertEqual(len(entries), 3)
+        self.assertEqual(entries[0].comment, 'foo')
+        self.assertEqual(entries[1].comment, 'baz')
+        self.assertEqual(entries[2].comment, 'bar')
+
+    def test_filter_by(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        entries = AuditLogEntry.get_all(filter_by={'comment': u'foo'}).all()
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].comment, 'foo')
+
+    def test_limit(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        entries = AuditLogEntry.get_all(limit=1).all()
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].comment, 'bar')

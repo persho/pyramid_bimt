@@ -11,6 +11,10 @@ from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import FormView
+from colanderalchemy import SQLAlchemySchemaNode
+
+import colander
+import deform
 
 
 @view_defaults(permission='admin')
@@ -46,25 +50,37 @@ class PortletAdd(FormView):
     buttons = ('submit', )
     title = 'Add Portlet'
     form_options = (('formid', 'portlet-add'), ('method', 'POST'))
-    sqla_schema_class = Portlet
-    sqla_fields = [
+    fields = [
         'name',
         'position',
         'weight',
         'html',
     ]
 
-    def after_schema(self, schema):
-        self.inject_relationship_field(
-            schema=schema, model=Group, before='position')
+    def __init__(self, request):
+        self.request = request
+        self.schema = SQLAlchemySchemaNode(Portlet, includes=self.fields)
+
+        # we don't like the way ColanderAlchemy renders SA Relationships so
+        # we manually inject a suitable SchemaNode for groups
+        choices = [(group.id, group.name) for group in Group.get_all()]
+        self.schema.add_before(
+            'position',
+            node=colander.SchemaNode(
+                colander.Set(),
+                name='groups',
+                missing=[],
+                widget=deform.widget.CheckboxChoiceWidget(values=choices),
+            ),
+        )
 
     def submit_success(self, appstruct):
         portlet = Portlet(
-            name=appstruct['name'],
-            groups=[Group.by_id(group_id) for group_id in appstruct['groups']],
-            position=appstruct['position'],
-            weight=appstruct['weight'],
-            html=appstruct['html'],
+            name=appstruct.get('name'),
+            groups=[Group.by_id(group_id) for group_id in appstruct.get('groups')],  # noqa
+            position=appstruct.get('position'),
+            weight=appstruct.get('weight'),
+            html=appstruct.get('html'),
         )
 
         Session.add(portlet)
@@ -90,21 +106,10 @@ class PortletAdd(FormView):
     permission='admin',
     renderer='pyramid_bimt:templates/form.pt',
 )
-class PortletEdit(FormView):
+class PortletEdit(PortletAdd):
     buttons = ('save', )
     title = 'Edit Portlet'
     form_options = (('formid', 'portlet-edit'), ('method', 'POST'))
-    sqla_schema_class = Portlet
-    sqla_fields = [
-        'name',
-        'position',
-        'weight',
-        'html',
-    ]
-
-    def after_schema(self, schema):
-        self.inject_relationship_field(
-            schema=schema, model=Group, before='position')
 
     def save_success(self, appstruct):
         portlet = self.request.context
