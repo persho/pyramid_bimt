@@ -9,13 +9,13 @@ from pyramid.view import view_defaults
 from pyramid_basemodel import Session
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
-from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
+from pyramid_bimt.models import UserProperty
 from pyramid_bimt.static import app_assets
-from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import table_assets
-from pyramid_deform import FormView
+from pyramid_bimt.views import FormView
+from pyramid_bimt.security import encrypt
 
 import colander
 import deform
@@ -26,6 +26,8 @@ class UserView(object):
     def __init__(self, context, request):
         self.request = request
         self.context = context
+        app_assets.need()
+        table_assets.need()
 
     @view_config(
         route_name='user_list',
@@ -34,8 +36,6 @@ class UserView(object):
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
-        app_assets.need()
-        table_assets.need()
         return {
             'users': User.get_all(),
         }
@@ -46,14 +46,10 @@ class UserView(object):
         renderer='pyramid_bimt:templates/user.pt',
     )
     def view(self):
-        app_assets.need()
-        user_ = self.context
-        properties = (self.view.schema.dictify(user_) or {}).get('properties', [])  # noqa
         return {
-            'user': user_,
-            'audit_log_entries': AuditLogEntry.get_all(
-                filter_by={'user_id': user_.id}),
-            'properties': properties,
+            'user': self.context,
+            'audit_log_entries': self.context.audit_log_entries,
+            'properties': self.context.properties,
         }
 
     @view_config(route_name='user_enable')
@@ -83,130 +79,128 @@ class UserView(object):
             location=self.request.route_path('user_list')
         )
 
-    view.schema = SQLAlchemySchemaNode(
-        User,
-        includes=['properties'],
-        overrides={'properties': {'includes': ['key', 'value']}}
-    )
-
-
-def group_validator(form, value):
-    if Group.by_name(value) is None:
-        raise colander.Invalid(form, 'Group must be one of: {}'.format(
-            ', '.join([g.name for g in Group.query.all()])))
-
-
-class UserEditSchema(colander.MappingSchema):
-    email = colander.SchemaNode(
-        colander.String(),
-        validator=colander.Email(),
-    )
-    fullname = colander.SchemaNode(
-        colander.String(),
-        widget=deform.widget.TextInputWidget()
-    )
-    valid_to = colander.SchemaNode(
-        colander.Date(),
-    )
-    groups = colander.SchemaNode(
-        colander.Sequence(),
-        colander.SchemaNode(
-            colander.String(),
-            name='Group',
-            validator=group_validator
-        ),
-    )
-
 
 @view_config(
-    route_name='user_edit',
-    permission='admin',
+    route_name='user_add',
     layout='default',
+    permission='admin',
     renderer='pyramid_bimt:templates/form.pt',
 )
-class UserEditForm(FormView):
-    TITLE_EDIT = 'Edit User'
-    TITLE_ADD = 'Add User'
+class UserAdd(FormView):
+    buttons = ('submit', )
+    title = 'Add User'
+    form_options = (('formid', 'user-add'), ('method', 'POST'))
+    fields = [
+        'email',
+        'password',
+        'fullname',
+        'affiliate',
+        'billing_email',
+        'valid_to',
+        'last_payment',
+        'properties',
+    ]
 
-    buttons = ('save', )
-    title = TITLE_EDIT
-    form_options = (('formid', 'useredit'), ('method', 'POST'))
-    schema = UserEditSchema()
+    def __init__(self, request):
+        self.request = request
+        self.schema = SQLAlchemySchemaNode(
+            User,
+            includes=self.fields,
+            overrides={'properties': {'includes': ['key', 'value']}}
+        )
 
-    def __call__(self):
-        app_assets.need()
-        form_assets.need()
+        # we don't like the way ColanderAlchemy renders SA Relationships so
+        # we manually inject a suitable SchemaNode for groups
+        choices = [(group.id, group.name) for group in Group.get_all()]
+        self.schema.add(
+            node=colander.SchemaNode(
+                colander.Set(),
+                name='groups',
+                missing=[],
+                widget=deform.widget.CheckboxChoiceWidget(values=choices),
+            ),
+        )
 
-        self.edited_user = self.request.context
-        if not self.edited_user:
-            self.title = self.TITLE_ADD
+    def submit_success(self, appstruct):
+        user = User(
+            email=appstruct.get('email'),
+            fullname=appstruct.get('fullname'),
+            affiliate=appstruct.get('affiliate'),
+            billing_email=appstruct.get('billing_email'),
+            valid_to=appstruct.get('valid_to'),
+            last_payment=appstruct.get('last_payment'),
+            groups=[Group.by_id(group_id) for group_id in appstruct.get('groups', [])],  # noqa
+            properties=[UserProperty(key=prop['key'], value=prop['value'])
+                        for prop in appstruct.get('properties', [])],
+        )
 
-        self.request.layout_manager.layout.current_page = self.title
+        if appstruct.get('password'):  # pragma: no cover
+            user.password = encrypt(appstruct['password'])
 
-        result = super(UserEditForm, self).__call__()
-        if isinstance(result, dict):
-            result['title'] = self.title
-        return result
-
-    def save_success(self, appstruct):
-        if self.edited_user:
-            # edit user
-            user = self.edited_user
-            user.email = appstruct['email'].lower()
-            user.fullname = appstruct['fullname']
-            user.valid_to = appstruct['valid_to']
-            user.groups = [Group.by_name(name) for name in appstruct['groups']]
-            self.request.session.flash(
-                u'User "{}" modified.'.format(user.email))
-        else:
-            # add user
-            user = User(
-                email=appstruct['email'].lower(),
-                fullname=appstruct['fullname'],
-                valid_to=appstruct['valid_to'],
-                groups=[Group.by_name(name) for name in appstruct['groups']]
-            )
-            Session.add(user)
-            self.request.session.flash(
-                u'User "{}" added.'.format(user.email))
-
-        Session.flush()  # this is needed, so that we get user.id NOW
+        Session.add(user)
+        Session.flush()
+        self.request.session.flash(u'User "{}" added.'.format(user.email))
         return HTTPFound(
             location=self.request.route_path('user_view', user_id=user.id))
 
     def appstruct(self):
-        params_groups = self.request.params.get('groups')
-        if self.edited_user and params_groups is None:
-            groups = [g.name for g in self.edited_user.groups]
-        else:
-            groups = [g for g in params_groups or []]
-
         return {
-            'email': self.request.params.get(
-                'email', self.edited_user.email if self.edited_user else u''
-            ),
-            'fullname': self.request.params.get(
-                'fullname',
-                self.edited_user.fullname if self.edited_user else u''
-            ),
-            'valid_to': self.request.params.get(
-                'valid_to',
-                self.edited_user.valid_to if self.edited_user else date.today()
-            ),
-            'groups': groups
+            'email': self.request.params.get('email', ''),
+            'password': self.request.params.get('password', ''),
+            'fullname': self.request.params.get('fullname', u''),
+            'affiliate': self.request.params.get('affiliate', u''),
+            'billing_email': self.request.params.get('billing_email', ''),
+            'valid_to': self.request.params.get('valid_to', date.today()),
+            'last_payment': self.request.params.get('last_payment', None),
+            'groups': self.request.params.get('groups', []),
+            'properties': self.request.params.get('properties', []),
         }
 
 
 @view_config(
-    route_name='user_add',
-    permission='admin',
+    route_name='user_edit',
     layout='default',
+    permission='admin',
     renderer='pyramid_bimt:templates/form.pt',
 )
-class UserAddForm(UserEditForm):
+class UserEdit(UserAdd):
+    buttons = ('save', )
+    title = 'Edit User'
+    form_options = (('formid', 'user-edit'), ('method', 'POST'))
 
-    def __call__(self):
-        app_assets.need()
-        form_assets.need()
-        self.request.context = None
-        return super(UserAddForm, self).__call__()
+    def save_success(self, appstruct):
+        user = self.request.context
+
+        user.email = appstruct['email']
+        user.fullname = appstruct['fullname']
+        user.affiliate = appstruct['affiliate']
+        user.billing_email = appstruct['billing_email']
+        user.valid_to = appstruct['valid_to']
+        user.last_payment = appstruct['last_payment']
+
+        user.groups = [Group.by_id(group_id) for group_id in appstruct['groups']]  # noqa
+
+        user.properties = []
+        for prop in appstruct['properties']:
+            user.properties.append(
+                UserProperty(key=prop['key'], value=prop['value']))
+
+        self.request.session.flash(
+            u'User "{}" modified.'.format(user.email))
+        return HTTPFound(
+            location=self.request.route_path(
+                'user_view', user_id=user.id))
+
+    def appstruct(self):
+        groups = self.request.context.groups or []
+        return {
+            'email': self.request.context.email or '',
+            'fullname': self.request.context.fullname or u'',
+            'affiliate': self.request.context.affiliate or u'',
+            'billing_email': self.request.context.billing_email or '',
+            'valid_to': self.request.context.valid_to or date.today(),
+            'last_payment': self.request.context.last_payment or None,
+            'groups': [str(g.id) for g in groups],
+            'properties': [{'key': prop.key, 'value': prop.value}
+                           for prop in self.request.context.properties],
+        }

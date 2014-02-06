@@ -10,7 +10,6 @@ from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
 from pyramid_basemodel import Session
 
-import colander
 import mock
 import unittest
 
@@ -95,6 +94,7 @@ class TestPortletAdd(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         add_routes_portlet(self.config)
+        initTestingDB(groups=True)
 
         from pyramid_bimt.views.portlet import PortletAdd
         self.request = testing.DummyRequest()
@@ -103,13 +103,6 @@ class TestPortletAdd(unittest.TestCase):
     def tearDown(self):
         Session.remove()
         testing.tearDown()
-
-    @mock.patch('pyramid_bimt.views.FormView.inject_relationship_field')
-    def test_groups_field_injected_into_schema(self, inject):
-        schema = colander.Schema()
-        self.view.after_schema(schema)
-        inject.assert_called_with(
-            schema=schema, model=Group, before='position')
 
     def test_appstruct_default_values(self):
         self.assertEqual(self.view.appstruct(), {
@@ -127,8 +120,6 @@ class TestPortletAdd(unittest.TestCase):
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
     def test_submit_success(self):
-        initTestingDB(groups=True)
-
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, '/portlet/1/edit')
@@ -157,6 +148,7 @@ class TestPortletEdit(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         add_routes_portlet(self.config)
+        initTestingDB(groups=True, portlets=True)
 
         from pyramid_bimt.views.portlet import PortletEdit
         self.request = testing.DummyRequest()
@@ -165,13 +157,6 @@ class TestPortletEdit(unittest.TestCase):
     def tearDown(self):
         Session.remove()
         testing.tearDown()
-
-    @mock.patch('pyramid_bimt.views.FormView.inject_relationship_field')
-    def test_groups_field_injected_into_schema(self, inject):
-        schema = colander.Schema()
-        self.view.after_schema(schema)
-        inject.assert_called_with(
-            schema=schema, model=Group, before='position')
 
     def test_appstruct_default_values(self):
         self.request.context = Portlet()
@@ -184,7 +169,6 @@ class TestPortletEdit(unittest.TestCase):
         })
 
     def test_appstruct_context_params(self):
-        initTestingDB(groups=True, portlets=True)
         self.request.context = Portlet.by_id(1)
         self.assertEqual(self.view.appstruct(), {
             'name': 'dummy',
@@ -195,7 +179,6 @@ class TestPortletEdit(unittest.TestCase):
         })
 
     def test_save_success(self):
-        initTestingDB(groups=True, portlets=True)
         self.request.context = Portlet.by_id(1)
 
         result = self.view.save_success(self.APPSTRUCT)

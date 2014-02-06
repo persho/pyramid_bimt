@@ -19,7 +19,7 @@ Scenario: Add new portlet
       And I select from dropdown  name=position  Above Footer
       And I input text  name=html  Site will be down this weekend!
       And I click button  Submit
-     Then location should be  http://localhost:8080/portlet/2/edit
+     Then location should be  http://localhost:8080/portlet/1/edit
       And page should contain  Portlet "downtime notice" added.
 
 Scenario: Edit portlet

@@ -3,33 +3,18 @@
 
 from pyramid import testing
 from pyramid_basemodel import Session
-from pyramid_bimt.models import Group
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.tests.test_user_model import _make_group
+from pyramid_bimt.tests.test_user_model import _make_user
 from sqlalchemy.exc import IntegrityError
 
 import unittest
 
 
-def _make_group(name='foo'):
-    group = Group(name=name)
-    Session.add(group)
-    return group
-
-
-def _make_user(email='foo@bar.com', groups=None):
-    if not groups:
-        groups = []
-    user = User(email=email, groups=groups)
-    Session.add(user)
-    return user
-
-
-def _make_portlet(name='foo', groups=None, position='above_content', weight=0):
-    if not groups:
-        groups = []
-    portlet = Portlet(name=name, groups=groups, position=position, weight=0)
+def _make_portlet(name='foo', **kwargs):
+    portlet = Portlet(name=name, **kwargs)
     Session.add(portlet)
     return portlet
 
@@ -79,7 +64,7 @@ class TestPortletById(unittest.TestCase):
         self.assertEqual(portlet.name, 'foo')
 
 
-class TestByUserAndPosition(unittest.TestCase):
+class TestPortletByUserAndPosition(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -132,7 +117,7 @@ class TestByUserAndPosition(unittest.TestCase):
         self.assertEqual(len(portlets), 0)
 
 
-class TestGetAll(unittest.TestCase):
+class TestPortletGetAll(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -169,9 +154,9 @@ class TestGetAll(unittest.TestCase):
         _make_portlet(name='baz', weight=-1)
         portlets = Portlet.get_all(order_by='weight')
         self.assertEqual(len(portlets), 3)
-        self.assertEqual(portlets[0].name, 'foo')
+        self.assertEqual(portlets[0].name, 'baz')
         self.assertEqual(portlets[1].name, 'bar')
-        self.assertEqual(portlets[2].name, 'baz')
+        self.assertEqual(portlets[2].name, 'foo')
 
     def test_filter_by(self):
         _make_portlet(name='foo', position='above_content')
