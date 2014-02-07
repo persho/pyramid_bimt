@@ -2,20 +2,21 @@ Changelog
 =========
 
 
-0.5 (unreleased)
+0.5 (2014-02-07)
 ----------------
 
-- Support per-group definition of validity period and trial/regular. The
-  ``bimt.jvzoo_regular_period`` and ``bimt.jvzoo_regular_period`` settings are
-  now obsolete and should be removed from ``*.ini`` files.
+- [DB MIGRATION REQUIRED] Support per-group definition of validity period and
+  trial/regular. The ``bimt.jvzoo_regular_period`` and
+  ``bimt.jvzoo_regular_period`` settings are now obsolete and should be removed
+  from ``*.ini`` files.
   [zupo]
 
 - The route naming policy was updated to be more consistent and clean.
   [zupo]
 
-- Sanity check view added that checks if all users are correctly divided into
-  groups and sends mail on selected address with results. View can be used by
-  admins or script called externally.
+- [DB MIGRATION REQUIRED] Sanity check view added that checks if all users are
+  correctly divided into groups and sends mail on selected address with
+  results. View can be used by admins or script called externally.
   [ferewuz]
 
 - [DB MIGRATION REQUIRED] Groups overhaul. 'users' group changed to 'enabled',
