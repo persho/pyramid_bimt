@@ -8,6 +8,7 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.settings import asbool
 from pyramid_basemodel import Session
 from pyramid_bimt.acl import AuditLogFactory
+from pyramid_bimt.acl import GroupFactory
 from pyramid_bimt.acl import PortletFactory
 from pyramid_bimt.acl import RootFactory
 from pyramid_bimt.acl import UserFactory
@@ -31,9 +32,7 @@ REQUIRED_SETTINGS = [
 ]
 
 REQUIRED_SETTINGS_PRODUCTION = [
-    'bimt.jvzoo_regular_period',
     'bimt.jvzoo_secret_key',
-    'bimt.jvzoo_trial_period',
     'bimt.piwik_site_id',
     'mail.default_sender',
     'mail.host',
@@ -67,6 +66,15 @@ def add_routes_user(config):
     config.add_route(
         'user_edit', '/user/{user_id}/edit',
         factory=UserFactory, traverse='/{user_id}'
+    )
+
+
+def add_routes_group(config):
+    config.add_route('group_list', '/groups', factory=GroupFactory)
+    config.add_route('group_add', '/group/add', factory=GroupFactory)
+    config.add_route(
+        'group_edit', '/group/{group_id}/edit',
+        factory=GroupFactory, traverse='/{group_id}'
     )
 
 
@@ -122,6 +130,7 @@ def configure(config, settings={}):
     # configure routes
     add_routes_auth(config)
     add_routes_user(config)
+    add_routes_group(config)
     add_routes_audit_log(config)
     add_routes_portlet(config)
     add_routes_other(config)

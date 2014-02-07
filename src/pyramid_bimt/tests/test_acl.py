@@ -112,6 +112,46 @@ class TestUserFactory(unittest.TestCase):
         self.assertEqual(cm.exception.location, '/users')
 
 
+class TestGroupFactory(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest()
+
+        from pyramid_bimt.acl import GroupFactory
+        self.factory = GroupFactory(self.request)
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_init(self):
+        self.assertIsNotNone(self.factory)
+        self.assertEqual(self.factory.request, self.request)
+
+    @mock.patch('pyramid_bimt.acl.Group')
+    def test_non_existing_group(self, Group):
+        Group.by_id.return_value = None
+        with self.assertRaises(KeyError):
+            self.factory[0]
+
+    @mock.patch('pyramid_bimt.acl.Group')
+    def test_existing_group(self, Group):
+        group = mock.Mock()
+        Group.by_id.return_value = group
+        self.assertEqual(self.factory['foo'], group)
+        self.assertEqual(self.factory['foo'].__parent__, self.factory)
+        self.assertEqual(self.factory['foo'].__name__, 'foo')
+
+    def test_redirect_to_nonslash(self):
+        from pyramid_bimt import add_routes_group
+        add_routes_group(self.config)
+        self.request['PATH_INFO'] = '/groups/'
+        with self.assertRaises(HTTPFound) as cm:
+            from pyramid_bimt.acl import GroupFactory
+            GroupFactory(self.request)
+        self.assertEqual(cm.exception.location, '/groups')
+
+
 class TestPortletFactory(unittest.TestCase):
 
     def setUp(self):

@@ -6,7 +6,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
-from pyramid_bimt.tests.test_user_model import _make_group
+from pyramid_bimt.tests.test_group_model import _make_group
 from pyramid_bimt.tests.test_user_model import _make_user
 from sqlalchemy.exc import IntegrityError
 

@@ -12,7 +12,15 @@
       <tr><th>Affiliate</th><td>${user.affiliate}</td><th>
       <tr><th>Created</th><td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
       <tr><th>Modified</th><td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td><th>
-      <tr><th>Groups</th><td>${', '.join([g.name for g in user.groups])}</td><th>
+      <tr>
+        <th>Groups</th>
+        <td>
+          <tal:groups repeat="group user.groups">
+            <a href="${request.route_path('group_edit', group_id=group.id)}">${group.name}</a><span
+              tal:condition="python: repeat['group'].index != len(user.groups)-1">, </span>
+          </tal:groups>
+        </td>
+      <th>
     </table>
 
     <h2>User Properties</h2>

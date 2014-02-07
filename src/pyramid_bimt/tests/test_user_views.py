@@ -253,20 +253,10 @@ class TestUserAdd(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_appstruct_default_values(self):
-        self.assertEqual(self.view.appstruct(), {
-            'email': '',
-            'password': '',
-            'fullname': u'',
-            'affiliate': u'',
-            'billing_email': '',
-            'valid_to': date.today(),
-            'last_payment': None,
-            'groups': [],
-            'properties': [],
-        })
+    def test_appstruct_empty_request(self):
+        self.assertEqual(self.view.appstruct(), {})
 
-    def test_appstruct_request_params(self):
+    def test_appstruct_full_request(self):
         for key, value in self.APPSTRUCT.items():
             self.request.params[key] = value
 
@@ -307,20 +297,11 @@ class TestUserEdit(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_appstruct_default_values(self):
+    def test_appstruct_empty_context(self):
         self.request.context = User()
-        self.assertEqual(self.view.appstruct(), {
-            'email': '',
-            'fullname': u'',
-            'affiliate': u'',
-            'billing_email': '',
-            'valid_to': date.today(),
-            'last_payment': None,
-            'groups': [],
-            'properties': [],
-        })
+        self.assertEqual(self.view.appstruct(), {})
 
-    def test_appstruct_context_params(self):
+    def test_appstruct_full_context(self):
         self.request.context = _make_user()
         self.assertEqual(self.view.appstruct(), {
             'email': 'foo@bar.com',

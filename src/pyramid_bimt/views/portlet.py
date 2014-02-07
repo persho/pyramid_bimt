@@ -91,13 +91,12 @@ class PortletAdd(FormView):
                 'portlet_edit', portlet_id=portlet.id))
 
     def appstruct(self):
-        return {
-            'name': self.request.params.get('name', ''),
-            'groups': self.request.params.get('groups', []),
-            'position': self.request.params.get('position', ''),
-            'weight': self.request.params.get('weight', 0),
-            'html': self.request.params.get('html', u''),
-        }
+        appstruct = dict()
+        for field in self.fields + ['groups']:
+            if self.request.params.get(field) is not None:
+                appstruct[field] = self.request.params[field]
+
+        return appstruct
 
 
 @view_config(
@@ -127,11 +126,16 @@ class PortletEdit(PortletAdd):
                 'portlet_edit', portlet_id=portlet.id))
 
     def appstruct(self):
-        groups = self.request.context.groups or []
-        return {
-            'name': self.request.context.name or '',
-            'groups': [str(g.id) for g in groups],
-            'position': self.request.context.position or '',
-            'weight': self.request.context.weight or 0,
-            'html': self.request.context.html or u'',
-        }
+        context = self.request.context
+        appstruct = dict()
+        for field in self.fields:
+            if (
+                hasattr(context, field) and
+                getattr(context, field) is not None
+            ):
+                appstruct[field] = getattr(context, field)
+
+        if context.groups:
+            appstruct['groups'] = [str(g.id) for g in context.groups]
+
+        return appstruct

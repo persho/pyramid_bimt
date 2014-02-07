@@ -9,6 +9,7 @@
           <th>ID</th>
           <th>Full Name</th>
           <th>Email</th>
+          <th>Groups</th>
           <th>Created</th>
           <th>Modified</th>
           <th>Enable/Disable</th>
@@ -32,6 +33,12 @@
           <td>
             <a style="${'text-decoration: line-through' if not user.enabled else ''}"
                href="${request.route_path('user_view', user_id=user.id)}">${user.email}</a>
+          </td>
+          <td>
+            <tal:groups repeat="group user.groups">
+              <a href="${request.route_path('group_edit', group_id=group.id)}">${group.name}</a><span
+                tal:condition="python: repeat['group'].index != len(user.groups)-1">, </span>
+            </tal:groups>
           </td>
           <td>${user.created.strftime('%Y/%m/%d %H:%M:%S')}</td>
           <td>${user.modified.strftime('%Y/%m/%d %H:%M:%S')}</td>
