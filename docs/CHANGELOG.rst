@@ -5,7 +5,11 @@ Changelog
 0.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- FontAwesome icons are now bundled with this package.
+  [zupo]
+
+- Tooltips can now be displayed on any DOM element, not just spans.
+  [zupo]
 
 
 0.5 (2014-02-07)

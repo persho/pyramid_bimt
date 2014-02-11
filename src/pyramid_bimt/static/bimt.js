@@ -8,8 +8,7 @@
 
         // Enable bootstrap tooltips
         $("body").tooltip({
-            selector: "span[data-toggle='tooltip']",
-            html: true
+            selector: "*[data-toggle='tooltip']"
         });
 
         // Enable 'secret' spans

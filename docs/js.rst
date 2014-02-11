@@ -17,3 +17,20 @@ This means to print ``*`` instead of actual password in the span with class
 When user clicks on the span, the ``*`` characters will be replaced with the
 actual password, so user can see & copy it.
 
+
+Display a nice tooltip
+----------------------
+
+To display a nice tooltip on an arbitrary DOM element, do the following:
+
+* add ``data-toggle="tooltip"`` attribute to enable tooltips
+* add ``data-placement="right"`` to tell the tooltip where to show itself
+* add ``title="foobar"`` to tell the tooltip what text to show
+
+Example:
+
+.. code-block:: html
+
+    <span data-toggle="tooltip" data-placement="right" title="foobar">
+
+More info and options at http://getbootstrap.com/javascript/#tooltips.
