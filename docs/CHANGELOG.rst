@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.5.1 (unreleased)
+0.5.1 (2014-02-14)
 ------------------
 
 - FontAwesome icons are now bundled with this package.
