@@ -34,6 +34,8 @@ that is not specific to a certain app, but shared among many apps, such as:
 * Simple portlets.
 * Default layout using ``pyramid_layout``.
 * Static resources handled by :ref:`Fanstatic <fanstatic:packaged_libs>`.
+* Glyphicons and FontAwesome icon sets.
+* Various UI JavaScript helpers.
 
 This documentation describers best-practices on how to write and manage BIMT
 apps.

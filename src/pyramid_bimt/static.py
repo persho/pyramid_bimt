@@ -49,10 +49,19 @@ picker_js = Resource(
     bottom=True,
 )
 
+fontawesome = Resource(
+    library=lib_bimt,
+    relpath='font-awesome.css',
+    minified='font-awesome.min.css',
+    minifier='cssmin',
+    depends=[bootstrap],
+)
+
 bimt_assets = Group([
     jquery,
     bootstrap,
     modernizr,
+    fontawesome,
     bimt_js,
     bimt_css,
 ])
