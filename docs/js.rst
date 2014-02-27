@@ -2,6 +2,42 @@
 JavaScript
 ==========
 
+Dynamic tables
+--------------
+
+The ``pyramid_bimt`` package comes bundled with the `jQuery.datatables` plugin.
+To use it in your view add the following to your view code:
+
+.. code-block:: python
+
+    from pyramid_bimt.static import table_assets
+    table_assets.need()
+
+Then in your template, make sure your table looks something like this:
+
+.. code-block:: html
+
+    <table class="table datatable">
+      <thead>
+        <tr>
+          <th>Foo</th>
+          <th>Bar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>2</td></tr>
+        <tr><td>3</td><td>4</td></tr>
+        <tr><td>5</td><td>6</td></tr>
+      </tbody>
+    </table>
+
+To disable sorting on a column add ``data-sort-disabled="true"`` as its
+attribute, like so:
+
+.. code-block:: html
+
+    <th data-sort-disabled="true">Bar</th>
+
 
 Show 'secret' info on click
 ---------------------------
