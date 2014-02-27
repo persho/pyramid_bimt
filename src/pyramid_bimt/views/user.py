@@ -17,6 +17,7 @@ from pyramid_bimt.views import FormView
 from pyramid_bimt.security import encrypt
 
 import colander
+import copy
 import deform
 
 
@@ -172,12 +173,22 @@ class UserEdit(UserAdd):
         user.valid_to = appstruct.get('valid_to')
         user.last_payment = appstruct.get('last_payment')
 
-        user.groups = [Group.by_id(group_id) for group_id in appstruct['groups']]  # noqa
+        user.groups = [
+            Group.by_id(group_id) for group_id in appstruct['groups']
+        ]
 
-        user.properties = []
+        # remove properties that are not present in appstruct
+        for prop in copy.copy(user.properties):
+            if prop.key not in [p['key'] for p in appstruct['properties']]:
+                user.properties.remove(prop)
+
+        # update/create properties present in appstruct
         for prop in appstruct['properties']:
-            user.properties.append(
-                UserProperty(key=prop['key'], value=prop['value']))
+            if user.get_property(prop['key'], None) is not None:
+                user.set_property(key=prop['key'], value=prop['value'])
+            else:
+                user.properties.append(
+                    UserProperty(key=prop['key'], value=prop['value']))
 
         self.request.session.flash(
             u'User "{}" modified.'.format(user.email))

@@ -5,7 +5,9 @@ Changelog
 0.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- When editing a User with an existing UserProperty, do not re-create the
+  UserProperty, but update the existing one. Fixes #277.
+  [zupo]
 
 
 0.5.1 (2014-02-14)

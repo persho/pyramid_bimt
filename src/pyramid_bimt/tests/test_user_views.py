@@ -323,11 +323,17 @@ class TestUserEdit(unittest.TestCase):
         'valid_to': date(2014, 2, 1),
         'last_payment': date(2014, 1, 1),
         'groups': [1, ],
-        'properties': [{u'key': u'foo', u'value': u'bar'}, ],
+        'properties': [
+            {u'key': u'foo', u'value': u'bar'},   # existing property
+            {u'key': u'baz', u'value': u'bam'},   # new property
+        ],
     }
 
     def test_save_success(self):
         self.request.context = User.by_id(2)
+
+        # add a property that will get updated on save_success()
+        self.request.context.set_property(key=u'foo', value=u'var')
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
@@ -343,8 +349,9 @@ class TestUserEdit(unittest.TestCase):
         self.assertEqual(user.last_payment, date(2014, 1, 1))
         self.assertEqual(user.groups, [Group.by_id(1), ])
         self.assertEqual(user.get_property('foo'), 'bar')
+        self.assertEqual(user.get_property('baz'), 'bam')
         with self.assertRaises(KeyError):
-            user.get_property('bimt')
+            user.get_property('bimt')  # removed property
 
         self.assertEqual(
             self.request.session.pop_flash(),
