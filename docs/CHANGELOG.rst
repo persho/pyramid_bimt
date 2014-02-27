@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.5.2 (unreleased)
+0.5.2 (2014-02-27)
 ------------------
 
 - When editing a User with an existing UserProperty, do not re-create the
