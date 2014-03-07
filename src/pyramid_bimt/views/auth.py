@@ -57,7 +57,11 @@ class LoginForm(FormView):
         email = appstruct['email'].lower()
         password = appstruct['password']
         user = User.by_email(email)
-        if (user is not None and verify(password, user.password)):
+        if (
+            password is not None and
+            user is not None and
+            verify(password, user.password)
+        ):
             headers = remember(self.request, user.email)
             self.request.registry.notify(UserLoggedIn(self.request, user))
             self.request.session.flash(u'Login successful.')
