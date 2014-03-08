@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.5.3 (unreleased)
+0.5.3 (2014-03-08)
 ------------------
 
 - Fix setting user's password through User Edit form. Refs #299.
