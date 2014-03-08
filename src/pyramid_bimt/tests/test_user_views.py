@@ -316,7 +316,7 @@ class TestUserEdit(unittest.TestCase):
 
     APPSTRUCT = {
         'email': 'foo@bar.com',
-        'password': 'secret',
+        'password': 'new_secret',
         'fullname': u'Foö Bar',
         'affiliate': u'Aff',
         'billing_email': 'billing@bar.com',
@@ -341,7 +341,7 @@ class TestUserEdit(unittest.TestCase):
 
         user = User.by_id(2)
         self.assertEqual(user.email, 'foo@bar.com')
-        self.assertTrue(verify('secret', user.password))
+        self.assertTrue(verify('new_secret', user.password))
         self.assertEqual(user.fullname, u'Foö Bar')
         self.assertEqual(user.affiliate, u'Aff')
         self.assertEqual(user.billing_email, 'billing@bar.com')
@@ -358,7 +358,7 @@ class TestUserEdit(unittest.TestCase):
             [u'User "foo@bar.com" modified.'],
         )
 
-    def test_password_field(self):
+    def test_empty_password_field(self):
         self.request.context = User.by_id(2)
 
         # simulate that password field was left empty
