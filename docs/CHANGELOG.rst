@@ -5,7 +5,8 @@ Changelog
 0.5.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix setting user's password through User Edit form. Refs #299.
+  [zupo]
 
 
 0.5.2 (2014-02-27)

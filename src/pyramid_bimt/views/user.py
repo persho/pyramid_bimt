@@ -134,7 +134,7 @@ class UserAdd(FormView):
                         for prop in appstruct.get('properties', [])],
         )
 
-        if appstruct.get('password'):  # pragma: no cover
+        if appstruct.get('password'):  # pragma: no branch
             user.password = encrypt(appstruct['password'])
 
         Session.add(user)
@@ -172,6 +172,9 @@ class UserEdit(UserAdd):
         user.billing_email = appstruct.get('billing_email')
         user.valid_to = appstruct.get('valid_to')
         user.last_payment = appstruct.get('last_payment')
+
+        if appstruct.get('password'):
+            user.password = encrypt(appstruct['password'])
 
         user.groups = [
             Group.by_id(group_id) for group_id in appstruct['groups']
