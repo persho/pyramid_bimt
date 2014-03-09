@@ -124,7 +124,7 @@ While we're at it, let's also configure IRC notifications from GitHub:
 
 .. code-block:: bash
 
-    $ gem install gcli
+    $ gem install github_cli
     $ gcli authorize
     $ gcli hook create niteoweb bnh
         --events=pull_request
