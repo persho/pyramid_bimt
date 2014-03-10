@@ -83,5 +83,6 @@ class TestExpireSubscriptionsIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserDisabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Disabled user 1 because its valid_to (2013-12-29) has expired.',
+            u'Disabled user admin@bar.com (1) because its '
+            u'valid_to (2013-12-29) has expired.',
         )

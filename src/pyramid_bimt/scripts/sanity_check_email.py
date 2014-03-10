@@ -8,7 +8,10 @@ from pyramid_mailer.message import Message
 from pyramid_bimt.sanity_check import sanity_check
 
 import argparse
+import logging
 import sys
+
+logger = logging.getLogger(__name__)
 
 
 def send_email(settings, request):
@@ -46,7 +49,7 @@ def main(argv=sys.argv):
     send_email(settings, request)
 
     env['closer']()
-    print 'Sanity check email sent successfully.'  # noqa
+    logger.info('Sanity check email sent successfully.')
 
 
 if __name__ == '__main__':
