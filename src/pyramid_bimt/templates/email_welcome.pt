@@ -12,6 +12,10 @@
                 u: ${username}<br>
                 p: ${password}
               </p>
+              <p tal:condition="api_key">
+                Here is your API key for integrating with other services:
+                <br>API key: <span tal:replace="api_key" />
+              </p>
               <p>
                 Login to the members' area:<br>
                 <a href="${login_url}">${login_url}</a>
