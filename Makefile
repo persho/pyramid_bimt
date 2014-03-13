@@ -48,6 +48,11 @@ release: .installed.cfg
 		git tag -a v$$VERSION -m "version $$VERSION"
 	@bin/postrelease
 
+graphviz: .installed.cfg
+	@bin/py bin/SA_to_dot.py
+	@dot -Tpng /tmp/schema.dot > docs/images/schema.png
+	@echo "Graphviz image generated at 'docs/images/schema.png'."
+
 clean:
 	@rm -rf .coverage .installed.cfg .mr.developer.cfg .Python bin build \
 		develop-eggs dist docs/html htmlcov lib include man parts \

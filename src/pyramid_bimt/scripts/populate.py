@@ -6,6 +6,8 @@ from pyramid_basemodel import Session
 from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import Mailing
+from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.models import User
@@ -108,6 +110,22 @@ def add_portlets():
             html=u'You are admin.',
         )
         Session.add(portlet)
+
+
+def add_mailings():
+    """Create a dummy mailing."""
+    with transaction.manager:
+        trial = Group.by_name('trial')
+
+        mailing = Mailing(
+            name='welcome_email',
+            groups=[trial, ],
+            trigger=MailingTriggers.after_created.name,
+            days=1,
+            subject=u'Welcome!',
+            body=u'Welcome to this amazing BIMT app!',
+        )
+        Session.add(mailing)
 
 
 def add_default_content():  # pragma: no cover (bw compat only)

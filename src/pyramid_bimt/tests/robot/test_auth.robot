@@ -25,7 +25,6 @@ Scenario: User resets its password
      And I input text  name=email  one@bar.com
      And I click button  Reset password
     Then page should contain  A new password was sent to your email.
-     And last email should contain  From: info@${APP_DOMAIN}
      And last email should contain  To: one@bar.com
      And last email should contain  Subject: ${APP_TITLE} Password Reset
      And last email should contain encoded  Hi One Bar

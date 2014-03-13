@@ -5,6 +5,13 @@ JavaScript
 Dynamic tables
 --------------
 
+.. figure:: images/datatables.png
+    :align: center
+
+    `Screenshot of a dinamic table.`
+
+
+
 The ``pyramid_bimt`` package comes bundled with the `jQuery.datatables` plugin.
 To use it in your view add the following to your view code:
 
@@ -42,13 +49,20 @@ attribute, like so:
 Show 'secret' info on click
 ---------------------------
 
-If you need to show a password in a template, use the `secret` span approach.
-This means to print ``*`` instead of actual password in the span with class
-``secret`` but include the password in the ``data-secret`` attribute. Example:
+.. figure:: images/secret_span.png
+    :align: center
+
+    `Screenshot of a secret span.`
+
+
+If you need to show a secret string in a template, use the `secret` span
+approach. This means to print ``*`` instead of actual secret string in a span
+with class ``secret``, but include the secret in the ``data-secret`` attribute.
+Example:
 
 .. code-block:: html
 
-    <span class="secret" data-secret="mypassword">**********</span>
+    <span class="secret" data-secret="${secret}" tal:content="python: '*' * len(secret)" />
 
 When user clicks on the span, the ``*`` characters will be replaced with the
 actual password, so user can see & copy it.
@@ -56,6 +70,11 @@ actual password, so user can see & copy it.
 
 Display a nice tooltip
 ----------------------
+
+.. figure:: images/tooltip.png
+    :align: center
+
+    `Screenshot of a tooltip.`
 
 To display a nice tooltip on an arbitrary DOM element, do the following:
 
@@ -70,3 +89,30 @@ Example:
     <span data-toggle="tooltip" data-placement="right" title="foobar">
 
 More info and options at http://getbootstrap.com/javascript/#tooltips.
+
+
+Confirmation before form submit
+-------------------------------
+
+.. figure:: images/form_confirmation.png
+    :align: center
+
+    `Screenshot of a form confirmation.`
+
+Sometimes you want the user to explicitly confirm that they want to submit
+a certain form. We use ``bootbox.js`` to drive this functionality. Enable it
+by adding the ``btn-confirmation`` class to the form button that you want
+confirmation for, like so:
+
+.. code-block:: python
+
+
+  class MyForm(FormView):
+      buttons = (
+          deform.Button(
+              name='remove',
+              css_class='btn-warning btn-confirmation',
+              value='Are you sure?',
+          ),
+      )
+

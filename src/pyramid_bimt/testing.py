@@ -11,6 +11,7 @@ from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.scripts.populate import add_audit_log_event_types
 from pyramid_bimt.scripts.populate import add_groups
+from pyramid_bimt.scripts.populate import add_mailings
 from pyramid_bimt.scripts.populate import add_portlets
 from pyramid_bimt.scripts.populate import add_users
 from simplejson import JSONDecodeError
@@ -18,7 +19,11 @@ from sqlalchemy import create_engine
 
 
 def initTestingDB(
-    auditlog_types=False, groups=False, users=False, portlets=False
+    auditlog_types=False,
+    groups=False,
+    users=False,
+    portlets=False,
+    mailings=False,
 ):
     engine = create_engine('sqlite:///:memory:')
     Base.metadata.create_all(engine)
@@ -35,6 +40,9 @@ def initTestingDB(
 
     if portlets:
         add_portlets()
+
+    if mailings:
+        add_mailings()
 
 
 @view_defaults(permission=NO_PERMISSION_REQUIRED)

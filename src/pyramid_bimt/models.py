@@ -4,9 +4,13 @@
 from datetime import date
 from datetime import datetime
 from flufl.enum import Enum
+from pyramid.renderers import render
+from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
+from pyramid_mailer import get_mailer
+from pyramid_mailer.message import Message
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import DateTime
@@ -19,8 +23,12 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
-import deform
 import colander
+import deform
+import logging
+import tempfile
+
+logger = logging.getLogger(__name__)
 
 _marker = object()
 
@@ -433,14 +441,14 @@ class AuditLogEventType(Base):
 
 
 @colander.deferred
-def users_choice_widget(node, kw):
+def users_select_widget(node, kw):
     users = User.get_all()
     choices = [(user.id, user.email) for user in users]
     return deform.widget.SelectWidget(values=choices)
 
 
 @colander.deferred
-def event_types_choice_widget(node, kw):
+def event_types_select_widget(node, kw):
     types = AuditLogEventType.get_all()
     choices = [(type_.id, type_.name) for type_ in types]
     return deform.widget.SelectWidget(values=choices)
@@ -461,7 +469,7 @@ class AuditLogEntry(Base):
         info={'colanderalchemy': dict(
             title='User ID',
             # TODO: Make values dynamic, not read at startup
-            widget=users_choice_widget,
+            widget=users_select_widget,
         )}
     )
 
@@ -472,7 +480,7 @@ class AuditLogEntry(Base):
         info={'colanderalchemy': dict(
             title='Event Type ID',
             # TODO: Make values dynamic, not read at startup
-            widget=event_types_choice_widget
+            widget=event_types_select_widget
         )}
     )
 
@@ -645,3 +653,136 @@ class Portlet(Base, BaseMixin):
             q = q.filter_by(**filter_by)
         q = q.limit(limit)
         return q.all()
+
+
+mailing_group_table = Table(
+    'mailing_group',
+    Base.metadata,
+    Column(
+        'mailing_id',
+        Integer,
+        ForeignKey('mailings.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    Column(
+        'group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    UniqueConstraint('mailing_id', 'group_id', name='mailing_id_group_id'),
+)
+
+
+MAILING_BODY_DEFAULT = u"""
+Enter the main body of the email. It will be injected between the
+"Hello <fullname>" and "Best wishes, <app_title> Team".
+
+You can use any user attributes in the email like so: ${user.fullname}
+"""
+
+
+class MailingTriggers(Enum):
+    """Supported operators for a mailing"""
+
+    after_created = 'x days after created'
+    after_last_payment = 'x days after last_payment'
+    before_valid_to = 'x days before valid_to'
+    never = 'never'
+
+
+class Mailing(Base, BaseMixin):
+    """A class representing a Mailing."""
+
+    __tablename__ = 'mailings'
+
+    name = Column(
+        String,
+        unique=True,
+        nullable=False,
+        info={'colanderalchemy': dict(
+            title='Name',
+            description='For internal purposes only, not visible to the user.',
+            validator=colander.Length(min=2, max=50),
+        )},
+    )
+
+    groups = relationship(
+        'Group',
+        secondary=mailing_group_table,
+        backref='mailings',
+    )
+
+    trigger = Column(
+        SAEnum(*[o.name for o in MailingTriggers], name='triggers'),
+        info={'colanderalchemy': dict(
+            title='Trigger',
+            description='Choose when to send this mailing.',
+            widget=deform.widget.SelectWidget(
+                values=[(o.name, o.value) for o in MailingTriggers]),
+        )},
+    )
+
+    days = Column(
+        Integer,
+        nullable=False,
+        info={'colanderalchemy': dict(
+            title='Days',
+            description='Number of days to send email before/after selected '
+            'trigger.',
+        )},
+    )
+
+    subject = Column(
+        Unicode,
+        nullable=False,
+        info={'colanderalchemy': dict(
+            title='Subject',
+            description='Enter the subject of the email.',
+            validator=colander.Length(min=3, max=100),
+        )},
+    )
+
+    body = Column(
+        Unicode,
+        nullable=False,
+        default=MAILING_BODY_DEFAULT,
+        info={'colanderalchemy': dict(
+            title='Body',
+            description='Enter the body of the email.',
+            widget=deform.widget.TextAreaWidget(rows=10, cols=60),
+        )},
+    )
+
+    def send(self, recipient):
+        """Send the mailing to a recipient."""
+        request = get_current_request()
+        mailer = get_mailer(request)
+
+        with tempfile.NamedTemporaryFile(suffix='.pt') as body_template:
+            body_template.write(self.body)
+            body_template.seek(0)
+
+            body_template.seek(0)
+            body = render(
+                body_template.name,
+                dict(request=request, user=recipient),
+            )
+
+            mailer.send(Message(
+                subject=self.subject,
+                recipients=[recipient.email, ],
+                html=render(
+                    'pyramid_bimt:templates/email.pt',
+                    {'fullname': recipient.fullname, 'body': body}),
+            ))
+            logger.info(u'Mailing "{}" sent to "{}".'.format(
+                self.name, recipient.email))
+
+    @classmethod
+    def by_id(self, mailing_id):
+        """Get a Mailing by id."""
+        return Mailing.query.filter_by(id=mailing_id).first()
+
+    @classmethod
+    def by_name(self, mailing_name):
+        """Get a Mailing by name."""
+        return Mailing.query.filter_by(name=mailing_name).first()

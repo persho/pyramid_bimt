@@ -9,8 +9,13 @@
         <th>Value</th>
       </tr>
       <tr tal:repeat="entry settings">
-        <td tal:content="python: entry[0]" />
-        <td tal:content="python: entry[1]" />
+        <td tal:content="entry[0]" />
+        <td>
+          <span tal:condition="entry[0] not in secrets" tal:content="entry[1]"/>
+          <span tal:condition="entry[0] in secrets" tal:content="python: '*' * len(entry[0])"
+                class="secret" data-secret="${entry[1]}" title="Click to reveal" data-toggle="tooltip"/>
+
+        <td/>
       </tr>
     </table>
 
@@ -21,8 +26,11 @@
         <th>Value</th>
       </tr>
       <tr tal:repeat="entry environ">
-        <td tal:content="python: entry[0]" />
-        <td tal:content="python: entry[1]" />
+        <td tal:content="entry[0]" />
+        <td>
+          <span tal:condition="entry[0] in secrets" tal:content="python: '*' * len(entry[0])" class="secret" data-secret="${entry[1]}" />
+          <span tal:condition="entry[0] not in secrets" tal:content="entry[1]"/>
+        <td/>
       </tr>
     </table>
 

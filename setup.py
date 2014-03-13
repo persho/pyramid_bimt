@@ -72,6 +72,7 @@ setup(
             'Sphinx',
             'fanstatic [cssmin,jsmin]',
             'pyramid_debugtoolbar',
+            'sadisplay',
             'waitress',
             'zest.releaser',
         ],
