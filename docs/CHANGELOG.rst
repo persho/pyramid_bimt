@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.5.4 (unreleased)
-------------------
+0.6 (2014-03-13)
+----------------
 
 - Email API key with credentials to new user (created by jvzoo).
   [matejc]
