@@ -10,6 +10,7 @@ from pyramid_bimt import configure
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
+from pyramid_mailer import get_mailer
 
 import mock
 import unittest
@@ -131,6 +132,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
+        self.mailer = get_mailer(testing.DummyRequest())
         add_routes_auth(self.config)
         initTestingDB(auditlog_types=True, groups=True)
         self.jvzoo_group = _make_jvzoo_group()
@@ -308,18 +310,31 @@ class TestJVZooViewIntegration(unittest.TestCase):
             u'regular until 2014-01-30',
         )
 
-        from pyramid_mailer import get_mailer
-        mailer = get_mailer(request)
-        self.assertEqual(len(mailer.outbox), 1)
-        self.assertEqual(mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn('Hello Foo Bär'.decode('utf-8'), mailer.outbox[0].html)
-        self.assertIn('u: bar@bar.com', mailer.outbox[0].html)
-        self.assertIn('p: secret', mailer.outbox[0].html)
-        self.assertIn('BIMT Team', mailer.outbox[0].html)
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn('Hello Foo Bär'.decode('utf-8'), self.mailer.outbox[0].html)  # noqa
+        self.assertIn('u: bar@bar.com', self.mailer.outbox[0].html)
+        self.assertIn('p: secret', self.mailer.outbox[0].html)
+        self.assertIn('BIMT Team', self.mailer.outbox[0].html)
         self.assertIn(
             '<a href="http://example.com/login">http://example.com/login</a>',
-            mailer.outbox[0].html,
+            self.mailer.outbox[0].html,
         )
+
+    @mock.patch('pyramid_bimt.views.jvzoo.date')
+    @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
+    @mock.patch('pyramid_bimt.views.jvzoo.generate')
+    def test_welcome_email_api_key_set(self, generate, verify_POST, mocked_date):  # noqa
+        from pyramid_bimt.events import IUserCreated
+
+        def generate_api_key(event):
+            event.user.set_property('api_key', u'secret_key')
+
+        self.config.add_subscriber(generate_api_key, IUserCreated)
+
+        self.test_new_user_no_trial()
+
+        self.assertIn('API key: secret_key', self.mailer.outbox[0].html)
 
 
 class TestJVZooViewFunctional(unittest.TestCase):
@@ -336,6 +351,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         configure(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
+        self.mailer = get_mailer(testing.DummyRequest())
 
     def tearDown(self):
         Session.remove()
@@ -379,15 +395,14 @@ class TestJVZooViewFunctional(unittest.TestCase):
                 date.today() + timedelta(days=7)),
         )
 
-        from pyramid_mailer import get_mailer
-        mailer = get_mailer(testing.DummyRequest())
-        self.assertEqual(len(mailer.outbox), 1)
-        self.assertEqual(mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn('Hello John Smith', mailer.outbox[0].html)
-        self.assertIn('u: john.smith@email.com', mailer.outbox[0].html)
-        self.assertRegexpMatches(mailer.outbox[0].html, 'p: .{10}\n')
-        self.assertIn('BIMT Team', mailer.outbox[0].html)
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn('Hello John Smith', self.mailer.outbox[0].html)
+        self.assertIn('u: john.smith@email.com', self.mailer.outbox[0].html)
+        self.assertNotIn('API', self.mailer.outbox[0].html)
+        self.assertRegexpMatches(self.mailer.outbox[0].html, 'p: .{10}\n')
+        self.assertIn('BIMT Team', self.mailer.outbox[0].html)
         self.assertIn(
             '<a href="http://localhost/login">http://localhost/login</a>',
-            mailer.outbox[0].html,
+            self.mailer.outbox[0].html,
         )

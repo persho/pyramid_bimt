@@ -186,6 +186,7 @@ class JVZooView(object):
                 {
                     'fullname': user.fullname,
                     'username': user.email,
+                    'api_key': user.get_property('api_key', default=None),
                     'password': password,
                     'login_url': self.request.route_url('login'),
                     'app_title': app_title,

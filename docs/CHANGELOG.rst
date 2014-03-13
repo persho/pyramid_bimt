@@ -5,7 +5,8 @@ Changelog
 0.5.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Email API key with credentials to new user (created by jvzoo).
+  [matejc]
 
 
 0.5.3 (2014-03-08)
