@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.6.1 (unreleased)
+0.6.1 (2014-03-21)
 ------------------
 
-- Nothing changed yet.
+- Support for form descriptions.
+  [matejc]
 
 
 0.6 (2014-03-13)
