@@ -35,4 +35,5 @@ class FormView(BaseFormView):
         result = super(FormView, self).__call__()
         if isinstance(result, dict):  # pragma: no branch
             result['title'] = self.title
+            result['description'] = getattr(self, 'description', None)
         return result
