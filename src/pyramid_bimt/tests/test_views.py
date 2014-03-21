@@ -313,3 +313,14 @@ class TestFormView(unittest.TestCase):
         self.view.hide_sidebar = True
         self.view()
         self.request.layout_manager.layout.hide_sidebar = True
+
+    def test_description(self):
+        self.view.description = 'See me maybe?'
+        result = self.view()
+        self.assertEqual(result['title'], 'Foo Form')
+        self.assertEqual(result['description'], 'See me maybe?')
+
+    def test_no_description(self):
+        result = self.view()
+        self.assertEqual(result['title'], 'Foo Form')
+        self.assertEqual(result['description'], None)
