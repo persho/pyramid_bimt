@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.6.2 (unreleased)
+0.6.2 (2014-04-08)
 ------------------
 
 - Support for ColanderAlchemy 0.3.1.
