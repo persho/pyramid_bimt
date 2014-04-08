@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
-from pyramid_bimt.static import app_assets
-from pyramid_bimt.static import form_assets
-from pyramid_bimt.static import table_assets
 from colanderalchemy import SQLAlchemySchemaNode
+from datetime import datetime
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid_basemodel import Session
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import form_assets
+from pyramid_bimt.static import table_assets
 from pyramid_deform import FormView
 
 
@@ -63,7 +64,7 @@ class AuditLogAddEntryForm(FormView):
 
     def submit_success(self, appstruct):
         entry = AuditLogEntry(
-            timestamp=appstruct['timestamp'],
+            timestamp=appstruct.get('timestamp') or datetime.utcnow(),
             user_id=appstruct['user_id'],
             event_type_id=appstruct['event_type_id'],
             comment=appstruct['comment'],

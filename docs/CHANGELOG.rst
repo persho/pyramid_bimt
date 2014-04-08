@@ -5,7 +5,8 @@ Changelog
 0.6.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Support for ColanderAlchemy 0.3.1.
+  [zupo]
 
 
 0.6.1 (2014-03-21)
