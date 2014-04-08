@@ -2,6 +2,7 @@
 """Define models."""
 
 from datetime import date
+from datetime import datetime
 from flufl.enum import Enum
 from pyramid.renderers import render
 from pyramid.threadlocal import get_current_request
@@ -486,6 +487,7 @@ class AuditLogEntry(Base):
     #: when was the entry triggered
     timestamp = Column(
         DateTime,
+        default=datetime.utcnow,
         info={'colanderalchemy': dict(title='Timestamp')}
     )
 

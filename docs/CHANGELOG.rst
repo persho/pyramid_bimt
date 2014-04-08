@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.6.3 (unreleased)
-------------------
+0.6.2.1 (unreleased)
+--------------------
 
-- Nothing changed yet.
+- Bugfix for 0.6.2.
+  [zupo]
 
 
 0.6.2 (2014-04-08)

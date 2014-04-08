@@ -2,6 +2,7 @@
 """Tests for AuditLogEventType."""
 
 from datetime import datetime
+from datetime import timedelta
 from pyramid import testing
 from pyramid_basemodel import Session
 from pyramid_bimt.models import AuditLogEntry
@@ -10,8 +11,8 @@ from pyramid_bimt.testing import initTestingDB
 import unittest
 
 
-def _make_entry(comment=u'', **kwargs):
-    entry = AuditLogEntry(comment=comment, **kwargs)
+def _make_entry(comment=u''):
+    entry = AuditLogEntry(comment=comment)
     Session.add(entry)
     return entry
 
@@ -92,6 +93,12 @@ class TestAuditLogEntryModel(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
+    def test_default_values(self):
+        entry = _make_entry()
+        Session.flush()
+        self.assertAlmostEqual(
+            entry.timestamp, datetime.utcnow(), delta=timedelta(seconds=10))
+
 
 class TestEntryById(unittest.TestCase):
 
@@ -136,9 +143,9 @@ class TestEntryGetAll(unittest.TestCase):
         self.assertEqual(len(entries), 3)
 
     def test_ordered_by_timestamp_by_default(self):
-        _make_entry(comment=u'foo', timestamp=datetime(2014, 1, 1, 0, 0, 1))
-        _make_entry(comment=u'bar', timestamp=datetime(2014, 1, 1, 0, 0, 2))
-        _make_entry(comment=u'baz', timestamp=datetime(2014, 1, 1, 0, 0, 3))
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
         entries = AuditLogEntry.get_all().all()
         self.assertEqual(len(entries), 3)
         self.assertEqual(entries[0].comment, 'baz')
@@ -167,4 +174,4 @@ class TestEntryGetAll(unittest.TestCase):
         _make_entry(comment=u'bar')
         entries = AuditLogEntry.get_all(limit=1).all()
         self.assertEqual(len(entries), 1)
-        self.assertEqual(entries[0].comment, 'foo')
+        self.assertEqual(entries[0].comment, 'bar')
