@@ -155,6 +155,15 @@ GetSentry via a Raven logger handler (this one depends on the
 
     $ heroku addons:add sentry
 
+Now, log into Sentry (via Heroku Single-Sign-On) and go to Settings -> Manage
+Integrations. Enable IRC and configure it like so:
+- Server: irc.freenode.net
+- Port: 7000
+- Room: #niteoweb
+- Without join: checked
+- Nick: GetSentry
+- SSL: checked
+
 
 Network & DB metrics aggregation in Librato Metrics
 """""""""""""""""""""""""""""""""""""""""""""""""""
