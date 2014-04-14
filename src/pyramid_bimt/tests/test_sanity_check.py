@@ -27,18 +27,18 @@ class TestCheckAdmin(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.sanity_check.User')
     @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_admin_not_enabled(self, Group, User):
+    def test_admin_not_disabled(self, Group, User):
         Group.by_name.return_value = 'admins'
 
         user = mock.Mock()
-        user.enabled = False
+        user.enabled = True
         user.groups = ['admins', ]
         User.by_id.return_value = user
 
         from pyramid_bimt.sanity_check import check_admin_user
         self.assertEqual(
             check_admin_user(),
-            ['User "admin" should be enabled.'],
+            ['User "admin" should be disabled in production.'],
         )
 
     @mock.patch('pyramid_bimt.sanity_check.User')
@@ -47,7 +47,7 @@ class TestCheckAdmin(unittest.TestCase):
         Group.by_name.return_value = 'admins'
 
         user = mock.Mock()
-        user.enabled = True
+        user.enabled = False
         user.groups = ['users', ]
         User.by_id.return_value = user
 
@@ -64,7 +64,7 @@ class TestCheckAdmin(unittest.TestCase):
         Group.by_name.return_value = group
 
         user = mock.Mock()
-        user.enabled = True
+        user.enabled = False
         user.groups = [group, ]
         User.by_id.return_value = user
 
