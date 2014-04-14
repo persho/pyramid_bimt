@@ -44,8 +44,8 @@ def check_admin_user():
 
     if not user:
         warnings.append('User "admin" should have id of "1".')
-    if user and not user.enabled:
-        warnings.append('User "admin" should be enabled.')
+    if user and user.enabled:
+        warnings.append('User "admin" should be disabled in production.')
     if user and Group.by_name('admins') not in user.groups:
         warnings.append('User "admin" should be in "admins" group.')
     return warnings
