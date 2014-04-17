@@ -66,6 +66,9 @@ def add_routes_user(config):
         'user_edit', '/user/{user_id}/edit',
         factory=UserFactory, traverse='/{user_id}'
     )
+    config.add_route(
+        'user_unsubscribe', '/unsubscribe', factory=UserFactory
+    )
 
 
 def add_routes_group(config):

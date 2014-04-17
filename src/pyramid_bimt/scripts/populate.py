@@ -56,7 +56,7 @@ def add_audit_log_event_types():
 
 
 def add_groups():
-    """Init the 'admins', 'enabled', 'trial' groups."""
+    """Init the 'admins', 'enabled', 'trial', 'unsubscribed' groups."""
     with transaction.manager:
         admins = Group(name='admins')
         Session.add(admins)
@@ -66,6 +66,9 @@ def add_groups():
 
         trial = Group(name='trial')
         Session.add(trial)
+
+        unsubscribed = Group(name='unsubscribed')
+        Session.add(unsubscribed)
 
 
 def add_users():
@@ -116,10 +119,12 @@ def add_mailings():
     """Create a dummy mailing."""
     with transaction.manager:
         trial = Group.by_name('trial')
+        admins = Group.by_name('admins')
 
         mailing = Mailing(
             name='welcome_email',
             groups=[trial, ],
+            exclude_groups=[admins, ],
             trigger=MailingTriggers.after_created.name,
             days=1,
             subject=u'Welcome!',

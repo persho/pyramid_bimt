@@ -40,6 +40,7 @@ def _make_mailing(
     id=1,
     name='foo',
     groups=None,
+    exclude_groups=None,
     trigger=MailingTriggers.never.name,
     days=0,
     subject=u'Sübject',
@@ -47,10 +48,13 @@ def _make_mailing(
 ):
     if groups is None:
         groups = [_make_group()]
+    if exclude_groups is None:
+        exclude_groups = []
     return Mailing(
         id=id,
         name=name,
         groups=groups,
+        exclude_groups=exclude_groups,
         trigger=trigger,
         days=days,
         subject=subject,
@@ -100,6 +104,7 @@ class TestMailingAdd(unittest.TestCase):
     APPSTRUCT = {
         'name': 'foo',
         'groups': [1, ],
+        'exclude_groups': [2, ],
         'trigger': 'never',
         'days': 30,
         'subject': u'Foö',
@@ -136,6 +141,7 @@ class TestMailingAdd(unittest.TestCase):
         mailing = Mailing.by_id(1)
         self.assertEqual(mailing.name, 'foo')
         self.assertEqual(mailing.groups, [Group.by_id(1)])
+        self.assertEqual(mailing.exclude_groups, [Group.by_id(2)])
         self.assertEqual(mailing.trigger, MailingTriggers.never.name)
         self.assertEqual(mailing.days, 30)
         self.assertEqual(mailing.subject, u'Foö')
@@ -150,6 +156,7 @@ class TestMailingEdit(unittest.TestCase):
     APPSTRUCT = {
         'name': 'bar',
         'groups': [1, 2],
+        'exclude_groups': [3, ],
         'trigger': 'after_created',
         'days': 7,
         'subject': u'Bär',
@@ -183,6 +190,7 @@ class TestMailingEdit(unittest.TestCase):
         self.assertEqual(self.view.appstruct(), {
             'name': 'welcome_email',
             'groups': ['3', ],
+            'exclude_groups': ['1', ],
             'trigger': MailingTriggers.after_created.name,
             'days': 1,
             'subject': u'Welcome!',
@@ -199,6 +207,7 @@ class TestMailingEdit(unittest.TestCase):
         mailing = Mailing.by_id(1)
         self.assertEqual(mailing.name, 'bar')
         self.assertEqual(mailing.groups, [Group.by_id(1), Group.by_id(2)])
+        self.assertEqual(mailing.exclude_groups, [Group.by_id(3)])
         self.assertEqual(mailing.trigger, MailingTriggers.after_created.name)
         self.assertEqual(mailing.days, 7)
         self.assertEqual(mailing.subject, u'Bär')
@@ -348,4 +357,19 @@ class TestRecipients(unittest.TestCase):
         self.assertItemsEqual(
             self.view.recipients,
             [User.by_email('admin@bar.com'), User.by_email('one@bar.com')],
+        )
+
+    def test_exclude(self):
+        add_groups()
+        add_users()
+        mailing = _make_mailing(
+            name='foo',
+            groups=[Group.by_name('admins'), Group.by_name('enabled')],
+            exclude_groups=[Group.by_name('admins')],
+        )
+        self.request.context = mailing
+
+        self.assertItemsEqual(
+            self.view.recipients,
+            [User.by_email('one@bar.com')],
         )

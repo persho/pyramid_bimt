@@ -76,11 +76,21 @@ class MailingAdd(FormView):
                 widget=deform.widget.CheckboxChoiceWidget(values=choices),
             ),
         )
+        self.schema.add_before(
+            'trigger',
+            node=colander.SchemaNode(
+                colander.Set(),
+                name='exclude_groups',
+                missing=[],
+                widget=deform.widget.CheckboxChoiceWidget(values=choices),
+            ),
+        )
 
     def submit_success(self, appstruct):
         mailing = Mailing(
             name=appstruct['name'],
             groups=[Group.by_id(group_id) for group_id in appstruct.get('groups')],  # noqa
+            exclude_groups=[Group.by_id(group_id) for group_id in appstruct.get('exclude_groups')],  # noqa
             trigger=appstruct['trigger'],
             days=appstruct['days'],
             subject=appstruct['subject'],
@@ -96,7 +106,7 @@ class MailingAdd(FormView):
 
     def appstruct(self):
         appstruct = dict()
-        for field in self.fields + ['groups']:
+        for field in self.fields + ['groups', 'exclude_groups']:
             if self.request.params.get(field) is not None:
                 appstruct[field] = self.request.params[field]
 
@@ -141,6 +151,10 @@ class MailingEdit(MailingAdd):
         recipients = set()
         for group in mailing.groups:
             recipients = recipients.union(group.users)
+
+        for group in mailing.exclude_groups:
+            recipients = recipients.difference(group.users)
+
         return recipients
 
     def save_success(self, appstruct):
@@ -148,6 +162,7 @@ class MailingEdit(MailingAdd):
 
         mailing.name = appstruct['name']
         mailing.groups = [Group.by_id(group_id) for group_id in appstruct['groups']]  # noqa
+        mailing.exclude_groups = [Group.by_id(group_id) for group_id in appstruct['exclude_groups']]  # noqa
         mailing.trigger = appstruct['trigger']
         mailing.days = appstruct['days']
         mailing.subject = appstruct['subject']
@@ -220,5 +235,7 @@ class MailingEdit(MailingAdd):
 
         if context.groups:
             appstruct['groups'] = [str(g.id) for g in context.groups]
+        if context.exclude_groups:
+            appstruct['exclude_groups'] = [str(g.id) for g in context.exclude_groups]  # noqa
 
         return appstruct

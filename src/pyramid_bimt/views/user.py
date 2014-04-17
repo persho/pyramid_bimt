@@ -79,6 +79,19 @@ class UserView(object):
             location=self.request.route_path('user_list')
         )
 
+    @view_config(route_name='user_unsubscribe', permission='user')
+    def unsubscribe(self):
+        request = self.context.request
+
+        if request.user.unsubscribe():
+            request.session.flash(
+                u'You have been unsubscribed from newsletter.')
+        else:
+            request.session.flash(
+                u'You are already unsubscribed from newsletter.')
+
+        return HTTPFound(location='/')
+
 
 @view_config(
     route_name='user_add',
