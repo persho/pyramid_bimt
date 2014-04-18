@@ -93,7 +93,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         message = Message(
             subject='{} Password Reset'.format('BIMT'),
             recipients=['one@bar.com', ],
-            body='test',
+            html='test',
         )
         match_message = self._MessageMatcher(compare_message, message)
         get_mailer().send.assert_called_with(match_message)

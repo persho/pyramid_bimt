@@ -41,7 +41,6 @@ Scenario: Test mailing
       And page should contain  Mailing "introduction email" sent to "admin@bar.com".
       And last email should contain  To: admin@bar.com
       And last email should contain  Subject: [Mailing Test] Let's introduce ourselves!
-      And last email should contain encoded  Hello Admin,
       And last email should contain encoded  This mailing would be sent to:
       And last email should contain encoded  one@bar.com
       And last email should contain encoded  Best wishes,
@@ -57,7 +56,6 @@ Scenario: Send mailing immediately
       And page should contain  Mailing "introduction email" sent to 1 recipients.
       And last email should contain  To: one@bar.com
       And last email should contain  Subject: Let's introduce ourselves!
-      And last email should contain encoded  Hello One Bar,
       And last email should contain encoded  Welcome to BIMT!
       And last email should contain encoded  Best wishes,
       And last email should contain encoded  ${APP_TITLE} Team
