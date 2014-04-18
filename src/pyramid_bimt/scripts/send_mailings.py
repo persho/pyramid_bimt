@@ -20,32 +20,33 @@ logger = logging.getLogger(__name__)
 def send_mailings():
     with transaction.manager:  # so send() will actually send emails
         for mailing in Mailing.query.all():
+
+            def send(mailing, user):
+                mailing.send(user)
+                logger.info(
+                    u'Sent mailing "{}" for user "{}" ({}).'.format(
+                        mailing.name, user.email, user.id))
+
             if mailing.trigger == MailingTriggers.after_created.name:
                 for user in User.query.filter(
                     func.date(User.created) == func.date(
                         date.today() - timedelta(days=mailing.days))
                 ).all():
-                    mailing.send(user)
-                    logger.info('Sent mailing "{}" for user "{}" ({}).'.format(
-                        mailing.name, user.email, user.id))
+                    send(mailing, user)
 
             elif mailing.trigger == MailingTriggers.after_last_payment.name:
                 for user in User.query.filter(
                     func.date(User.last_payment) == func.date(
                         date.today() - timedelta(days=mailing.days))
                 ).all():
-                    mailing.send(user)
-                    logger.info('Sent mailing "{}" for user "{}" ({}).'.format(
-                        mailing.name, user.email, user.id))
+                    send(mailing, user)
 
             elif mailing.trigger == MailingTriggers.before_valid_to.name:
                 for user in User.query.filter(
                     func.date(User.valid_to) == func.date(
                         date.today() + timedelta(days=mailing.days))
                 ).all():
-                    mailing.send(user)
-                    logger.info('Sent mailing "{}" for user "{}" ({}).'.format(
-                        mailing.name, user.email, user.id))
+                    send(mailing, user)
 
 
 def main(argv=sys.argv):
