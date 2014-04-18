@@ -372,3 +372,45 @@ class TestUserEdit(unittest.TestCase):
         user = User.by_id(2)
         self.assertEqual(user.email, 'foo@bar.com')
         self.assertTrue(verify('secret', user.password))
+
+
+class TestUserUnsubscribe(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        add_routes_user(self.config)
+        initTestingDB(users=True, groups=True, auditlog_types=True)
+
+        from pyramid_bimt.views.user import UserView
+        self.context = User.by_id(2)
+        self.request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            user=self.context
+        )
+        self.context.request = self.request
+        self.view = UserView(self.context, self.request)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_unsubscribe(self):
+        self.assertFalse(self.context.unsubscribed)
+
+        result = self.view.unsubscribe()
+        self.assertTrue(self.context.unsubscribed)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, '/')
+        self.assertEqual(
+            self.request.session.pop_flash(),
+            [u'You have been unsubscribed from newsletter.']
+        )
+
+        result = self.view.unsubscribe()
+        self.assertTrue(self.context.unsubscribed)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, '/')
+        self.assertEqual(
+            self.request.session.pop_flash(),
+            [u'You are already unsubscribed from newsletter.']
+        )

@@ -311,6 +311,35 @@ class User(Base, BaseMixin):
         else:
             return False
 
+    @property
+    def unsubscribed(self):
+        """True if User is in 'unsubscribed' group, False otherwise."""
+        return 'unsubscribed' in [g.name for g in self.groups]
+
+    def subscribe(self):
+        """Subscribe User by removing it from the 'unsubscribed' group.
+
+        :return: True if user was subscribed, False if nothing changed.
+        :rtype: bool
+        """
+        if self.unsubscribed:
+            self.groups.remove(Group.by_name('unsubscribed'))
+            return True
+        else:
+            return False
+
+    def unsubscribe(self):
+        """Unsubscribed User by appending it from the 'unsubscribed' group.
+
+        :return: True if user was unsubscribed, False if nothing changed.
+        :rtype: bool
+        """
+        if self.unsubscribed:
+            return False
+        else:
+            self.groups.append(Group.by_name('unsubscribed'))
+            return True
+
     @classmethod
     def by_id(self, user_id):
         """Get a User by id."""
@@ -671,6 +700,22 @@ mailing_group_table = Table(
     UniqueConstraint('mailing_id', 'group_id', name='mailing_id_group_id'),
 )
 
+exclude_mailing_group_table = Table(
+    'exclude_mailing_group',
+    Base.metadata,
+    Column(
+        'mailing_id',
+        Integer,
+        ForeignKey('mailings.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    Column(
+        'group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    UniqueConstraint('mailing_id', 'group_id', name='mailing_id_group_id'),
+)
+
 
 MAILING_BODY_DEFAULT = u"""
 Enter the main body of the email. It will be injected between the
@@ -709,6 +754,11 @@ class Mailing(Base, BaseMixin):
         'Group',
         secondary=mailing_group_table,
         backref='mailings',
+    )
+
+    exclude_groups = relationship(
+        'Group',
+        secondary=exclude_mailing_group_table,
     )
 
     trigger = Column(

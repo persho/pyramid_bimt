@@ -211,6 +211,31 @@ class TestEnabledDisabled(unittest.TestCase):
         )
 
 
+class TestSubscription(unittest.TestCase):
+
+    def setUp(self):
+        initTestingDB(users=True, groups=True)
+        self.config = testing.setUp()
+        self.user = _make_user()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_user_unsubscribe(self):
+        self.assertFalse(self.user.unsubscribed)
+        self.assertTrue(self.user.unsubscribe())
+        self.assertFalse(self.user.unsubscribe())
+        self.assertTrue(self.user.unsubscribed)
+
+    def test_user_subscribe(self):
+        self.test_user_unsubscribe()
+        self.assertTrue(self.user.unsubscribed)
+        self.assertTrue(self.user.subscribe())
+        self.assertFalse(self.user.subscribe())
+        self.assertFalse(self.user.unsubscribed)
+
+
 class TestUserProperties(unittest.TestCase):
 
     def setUp(self):
