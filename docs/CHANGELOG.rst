@@ -5,7 +5,14 @@ Changelog
 0.6.2.2 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Fix for #341.
+  [zupo]
+
+- Adjusted @@sanity-check to make sure admin user is disabled in production.
+  [zupo]
+
+- Documentation on how to enable IRC notifications from GetSentry.
+  [zupo]
 
 
 0.6.2.1 (2014-04-08)

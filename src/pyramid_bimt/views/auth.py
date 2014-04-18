@@ -19,7 +19,7 @@ from pyramid_deform import FormView
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 
-PASSWORD_RESET_EMAIL_BODY = """
+PASSWORD_RESET_EMAIL_BODY = u"""
 Hi {fullname},
 
 your new password for {app_title} is: {password}
