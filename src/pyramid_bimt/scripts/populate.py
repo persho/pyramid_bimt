@@ -78,7 +78,7 @@ def add_users():
         admin = User(
             email=u'admin@bar.com',
             password=SECRET_ENC,
-            fullname=u'Admin',
+            fullname=u'Ädmin',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         admin.groups.append(admins)
@@ -89,7 +89,7 @@ def add_users():
         one = User(
             email=u'one@bar.com',
             password=SECRET_ENC,
-            fullname=u'One Bar',
+            fullname=u'Öne Bar',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],
         )
         one.groups.append(enabled)

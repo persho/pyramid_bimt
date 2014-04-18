@@ -248,7 +248,7 @@ class TestMailingEdit(unittest.TestCase):
         self.assertEqual(mailer.outbox[0].subject, u'Welcome!')
 
         self.assertIn(
-            'Hello One Bar', mailer.outbox[0].html,)
+            u'Hello Öne Bar', mailer.outbox[0].html,)
         self.assertIn(
             'Welcome to this amazing BIMT app!', mailer.outbox[0].html)
         self.assertIn('Best wishes,', mailer.outbox[0].html)
