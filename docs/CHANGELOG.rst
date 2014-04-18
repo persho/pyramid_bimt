@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.6.4 (unreleased)
-------------------
+0.6.3.1 (2014-04-18)
+--------------------
 
-- Nothing changed yet.
+- Brown-bag release.
+  [zupo]
 
 
 0.6.3 (2014-04-18)
