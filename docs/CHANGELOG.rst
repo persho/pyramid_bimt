@@ -2,11 +2,11 @@ Changelog
 =========
 
 
-0.6.3.2 (unreleased)
---------------------
+0.7 (2014-04-20)
+----------------
 
-- Add ``.../unsubscribe`` view and ``Exclude Groups`` to Mailing
-  page. When upgrading to this version, upgrade step must be run
+- [DB MIGRATION REQUIRED] Add ``.../unsubscribe`` view and ``Exclude Groups``
+  to Mailing page. When upgrading to this version, upgrade step must be run
   on applications to add 'exclude_mailing_group' relation table
   and add group ``unsubscribed``.
   [matejc]
