@@ -802,6 +802,11 @@ class Mailing(Base, BaseMixin):
         )},
     )
 
+    @property
+    def allow_unsubscribed(self):
+        """False if exclude_groups contains group named unsubscribed."""
+        return 'unsubscribed' not in [g.name for g in self.exclude_groups]
+
     def send(self, recipient):
         """Send the mailing to a recipient."""
         request = get_current_request()
@@ -820,9 +825,11 @@ class Mailing(Base, BaseMixin):
             mailer.send(Message(
                 subject=self.subject,
                 recipients=[recipient.email, ],
-                html=render(
-                    'pyramid_bimt:templates/email.pt',
-                    {'fullname': recipient.fullname, 'body': body}),
+                html=render('pyramid_bimt:templates/email.pt', {
+                    'fullname': recipient.fullname,
+                    'body': body,
+                    'unsubscribe_url': None if self.allow_unsubscribed else request.route_url('user_unsubscribe'),  # noqa
+                }),
             ))
             logger.info(u'Mailing "{}" sent to "{}".'.format(
                 self.name, recipient.email))

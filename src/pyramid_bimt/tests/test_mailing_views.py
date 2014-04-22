@@ -5,6 +5,7 @@ from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
 from pyramid_basemodel import Session
 from pyramid_bimt import add_routes_mailing
+from pyramid_bimt import add_routes_user
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
@@ -262,6 +263,69 @@ class TestMailingEdit(unittest.TestCase):
             'Welcome to this amazing BIMT app!', mailer.outbox[0].html)
         self.assertIn('Best wishes,', mailer.outbox[0].html)
         self.assertIn('BIMT Team', mailer.outbox[0].html)
+
+
+class TestMailUnsubscribe(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'mail.default_sender': 'admin@bimt.com',
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
+        self.config.include('pyramid_mailer.testing')
+        initTestingDB(groups=True, mailings=True, users=True)
+        add_routes_mailing(self.config)
+
+        from pyramid_bimt.views.mailing import MailingEdit
+        self.request = testing.DummyRequest()
+        self.view = MailingEdit(self.request)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    @mock.patch('pyramid_bimt.models.get_current_request')
+    def test_in_unsubscribed(self, get_current_request):
+        get_current_request.return_value = self.request
+        add_routes_user(self.config)
+        self.request.user = User.by_id(1)
+        self.request.context = _make_mailing(
+            id=123, name='excluded',
+            groups=[Group.by_name('admins'), Group.by_name('enabled')],
+            exclude_groups=[Group.by_name('unsubscribed')],
+            body=u'Body', subject=u'Subject'
+        )
+
+        mailer = get_mailer(self.request)
+
+        self.request.context.send(self.request.user)
+
+        self.assertEqual(len(mailer.outbox), 1)
+        self.assertEqual(
+            mailer.outbox[0].subject, u'Subject')
+        self.assertIn('<a href="http://example.com/unsubscribe">Unsubscribe from our Newsletter</a>', mailer.outbox[0].html)  # noqa
+
+    @mock.patch('pyramid_bimt.models.get_current_request')
+    def test_not_in_unsubscribed(self, get_current_request):
+        get_current_request.return_value = self.request
+        add_routes_user(self.config)
+        self.request.user = User.by_id(1)
+        self.request.context = _make_mailing(
+            id=123, name='excluded',
+            groups=[Group.by_name('admins'), Group.by_name('enabled')],
+            exclude_groups=[],
+            body=u'Body', subject=u'Subject'
+        )
+
+        mailer = get_mailer(self.request)
+
+        self.request.context.send(self.request.user)
+
+        self.assertEqual(len(mailer.outbox), 1)
+        self.assertEqual(
+            mailer.outbox[0].subject, u'Subject')
+        self.assertNotIn('Unsubscribe from our Newsletter', mailer.outbox[0].html)  # noqa
 
 
 class TestBefore(unittest.TestCase):
