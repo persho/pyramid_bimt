@@ -813,7 +813,8 @@ class Mailing(Base, BaseMixin):
         mailer = get_mailer(request)
 
         with tempfile.NamedTemporaryFile(suffix='.pt') as body_template:
-            body_template.write(self.body)
+            assert type(self.body) is unicode, 'Mail body type must be unicode, not {}!'.format(type(self.body))  # noqa
+            body_template.write(self.body.encode('utf-8'))
             body_template.seek(0)
 
             body_template.seek(0)

@@ -127,8 +127,8 @@ def add_mailings():
             exclude_groups=[admins, ],
             trigger=MailingTriggers.after_created.name,
             days=1,
-            subject=u'Welcome!',
-            body=u'Welcome to this amazing BIMT app!',
+            subject=u'Über Welcome!',
+            body=u'Welcome to this über amazing BIMT app!',
         )
         Session.add(mailing)
 
