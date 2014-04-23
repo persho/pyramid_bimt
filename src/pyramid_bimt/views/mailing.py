@@ -178,7 +178,8 @@ class MailingEdit(MailingAdd):
         mailing = self.request.context
 
         with tempfile.NamedTemporaryFile(suffix='.pt') as template:
-            template.write(mailing.body)
+            assert type(mailing.body) is unicode, 'Mail body type must be unicode, not {}!'.format(type(mailing.body))  # noqa
+            template.write(mailing.body.encode('utf-8'))
             template.seek(0)
             body = render(
                 template.name,

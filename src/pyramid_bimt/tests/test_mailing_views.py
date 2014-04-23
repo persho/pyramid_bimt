@@ -194,8 +194,8 @@ class TestMailingEdit(unittest.TestCase):
             'exclude_groups': ['1', ],
             'trigger': MailingTriggers.after_created.name,
             'days': 1,
-            'subject': u'Welcome!',
-            'body': u'Welcome to this amazing BIMT app!',
+            'subject': u'Über Welcome!',
+            'body': u'Welcome to this über amazing BIMT app!',
         })
 
     def test_save_success(self):
@@ -233,9 +233,30 @@ class TestMailingEdit(unittest.TestCase):
         mailer = get_mailer(self.request)
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(
-            mailer.outbox[0].subject, u'[Mailing Test] Welcome!')
+            mailer.outbox[0].subject, u'[Mailing Test] Über Welcome!')
         self.assertIn('This mailing would be sent to:', mailer.outbox[0].html)
         self.assertIn('one@bar.com', mailer.outbox[0].html)
+
+    def test_test_success_non_unicode(self):
+        add_users()
+        self.request.user = User.by_id(1)
+        self.request.context = _make_mailing(
+            id=1,
+            name='foo',
+            groups=None,
+            exclude_groups=None,
+            trigger=MailingTriggers.never.name,
+            days=0,
+            subject='Subject',
+            body='Body',
+        )
+
+        with self.assertRaises(AssertionError) as cm:
+            self.view.test_success(self.APPSTRUCT)
+        self.assertEqual(
+            cm.exception.message,
+            'Mail body type must be unicode, not <type \'str\'>!'
+        )
 
     @mock.patch('pyramid_bimt.models.get_current_request')
     def test_send_immediately_success(self, get_current_request):
@@ -255,14 +276,36 @@ class TestMailingEdit(unittest.TestCase):
         mailer = get_mailer(self.request)
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(mailer.outbox[0].recipients, ['one@bar.com', ])
-        self.assertEqual(mailer.outbox[0].subject, u'Welcome!')
+        self.assertEqual(mailer.outbox[0].subject, u'Über Welcome!')
 
         self.assertIn(
             u'Hello Öne Bar', mailer.outbox[0].html,)
         self.assertIn(
-            'Welcome to this amazing BIMT app!', mailer.outbox[0].html)
+            u'Welcome to this über amazing BIMT app!', mailer.outbox[0].html)
         self.assertIn('Best wishes,', mailer.outbox[0].html)
         self.assertIn('BIMT Team', mailer.outbox[0].html)
+
+    @mock.patch('pyramid_bimt.models.get_current_request')
+    def test_send_immediately_success_non_unicode(self, get_current_request):
+        get_current_request.return_value = self.request
+        add_users()
+        self.request.context = _make_mailing(
+            id=1,
+            name='foo',
+            groups=None,
+            exclude_groups=None,
+            trigger=MailingTriggers.never.name,
+            days=0,
+            subject='Subject',
+            body='Body',
+        )
+
+        with self.assertRaises(AssertionError) as cm:
+            self.view.send_immediately_success(self.APPSTRUCT)
+        self.assertEqual(
+            cm.exception.message,
+            'Mail body type must be unicode, not <type \'str\'>!'
+        )
 
 
 class TestMailUnsubscribe(unittest.TestCase):
