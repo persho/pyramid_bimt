@@ -51,6 +51,7 @@ Scenario: Send mailing immediately
      When I go to  http://localhost:8080/mailing/1/edit
       And I click button  Send immediately
      Then page should contain  Immediately send mailing "introduction email" to all 1 recipients without date constraints?
+     Wait Until Element Is Visible  xpath=//button[.='OK']  timeout=3
       And when I click button  OK
      Then location should be  http://localhost:8080/mailing/1/edit
       And page should contain  Mailing "introduction email" sent to 1 recipients.

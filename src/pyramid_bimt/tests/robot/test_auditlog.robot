@@ -24,6 +24,7 @@ Scenario: Add audit log entry
 Scenario: Delete audit log entry
     I log in as admin
     Go to  http://localhost:8080/audit-log
+    Select From List By Label  name=DataTables_Table_0_length  100
     I click delete audit log entry  Fake create user.
     Location Should Be  http://localhost:8080/audit-log
     Page Should Contain  Audit log entry deleted.
