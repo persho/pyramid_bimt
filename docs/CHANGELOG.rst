@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.7.2 (unreleased)
+0.7.2 (2014-04-24)
 ------------------
 
 - UniqueConstraint names must be unique.
