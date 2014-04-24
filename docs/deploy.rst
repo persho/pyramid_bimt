@@ -126,7 +126,7 @@ While we're at it, let's also configure IRC notifications from GitHub:
 
     $ gem install github_cli
     $ gcli authorize
-    $ gcli hook create niteoweb bnh
+    $ gcli hook create niteoweb <APP>
         --events=pull_request
         --name=irc
         --config=server:irc.freenode.net port:7000 room:"#niteoweb" ssl:1 message_without_join:1
@@ -141,6 +141,23 @@ We aggregate all logs in Papertrail:
 
     $ heroku addons:add papertrail
 
+Once you have Papertrail ready, you need to prepare Amazon S3 to keep your
+log archives for future reference. Amazon S3 is managed via
+https://console.aws.amazon.com/.
+
+First, you need to create a `Bucket` to store your backups on S3. Select ``S3``
+under ``Services`` in `Amazon AWS Console` and click ``Create Bucket``. Name
+it ``bimt-<APP>-logs``.
+
+Then click ``Properties`` -> ``Permissions`` -> ``Add more permissions``:
+- Grantee: aws@papertrailapp.com
+- check Upload/Delete
+
+Now that the S3 Bucket is ready, login to Papertrail (Heroku Dashboard -> app
+resources -> click Papertrail) and set the following:
+- Me -> Profile -> Name: NiteoWeb Ltd.
+- Me -> Profile -> Timezone: Ljubljana
+- Account -> Archive Copy -> Bucket name: bimt-<APP>-logs
 
 Error aggregation in GetSentry
 """"""""""""""""""""""""""""""
@@ -163,6 +180,10 @@ Integrations. Enable IRC and configure it like so:
 - Without join: checked
 - Nick: GetSentry
 - SSL: checked
+
+Also set the following:
+- Account -> Name: <APP TITLE>
+- Appearance -> Timezone: Ljubljana
 
 
 Network & DB metrics aggregation in Librato Metrics
@@ -198,6 +219,8 @@ We use MailGun to send out emails:
     $ heroku addons:add mailgun
 
 Now go to MailGun control-panel and add & configure a domain for your app.
+Enable tracking of HTML emails & clicks.
+
 After your domain is ready, configure your app to use the correct postmaster
 account:
 
@@ -211,14 +234,19 @@ account:
 Scheduled maintenance scripts with Heroku Scheduler
 """""""""""""""""""""""""""""""""""""""""""""""""""
 
-To daily check for user's with expired membership, we use the Heroku Scheduler
-to run the ``python -m pyramid_bimt.scripts.expire_subscriptions`` command on a
-daily basis:
+We run daily maintenance scripts with Heroku Scheduler:
 
 .. code-block:: bash
 
     $ heroku addons:add scheduler
     $ heroku addons:open scheduler
+
+Add the following BIMT scripts (plus any additional app-specific ones):
+
+.. code-block:: bash
+
+    python -m pyramid_bimt.scripts.expire_subscriptions etc/production.ini
+    python -m pyramid_bimt.scripts.sanity_check_email etc/production.ini
 
 
 On-site PostgreSQL backups
