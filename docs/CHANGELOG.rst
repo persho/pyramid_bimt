@@ -5,7 +5,8 @@ Changelog
 0.7.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- UniqueConstraint names must be unique.
+  [zupo]
 
 
 0.7.1 (2014-04-24)

@@ -713,7 +713,7 @@ exclude_mailing_group_table = Table(
         Integer,
         ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
     ),
-    UniqueConstraint('mailing_id', 'group_id', name='mailing_id_group_id'),
+    UniqueConstraint('mailing_id', 'group_id', name='exclude_mailing_id_group_id'),  # noqa
 )
 
 
