@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.8 (unreleased)
-----------------
+0.7.1 (2014-04-24)
+------------------
 
-- Nothing changed yet.
+- Support for unsubscribing from Mailings.
+  [matejc]
 
 
 0.7 (2014-04-20)
