@@ -43,9 +43,18 @@ class TestPortletsFetchers(unittest.TestCase):
         MockedPortlet.by_user_and_position.return_value = [
             Portlet(html=u'foö'), ]
 
-        self.assertEqual(above_content_portlets(self.context, request), u'foö')
-        self.assertEqual(below_sidebar_portlets(self.context, request), u'foö')
-        self.assertEqual(above_footer_portlets(self.context, request), u'foö')
+        self.assertEqual(
+            above_content_portlets(self.context, request),
+            u'<div class="well">foö</div>\n'
+        )
+        self.assertEqual(
+            below_sidebar_portlets(self.context, request),
+            u'<div class="well">foö</div>\n'
+        )
+        self.assertEqual(
+            above_footer_portlets(self.context, request),
+            u'<div class="well">foö</div>\n'
+        )
 
     @mock.patch('pyramid_bimt.layout.Portlet')
     def test_user_with_multiple_portlets(self, MockedPortlet):
@@ -54,9 +63,18 @@ class TestPortletsFetchers(unittest.TestCase):
         MockedPortlet.by_user_and_position.return_value = [
             Portlet(html=u'foö'), Portlet(html=u'bär')]
 
-        self.assertEqual(above_content_portlets(self.context, request), u'foöbär')  # noqa
-        self.assertEqual(below_sidebar_portlets(self.context, request), u'foöbär')  # noqa
-        self.assertEqual(above_footer_portlets(self.context, request), u'foöbär')   # noqa
+        self.assertEqual(
+            above_content_portlets(self.context, request),
+            u'<div class="well">foö</div>\n<div class="well">bär</div>\n',
+        )
+        self.assertEqual(
+            below_sidebar_portlets(self.context, request),
+            u'<div class="well">foö</div>\n<div class="well">bär</div>\n',
+        )
+        self.assertEqual(
+            above_footer_portlets(self.context, request),
+            u'<div class="well">foö</div>\n<div class="well">bär</div>\n',
+        )
 
 
 class TestFlashMessages(unittest.TestCase):
