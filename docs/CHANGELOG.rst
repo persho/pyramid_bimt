@@ -5,7 +5,10 @@ Changelog
 0.7.3 (unreleased)
 ------------------
 
-- Portlets changed, they are now rendered using a template. Fixes #355
+- Add support for AJAX loading of data into jQuery.dataTables, refs #358.
+  [ferewuz, zupo]
+
+- Portlets changed, they are now rendered using a template. Fixes #355.
   [ferewuz]
 
 

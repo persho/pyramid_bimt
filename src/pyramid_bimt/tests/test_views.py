@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for pyramid_bimt views."""
 
+from collections import OrderedDict
 from pyramid import testing
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid_basemodel import Session
@@ -119,66 +120,6 @@ def compare_message(self, other):
         return True
     else:
         return False
-
-
-class TestAuditLogView(unittest.TestCase):
-    def setUp(self):
-        settings = {
-            'bimt.app_title': 'BIMT',
-        }
-        self.config = testing.setUp(settings=settings)
-        initTestingDB(auditlog_types=True, groups=True, users=True)
-        configure(self.config)
-        self.request = testing.DummyRequest()
-        app = self.config.make_wsgi_app()
-        self.testapp = webtest.TestApp(app)
-
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_audit_log(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/audit-log', status=200)
-        self.assertIn('<h1>Audit Log</h1>', resp.text)
-
-    def test_audit_log_delete(self):
-        from pyramid_bimt.models import AuditLogEventType
-        from pyramid_bimt.models import AuditLogEntry
-        from pyramid_bimt.views.auditlog import audit_log_delete
-        import transaction
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-        request = self.request
-        entry = AuditLogEntry(
-            user_id=1,
-            event_type_id=AuditLogEventType.by_name('UserCreated').id,
-        )
-        Session.add(entry)
-        request.context = entry
-        transaction.commit()
-        resp = audit_log_delete(request)
-        self.assertIn('/audit-log', resp.location)
-
-    def test_audit_log_add(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/audit-log/add', status=200)
-        self.assertIn('<h1>Add Audit log entry</h1>', resp.text)
-
-    def test_audit_log_add_submit_success(self):
-        from pyramid_bimt.views.auditlog import AuditLogAddEntryForm
-        import datetime
-        audit_log_add_view = AuditLogAddEntryForm(self.request)
-        form_values = {
-            'timestamp': datetime.datetime.now(),
-            'user_id': 1,
-            'event_type_id': 1,
-            'comment': 'testing'
-        }
-        resp = audit_log_add_view.submit_success(form_values)
-        self.assertIn('/audit-log', resp.location)
 
 
 class TestLogoutView(unittest.TestCase):
@@ -324,3 +265,91 @@ class TestFormView(unittest.TestCase):
         result = self.view()
         self.assertEqual(result['title'], 'Foo Form')
         self.assertEqual(result['description'], None)
+
+
+class TestDatatablesAJAXView(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest()
+
+        from pyramid_bimt.views import DatatablesDataView
+        self.view = DatatablesDataView(self.request)
+
+        self.view.model = mock.Mock()
+        self.view.columns = OrderedDict()
+        self.view.columns['foo'] = None
+        self.view.columns['bar'] = None
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_sEcho(self):
+        self.view.model.get_all.return_value.all.return_value = []
+        self.request.GET['sEcho'] = '1'
+
+        result = self.view()
+        self.assertEqual(result['sEcho'], 1)
+
+    def test_iTotalRecords_iTotalDisplayrecors(self):
+        self.view.model.get_all.return_value.all.return_value = []
+        self.view.model.get_all.return_value.count.return_value = 1
+
+        result = self.view()
+        self.assertEqual(result['iTotalRecords'], 1)
+        self.assertEqual(result['iTotalDisplayRecords'], 1)
+
+    def test_default_query_parameters(self):
+        self.view.model.get_all.return_value.all.return_value = []
+        self.view()
+
+        self.view.model.get_all.assert_any_call(
+            search=None, order_by='foo', order_direction='asc', offset=(0, 10))
+
+    def test_arbitrary_query_parameters(self):
+        self.request.GET['iDisplayStart'] = '5'
+        self.request.GET['iDisplayLength'] = '50'
+        self.request.GET['sSearch'] = 'foo'
+        self.request.GET['iSortCol_0'] = '1'
+        self.request.GET['sSortDir_0'] = 'desc'
+
+        self.view.model.get_all.return_value.all.return_value = []
+        self.view()
+
+        self.view.model.get_all.assert_any_call(
+            search='foo', order_by='bar', order_direction='desc', offset=(5, 55))  # noqa
+
+    def test_integration(self):
+        from pyramid_bimt.models import AuditLogEntry
+        from pyramid_bimt.views import DatatablesDataView
+        initTestingDB(auditlog_types=True)
+
+        class DummyDatatablesAJAXView(DatatablesDataView):
+
+            model = AuditLogEntry
+
+            columns = OrderedDict()
+            columns['id'] = None
+            columns['comment'] = None
+
+            def populate_columns(self, entry):
+                self.columns['id'] = entry.id
+                self.columns['comment'] = entry.comment
+
+        Session.add(AuditLogEntry(comment=u'föo'))
+        Session.add(AuditLogEntry(comment=u'bär'))
+        Session.flush()
+
+        self.request.GET['sSearch'] = u'föo'
+
+        resp = DummyDatatablesAJAXView(self.request)()
+        self.assertEqual(resp['sEcho'], 0)
+        self.assertEqual(resp['iTotalRecords'], 2)
+        self.assertEqual(resp['iTotalDisplayRecords'], 1)
+        self.assertEqual(
+            resp['aaData'],
+            [
+                [1, u'föo']
+            ],
+        )
+
+        Session.remove()

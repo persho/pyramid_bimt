@@ -152,7 +152,17 @@ class TestEntryGetAll(unittest.TestCase):
         self.assertEqual(entries[1].comment, 'bar')
         self.assertEqual(entries[2].comment, 'foo')
 
-    def test_override_ordered_by(self):
+    def test_override_order_direction(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
+        entries = AuditLogEntry.get_all(order_direction='asc').all()
+        self.assertEqual(len(entries), 3)
+        self.assertEqual(entries[0].comment, 'foo')
+        self.assertEqual(entries[1].comment, 'bar')
+        self.assertEqual(entries[2].comment, 'baz')
+
+    def test_override_order_by(self):
         _make_entry(comment=u'foo')
         _make_entry(comment=u'bar')
         _make_entry(comment=u'baz')
@@ -161,6 +171,24 @@ class TestEntryGetAll(unittest.TestCase):
         self.assertEqual(entries[0].comment, 'foo')
         self.assertEqual(entries[1].comment, 'baz')
         self.assertEqual(entries[2].comment, 'bar')
+
+    def test_offset(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
+        entries = AuditLogEntry.get_all(offset=(1, 2)).all()
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[0].comment, 'bar')
+        self.assertEqual(entries[1].comment, 'foo')
+
+    def test_search(self):
+        _make_entry(comment=u'foo')
+        _make_entry(comment=u'bar')
+        _make_entry(comment=u'baz')
+        entries = AuditLogEntry.get_all(search='ba').all()
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[0].comment, 'baz')
+        self.assertEqual(entries[1].comment, 'bar')
 
     def test_filter_by(self):
         _make_entry(comment=u'foo')

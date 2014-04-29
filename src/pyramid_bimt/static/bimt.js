@@ -53,10 +53,18 @@
             });
 
             // Enable datatables
-            $table.dataTable({
+            var settings = {
                 "aaSorting"   : [[0, sort_direction]],
-                "aoColumns"   : aoColumns
-            });
+                "aoColumns"   : aoColumns,
+            };
+            if ($table.data('ajax') === true) {
+                /* jshint ignore:start */
+                settings["bProcessing"] = true;
+                settings["bServerSide"] = true;
+                settings["sAjaxSource"] = document.URL;
+                /* jshint ignore:end */
+            }
+            $table.dataTable(settings);
 
             $('.datatable').each(function () {
             // Add the placeholder for Search and Length and turn them into

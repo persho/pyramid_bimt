@@ -70,6 +70,7 @@ To build your environment in the same manner as it's built on Heroku do this:
     # Build and start the Heroku environment locally
     $ source bin/activate
     $ pip install -r requirements.txt
+    $ heroku config:pull --overwrite
     $ foreman start
 
 Heroku uses ``requirements.txt`` to install all dependencies, make sure all
@@ -91,7 +92,7 @@ If you want, you can deploy the entire app to your own Heroku account:
     $ git push heroku master  # upload code
     $ heroku addons:add heroku-postgresql:dev
     $ heroku pg:promote <HEROKU_POSTGRESQL_URL>
-    $ heroku run 'python -m <APP>.scripts.populate'  # populate db
+    $ heroku run 'python -m <APP>.scripts.populate etc/production.ini'  # populate db
     $ heroku restart  # restart the app so DB changes take effect
     $ heroku logs -t  # see what's going on
     $ heroku open  # open deployed app in your browser
