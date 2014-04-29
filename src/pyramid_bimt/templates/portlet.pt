@@ -1,0 +1,1 @@
+<div tal:content="structure content" class="well" />

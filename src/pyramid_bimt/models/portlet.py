@@ -5,6 +5,7 @@
 from flufl.enum import Enum
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid.renderers import render
 from sqlalchemy import Column
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey
@@ -105,6 +106,13 @@ class Portlet(Base, BaseMixin):
             widget=deform.widget.TextAreaWidget(rows=10),
         )},
     )
+
+    def get_rendered_portlet(self):
+        """Get rendered portlet html"""
+        return render(
+            'pyramid_bimt:templates/portlet.pt',
+            {'content': self.html}
+        )
 
     @classmethod
     def by_id(self, portlet_id):

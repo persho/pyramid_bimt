@@ -5,7 +5,8 @@ Changelog
 0.7.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Portlets changed, they are now rendered using a template. Fixes #355
+  [ferewuz]
 
 
 0.7.2 (2014-04-24)

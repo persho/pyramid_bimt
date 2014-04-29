@@ -64,7 +64,7 @@ def above_content_portlets(context, request):
         portlets = Portlet.by_user_and_position(
             request.user, PortletPositions.above_content.name)
         if portlets:
-            return u''.join([portlet.html for portlet in portlets])
+            return render_portlets(portlets)
     return ''
 
 
@@ -74,7 +74,7 @@ def below_sidebar_portlets(context, request):
         portlets = Portlet.by_user_and_position(
             request.user, PortletPositions.below_sidebar.name)
         if portlets:
-            return u''.join([portlet.html for portlet in portlets])
+            return render_portlets(portlets)
     return ''
 
 
@@ -84,5 +84,10 @@ def above_footer_portlets(context, request):
         portlets = Portlet.by_user_and_position(
             request.user, PortletPositions.above_footer.name)
         if portlets:
-            return u''.join([portlet.html for portlet in portlets])
+            return render_portlets(portlets)
     return ''
+
+
+def render_portlets(portlets):
+    """Render selected portlets"""
+    return u''.join([portlet.get_rendered_portlet() for portlet in portlets])

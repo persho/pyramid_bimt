@@ -42,6 +42,13 @@ class TestPortletModel(unittest.TestCase):
             Session.flush()
         self.assertIn('column name is not unique', cm.exception.message)
 
+    def test_render_portlet(self):
+        portlet = _make_portlet(name='foo', html=u'fööbär')
+        self.assertEqual(
+            portlet.get_rendered_portlet(),
+            u'<div class="well">f\xf6\xf6b\xe4r</div>\n'
+        )
+
 
 class TestPortletById(unittest.TestCase):
 
