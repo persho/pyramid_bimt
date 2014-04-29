@@ -258,7 +258,7 @@ class TestMailingEdit(unittest.TestCase):
             'Mail body type must be unicode, not <type \'str\'>!'
         )
 
-    @mock.patch('pyramid_bimt.models.get_current_request')
+    @mock.patch('pyramid_bimt.models.mailing.get_current_request')
     def test_send_immediately_success(self, get_current_request):
         get_current_request.return_value = self.request
         add_users()
@@ -285,7 +285,7 @@ class TestMailingEdit(unittest.TestCase):
         self.assertIn('Best wishes,', mailer.outbox[0].html)
         self.assertIn('BIMT Team', mailer.outbox[0].html)
 
-    @mock.patch('pyramid_bimt.models.get_current_request')
+    @mock.patch('pyramid_bimt.models.mailing.get_current_request')
     def test_send_immediately_success_non_unicode(self, get_current_request):
         get_current_request.return_value = self.request
         add_users()
@@ -328,7 +328,7 @@ class TestMailUnsubscribe(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.models.get_current_request')
+    @mock.patch('pyramid_bimt.models.mailing.get_current_request')
     def test_in_unsubscribed(self, get_current_request):
         get_current_request.return_value = self.request
         add_routes_user(self.config)
@@ -349,7 +349,7 @@ class TestMailUnsubscribe(unittest.TestCase):
             mailer.outbox[0].subject, u'Subject')
         self.assertIn('<a href="http://example.com/unsubscribe">Unsubscribe from our Newsletter</a>', mailer.outbox[0].html)  # noqa
 
-    @mock.patch('pyramid_bimt.models.get_current_request')
+    @mock.patch('pyramid_bimt.models.mailing.get_current_request')
     def test_not_in_unsubscribed(self, get_current_request):
         get_current_request.return_value = self.request
         add_routes_user(self.config)
