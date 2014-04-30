@@ -9,6 +9,7 @@ from pyramid.security import remember
 from pyramid.view import view_config
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedOut
+from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
@@ -16,8 +17,6 @@ from pyramid_bimt.security import verify
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView
-from pyramid_mailer import get_mailer
-from pyramid_mailer.message import Message
 
 PASSWORD_RESET_EMAIL_BODY = u"""
 Hi {fullname},
@@ -87,19 +86,22 @@ class LoginForm(FormView):
             # change user's password and send email
             password = generate()
             user.password = encrypt(password)
-            mailer = get_mailer(self.request)
-            message = Message(
-                subject='{} Password Reset'.format(
-                    self.request.registry.settings['bimt.app_title']),
-                recipients=[user.email, ],
-                html=PASSWORD_RESET_EMAIL_BODY.format(
-                    fullname=user.fullname,
-                    password=password,
-                    login_url=self.request.route_url('login'),
-                    app_title=self.request.registry.settings['bimt.app_title']
-                ),
+            self.request.registry.notify(
+                UserChangedPassword(self.request, user)
             )
-            mailer.send(message)
+            # mailer = get_mailer(self.request)
+            # message = Message(
+            #     subject='{} Password Reset'.format(
+            #         self.request.registry.settings['bimt.app_title']),
+            #     recipients=[user.email, ],
+            #     html=PASSWORD_RESET_EMAIL_BODY.format(
+            #         fullname=user.fullname,
+            #         password=password,
+            #         login_url=self.request.route_url('login'),
+            #         app_title=self.request.registry.settings['bimt.app_title']  # noqa
+            #     ),
+            # )
+            # mailer.send(message)
 
             self.request.session.flash(
                 u'A new password was sent to your email.')

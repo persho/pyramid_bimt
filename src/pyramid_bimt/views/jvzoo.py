@@ -13,9 +13,6 @@ from pyramid_bimt.models import Session
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
-from pyramid_mailer import get_mailer
-from pyramid_mailer.message import Message
-from pyramid.renderers import render
 
 import logging
 import hashlib
@@ -82,7 +79,6 @@ class JVZooView(object):
                 self.request.registry.notify(
                     UserCreated(self.request, user, comment.format(
                         u'Created', trans_id, trans_type, '')))
-                self.send_welcome_email(user, password)
                 logger.info('JVZoo created new user: {}'.format(user.email))
 
             group = Group.by_product_id(
@@ -174,42 +170,42 @@ class JVZooView(object):
         else:
             raise ValueError('Checksum verification failed')
 
-    def send_welcome_email(self, user, password):
-        """Send a welcome email to the user, containing login credentials."""
-        app_title = self.request.registry.settings['bimt.app_title']
-        mailer = get_mailer(self.request)
-        if user.get_property('api_key', None):
-            api_key = u"""
-            <p>
-              Here is your API key for integrating with other services: <br />
-              API key: {}
-            </p>
-            """.format(user.get_property('api_key'))
-        else:
-            api_key = ''
+    # def send_welcome_email(self, user, password):
+    #     """Send a welcome email to the user, containing login credentials."""
+    #     app_title = self.request.registry.settings['bimt.app_title']
+    #     mailer = get_mailer(self.request)
+    #     if user.get_property('api_key', None):
+    #         api_key = u"""
+    #         <p>
+    #           Here is your API key for integrating with other services: <br />  # noqa
+    #           API key: {}
+    #         </p>
+    #         """.format(user.get_property('api_key'))
+    #     else:
+    #         api_key = ''
 
-        body = u"""
-            <p>
-              Here are your login details for the membership area:<br>
-              u: {username}<br>
-              p: {password}
-            </p>
-            {api_key}
-            <p>
-              Login to the members' area:<br>
-              <a href="{login_url}">{login_url}</a>
-            </p>
-        """.format(
-            username=user.email,
-            password=password,
-            api_key=api_key,
-            login_url=self.request.route_url('login'),
-        )
+    #     body = u"""
+    #         <p>
+    #           Here are your login details for the membership area:<br>
+    #           u: {username}<br>
+    #           p: {password}
+    #         </p>
+    #         {api_key}
+    #         <p>
+    #           Login to the members' area:<br>
+    #           <a href="{login_url}">{login_url}</a>
+    #         </p>
+    #     """.format(
+    #         username=user.email,
+    #         password=password,
+    #         api_key=api_key,
+    #         login_url=self.request.route_url('login'),
+    #     )
 
-        mailer.send(Message(
-            recipients=[user.email, ],
-            subject=u'Welcome to {}!'.format(app_title),
-            html=render(
-                'pyramid_bimt:templates/email.pt',
-                {'fullname': user.fullname, 'body': body},
-            )))
+    #     mailer.send(Message(
+    #         recipients=[user.email, ],
+    #         subject=u'Welcome to {}!'.format(app_title),
+    #         html=render(
+    #             'pyramid_bimt:templates/email.pt',
+    #             {'fullname': user.fullname, 'body': body},
+    #         )))
