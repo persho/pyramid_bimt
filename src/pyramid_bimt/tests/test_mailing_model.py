@@ -91,7 +91,6 @@ class TestSendMailingsScript(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
         }
-        self.config = testing.setUp(settings=settings)
         self.request = testing.DummyRequest()
         self.config = testing.setUp(request=self.request, settings=settings)
         self.config.include('pyramid_mailer.testing')
@@ -212,3 +211,51 @@ class TestSendMailingsScript(unittest.TestCase):
         send_mailings()
         self.assertEqual(len(self.mailer.outbox), 1)
         self.assertEqual(self.mailer.outbox[0].subject, 'foo')
+
+
+class TestMailingEvents(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.request = testing.DummyRequest()
+        self.config = testing.setUp(request=self.request, settings=settings)
+        self.config.scan('pyramid_bimt.models.mailing')
+        self.config.include('pyramid_mailer.testing')
+        self.mailer = get_mailer(self.request)
+        initTestingDB(users=True, groups=True, mailings=True, auditlog_types=True)  # noqa
+
+        self.user = User(email='foo@bar.com')
+        Session.add(self.user)
+        Session.flush()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_user_created_mailing(self):
+        from pyramid_bimt.events import UserCreated
+        self.request.registry.notify(UserCreated(self.request, self.user))
+
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn(u'You are succesfully registered!', self.mailer.outbox[0].html)  # noqa
+
+    def test_user_disabled_mailing(self):
+        from pyramid_bimt.events import UserDisabled
+        self.request.registry.notify(UserDisabled(self.request, self.user))
+
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn(u'Your account is disabled!', self.mailer.outbox[0].html)  # noqa
+
+    def test_after_user_changed_password(self):
+        from pyramid_bimt.events import UserChangedPassword
+        self.request.registry.notify(
+            UserChangedPassword(self.request, self.user)
+        )
+
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn(u'Your password is changed!', self.mailer.outbox[0].html)  # noqa

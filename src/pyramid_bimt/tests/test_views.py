@@ -73,36 +73,14 @@ class TestLoginViewsFunctional(unittest.TestCase):
                 'But it fails with message {}'.format(cm.exception.message)
             )
 
-    class _MessageMatcher(object):
-        def __init__(self, compare, msg):
-            self.msg = msg
-            self.compare = compare
-
-        def __eq__(self, other):
-            return self.compare(self.msg, other)
-
-    @mock.patch('pyramid_bimt.views.auth.get_mailer')
-    def test_login_reset_password(self, get_mailer):
+    def test_login_reset_password(self):
         resp = self.testapp.get('/login', status=200)
-        from pyramid_mailer.message import Message
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
         resp = resp.form.submit('reset_password')
         self.assertIn('302 Found', resp.text)
         resp = resp.follow()
         self.assertIn('A new password was sent to your email.', resp.text)
-        message = Message(
-            subject='{} Password Reset'.format('BIMT'),
-            recipients=['one@bar.com', ],
-            html='test',
-        )
-        match_message = self._MessageMatcher(compare_message, message)
-        get_mailer().send.assert_called_with(match_message)
-
-        with self.assertRaises(AssertionError):
-            message.subject = 'test'
-            match_message = self._MessageMatcher(compare_message, message)
-            get_mailer().send.assert_called_with(match_message)
 
     def test_login_reset_password_no_user(self):
         resp = self.testapp.get('/login', status=200)
@@ -111,15 +89,6 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('reset_password')
         self.assertIn('Password reset failed. Make sure you have correctly '
                       'entered your email address.', resp.text)
-
-
-def compare_message(self, other):
-    if (self.subject == other.subject and
-            self.sender == other.sender and
-            self.recipients == other.recipients):
-        return True
-    else:
-        return False
 
 
 class TestLogoutView(unittest.TestCase):
