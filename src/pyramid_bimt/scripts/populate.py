@@ -132,6 +132,33 @@ def add_mailings():
         )
         Session.add(mailing)
 
+        mailing_created = Mailing(
+            name='after_creation',
+            trigger=MailingTriggers.after_user_created.name,
+            days=0,
+            subject=u'Welcome to BIMT!',
+            body=u'You are succesfully registered!',
+        )
+        Session.add(mailing_created)
+
+        mailing_disabled = Mailing(
+            name='after_disabled',
+            trigger=MailingTriggers.after_user_disabled.name,
+            days=0,
+            subject=u'Welcome to BIMT!',
+            body=u'Your account is disabled!',
+        )
+        Session.add(mailing_disabled)
+
+        mailing_password_changed = Mailing(
+            name='after_user_changed_password',
+            trigger=MailingTriggers.after_user_changed_password.name,
+            days=0,
+            subject=u'Welcome to BIMT!',
+            body=u'Your password is changed!',
+        )
+        Session.add(mailing_password_changed)
+
 
 def add_default_content():  # pragma: no cover (bw compat only)
 

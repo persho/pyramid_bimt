@@ -35,14 +35,14 @@ def initTestingDB(
     if groups:
         add_groups()
 
+    if mailings:
+        add_mailings()
+
     if users:
         add_users()
 
     if portlets:
         add_portlets()
-
-    if mailings:
-        add_mailings()
 
 
 @view_defaults(permission=NO_PERMISSION_REQUIRED)
