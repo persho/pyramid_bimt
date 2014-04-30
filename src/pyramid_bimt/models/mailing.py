@@ -2,10 +2,14 @@
 """Mailing models."""
 
 from flufl.enum import Enum
+from pyramid.events import subscriber
 from pyramid.renderers import render
 from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid_bimt.events import UserChangedPassword
+from pyramid_bimt.events import UserCreated
+from pyramid_bimt.events import UserDisabled
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from sqlalchemy import Column
@@ -75,6 +79,9 @@ class MailingTriggers(Enum):
     after_last_payment = 'x days after last_payment'
     before_valid_to = 'x days before valid_to'
     never = 'never'
+    after_user_created = 'immediatelly after user is created'
+    after_user_disabled = 'immediatelly after user is disabled'
+    after_user_changed_password = 'immediatelly after user changes password'
 
 
 class Mailing(Base, BaseMixin):
@@ -187,3 +194,26 @@ class Mailing(Base, BaseMixin):
     def by_name(self, mailing_name):
         """Get a Mailing by name."""
         return Mailing.query.filter_by(name=mailing_name).first()
+
+    @classmethod
+    def by_trigger_name(self, trigger_name):
+        """Get a Mailing by triggername."""
+        return Mailing.query.filter_by(trigger=trigger_name).all()
+
+
+@subscriber(UserCreated)
+def user_created_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_created.name):  # noqa
+        mailing.send(event.user)
+
+
+@subscriber(UserDisabled)
+def user_disabled_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_disabled.name):  # noqa
+        mailing.send(event.user)
+
+
+@subscriber(UserChangedPassword)
+def user_changed_password_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_changed_password.name):  # noqa
+        mailing.send(event.user)
