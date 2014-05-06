@@ -53,6 +53,7 @@ setup(
         'pyramid_mailer',
         'pyramid_raven',
         'python-dateutil',
+        'requests',
     ],
     extras_require={
         'test': [

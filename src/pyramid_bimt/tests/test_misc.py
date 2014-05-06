@@ -95,3 +95,35 @@ class TestCheckSettings(unittest.TestCase):
             check_required_settings(self.config_full)
 
         self.assertIn('bimt.jvzoo_secret_key', cm.exception.message)
+
+
+class TestAutoKillConnactions(unittest.TestCase):
+
+    def setUp(self):
+        from pyramid_bimt import kill_connections
+        self.kill_connections = kill_connections
+        testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_no_exception(self):
+        try:
+            # empty arguments could throw exception
+            self.kill_connections(username=None, password=None, apiurl=None)
+        except:
+            self.fail('kill_connections function should not raise exception')
+
+    @mock.patch('pyramid_bimt.requests')
+    def test_kill_connections(self, requests):
+        requests.get.return_value.status_code = 200
+        requests.get.return_value.json.return_value = [{'name': 'foo bar'}]
+
+        self.kill_connections(
+            username='foo', password='bar', apiurl='http://foo.bar')
+
+        requests.delete.assert_called_with(
+            'http://foo.bar/api/connections/foo%20bar',
+            headers={'X-Reason': 'Auto-kill on app start'},
+            auth=('foo', 'bar')
+        )
