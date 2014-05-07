@@ -17,7 +17,12 @@ from pyramid_bimt.acl import groupfinder
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
+import logging
+import requests
 import sys
+import urllib
+
+logger = logging.getLogger('init')
 
 
 REQUIRED_SETTINGS = [
@@ -121,6 +126,27 @@ def add_routes_other(config):
     config.add_route('sanity_check', '/sanity-check')
 
 
+def kill_connections(username=None, password=None, apiurl=None):
+    try:
+        r = requests.get(
+            '{}/api/connections'.format(apiurl),
+            auth=(username, password)
+        )
+        assert r.status_code == 200
+
+        for connection_dict in r.json():
+            name = urllib.quote(connection_dict['name'])
+            requests.delete(
+                '{}/api/connections/{}'.format(apiurl, name),
+                auth=(username, password),
+                headers={'X-Reason': 'Auto-kill on app start'}
+            )
+
+    except Exception as ex:  # catch everything
+        # do not allow errors in this function to stop startup of application
+        logger.warning(str(ex))
+
+
 def configure(config, settings={}):
 
     # Include pyramid layout
@@ -158,6 +184,12 @@ def configure(config, settings={}):
 
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore=ignores)
+
+    kill_connections(
+        username=settings.get('bimt.amqp_username', ''),
+        password=settings.get('bimt.amqp_password', ''),
+        apiurl=settings.get('bimt.amqp_apiurl', '')
+    )
 
 
 def check_required_settings(config):
