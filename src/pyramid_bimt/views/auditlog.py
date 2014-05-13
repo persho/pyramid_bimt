@@ -2,6 +2,7 @@
 """Views for loggin in, logging out, etc."""
 
 from colanderalchemy import SQLAlchemySchemaNode
+from collections import OrderedDict
 from datetime import datetime
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
@@ -10,6 +11,7 @@ from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import table_assets
+from pyramid_bimt.views import DatatablesDataView
 from pyramid_deform import FormView
 
 
@@ -18,14 +20,47 @@ from pyramid_deform import FormView
     permission='admin',
     layout='default',
     renderer='pyramid_bimt:templates/audit_log.pt',
+    xhr=False,
 )
 def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
     app_assets.need()
     table_assets.need()
-    return {
-        'entries': AuditLogEntry.get_all(),
-    }
+    return {}
+
+
+@view_config(
+    route_name='audit_log',
+    permission='admin',
+    renderer='json',
+    xhr=True,
+)
+class AuditLogAJAX(DatatablesDataView):
+    """Ajax view used to populate AuditLog datatables with JSON data."""
+    model = AuditLogEntry
+
+    columns = OrderedDict()
+    columns['timestamp'] = None
+    columns['event_type_id'] = None
+    columns['user_id'] = None
+    columns['comment'] = None
+    columns['action'] = None
+
+    def populate_columns(self, entry):
+        self.columns['event_type_id'] = entry.event_type.title
+        self.columns['comment'] = entry.comment
+        self.columns['timestamp'] = \
+            entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')
+        self.columns['user_id'] = '<a href="{}">{}</a>'.format(
+            self.request.route_path('user_view', user_id=entry.user.id),
+            entry.user.email,
+        )
+        self.columns['action'] = """
+        <a class="btn btn-xs btn-danger" href="{}">
+          <span class="glyphicon glyphicon-remove-sign"></span> Delete
+        </a>
+        """.format(
+            self.request.route_path('audit_log_delete', entry_id=entry.id))
 
 
 @view_config(

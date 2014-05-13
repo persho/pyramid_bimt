@@ -175,28 +175,44 @@ class AuditLogEntry(Base):
         return Session.query(AuditLogEntry).filter_by(id=id).first()
 
     @classmethod
-    def get_all(class_, order_by='timestamp', filter_by=None, limit=100):
+    def get_all(
+        class_,
+        order_by='timestamp',
+        order_direction='desc',
+        filter_by=None,
+        offset=None,
+        search=None,
+        limit=100,
+    ):
         """Return all auditlog entries.
 
-        By default, order by ``timestamp`` and limit to ``100`` results.
+        By default, order descending by ``timestamp`` and limit to ``100``
+        results.
 
         :param order_by: The column name that should be used for ordering
             results.
         :type order_by: string
 
-        :param order_by: Mapping of query filters, for example
+        :param order_direction: Name of order direction: 'asc' or 'desc'.
+        :type order_direction: string
+
+        :param filter_by: Mapping of query filters, for example
             ``{'comment': 'foo'}``
-        :type order_by: dict
+        :type filter_by: dict
 
         :return: list of AuditLogEntry instances, wrapped in a SQLAlchemy Query
             object, so you can call ``.all()`` to convert to list, or append
-            additional query parameters (such as ``.desc()`` for descending)
+            additional query parameters (such as ``.count()`` for counting)
         :rtype: :class:sqlalchemy.orm.query.Query
         """
         AuditLogEntry = class_
         q = Session.query(AuditLogEntry)
-        q = q.order_by(getattr(AuditLogEntry, order_by).desc())
+        q = q.order_by('{} {}'.format(order_by, order_direction))
         if filter_by:
             q = q.filter_by(**filter_by)
+        if search:
+            q = q.filter(AuditLogEntry.comment.like(u'%{}%'.format(search)))
+        if offset:
+            q = q.slice(offset[0], offset[1])
         q = q.limit(limit)
         return q

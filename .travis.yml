@@ -28,6 +28,9 @@ after_success:
   - echo "secret_key=$AWS_SECRET_KEY" >> .s3cfg
   - test $TRAVIS_BRANCH == 'master' && s3cmd sync --config=.s3cfg docs/html/* s3://docs.niteoweb.com/pyramid_bimt/
 
+before_deploy:
+  - git fetch --unshallow
+
 deploy:
   provider: pypi
   server: https://pypi.niteoweb.com

@@ -46,6 +46,21 @@ attribute, like so:
     <th data-sort-disabled="true">Bar</th>
 
 
+Dynamic tables with AJAX loading
+--------------------------------
+
+If you have many thousands of rows to show, it's better to load data into
+datatables via AJAX. Do it like so:
+
+ * add the ``data-ajax="true"`` attribute to the ``table`` tag
+ * remove any HTML code inside the ``<tbody`` tag
+ * provide an implementation of the
+   :class:`pyramid_bimt.views.DatatablesDataView` class:
+
+.. autoclass:: pyramid_bimt.views.DatatablesDataView
+    :members:
+
+
 Show 'secret' info on click
 ---------------------------
 

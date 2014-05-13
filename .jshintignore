@@ -1,3 +1,4 @@
 src/pyramid_bimt/static/datatables/dataTables.bootstrap.js
 src/pyramid_bimt/static/datatables/dataTables.bootstrap.min.js
+src/pyramid_bimt/static/bimt.min.js
 
