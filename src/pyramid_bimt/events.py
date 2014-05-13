@@ -75,6 +75,13 @@ class PyramidBIMTEvent(object):
 class UserCreated(PyramidBIMTEvent):
     """Emitted whenever a new user is created."""
 
+    def __init__(self, request, user, password, comment=None):
+        self.request = request
+        self.user = user
+        self.password = password
+        self.comment = comment
+        self.log_event(comment=comment)
+
 
 @implementer(IUserLoggedIn)
 class UserLoggedIn(PyramidBIMTEvent):
@@ -87,7 +94,7 @@ class UserLoggedOut(PyramidBIMTEvent):
 
 
 @implementer(IUserChangedPassword)
-class UserChangedPassword(PyramidBIMTEvent):
+class UserChangedPassword(UserCreated):
     """Emitted whenever a user changes its password."""
 
 
