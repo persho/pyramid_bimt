@@ -383,4 +383,4 @@ class TestJVZooViewFunctional(unittest.TestCase):
         )
         self.assertEqual(len(self.mailer.outbox), 1)
         self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn(u'You are succesfully registered!', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'Here are your login details for the membership area', self.mailer.outbox[0].html)  # noqa

@@ -132,7 +132,7 @@ def add_dummy_mailings():
         Session.add(mailing)
 
 
-def add_mailings(app_title=u'Bimt'):
+def add_mailings(app_title=u'BIMT'):
     """Create a default mailings."""
     with transaction.manager:
 
@@ -161,8 +161,8 @@ def add_mailings(app_title=u'Bimt'):
             name='after_disabled',
             trigger=MailingTriggers.after_user_disabled.name,
             days=0,
-            subject=u'Your {} is disabled!'.format(app_title),
-            body=u'Your account is disabled!',
+            subject=u'Your {} account is disabled.'.format(app_title),
+            body=u'Your account is disabled.',
         )
         Session.add(mailing_disabled)
 
