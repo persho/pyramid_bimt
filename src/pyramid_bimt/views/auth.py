@@ -18,18 +18,6 @@ from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView
 
-PASSWORD_RESET_EMAIL_BODY = u"""
-Hi {fullname},
-
-your new password for {app_title} is: {password}
-
-Login to the members' area:
-{login_url}
-
-Regards,
-The Big IM Toolbox Team
-"""
-
 
 @view_config(
     route_name='login',
@@ -83,25 +71,12 @@ class LoginForm(FormView):
         user = User.by_email(email)
         if user is not None:
 
-            # change user's password and send email
+            # change user's password and fire event
             password = generate()
             user.password = encrypt(password)
             self.request.registry.notify(
-                UserChangedPassword(self.request, user)
+                UserChangedPassword(self.request, user, password)
             )
-            # mailer = get_mailer(self.request)
-            # message = Message(
-            #     subject='{} Password Reset'.format(
-            #         self.request.registry.settings['bimt.app_title']),
-            #     recipients=[user.email, ],
-            #     html=PASSWORD_RESET_EMAIL_BODY.format(
-            #         fullname=user.fullname,
-            #         password=password,
-            #         login_url=self.request.route_url('login'),
-            #         app_title=self.request.registry.settings['bimt.app_title']  # noqa
-            #     ),
-            # )
-            # mailer.send(message)
 
             self.request.session.flash(
                 u'A new password was sent to your email.')

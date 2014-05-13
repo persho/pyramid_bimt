@@ -77,7 +77,7 @@ class JVZooView(object):
                 )
                 Session.add(user)
                 self.request.registry.notify(
-                    UserCreated(self.request, user, comment.format(
+                    UserCreated(self.request, user, password, comment.format(
                         u'Created', trans_id, trans_type, '')))
                 logger.info('JVZoo created new user: {}'.format(user.email))
 
@@ -169,43 +169,3 @@ class JVZooView(object):
             return True
         else:
             raise ValueError('Checksum verification failed')
-
-    # def send_welcome_email(self, user, password):
-    #     """Send a welcome email to the user, containing login credentials."""
-    #     app_title = self.request.registry.settings['bimt.app_title']
-    #     mailer = get_mailer(self.request)
-    #     if user.get_property('api_key', None):
-    #         api_key = u"""
-    #         <p>
-    #           Here is your API key for integrating with other services: <br />  # noqa
-    #           API key: {}
-    #         </p>
-    #         """.format(user.get_property('api_key'))
-    #     else:
-    #         api_key = ''
-
-    #     body = u"""
-    #         <p>
-    #           Here are your login details for the membership area:<br>
-    #           u: {username}<br>
-    #           p: {password}
-    #         </p>
-    #         {api_key}
-    #         <p>
-    #           Login to the members' area:<br>
-    #           <a href="{login_url}">{login_url}</a>
-    #         </p>
-    #     """.format(
-    #         username=user.email,
-    #         password=password,
-    #         api_key=api_key,
-    #         login_url=self.request.route_url('login'),
-    #     )
-
-    #     mailer.send(Message(
-    #         recipients=[user.email, ],
-    #         subject=u'Welcome to {}!'.format(app_title),
-    #         html=render(
-    #             'pyramid_bimt:templates/email.pt',
-    #             {'fullname': user.fullname, 'body': body},
-    #         )))
