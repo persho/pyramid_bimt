@@ -146,6 +146,7 @@ def add_mailings(app_title=u'BIMT'):
               Here is your API key for integrating with other services: <br />  # noqa
               API key: ${python: user.get_property('api_key')}
             </p>
+            <p>Login to the members' area: ${request.route_url('login')}</p>
         """
 
         mailing_created = Mailing(
@@ -168,7 +169,8 @@ def add_mailings(app_title=u'BIMT'):
 
         password_email_body = u"""
 
-         Your new password for ${app_title} is: ${password}
+        <p>Your new password for ${app_title} is: ${password}</p>
+         <p>Login to the members' area: ${request.route_url('login')}</p>
 
          """
         mailing_password_changed = Mailing(

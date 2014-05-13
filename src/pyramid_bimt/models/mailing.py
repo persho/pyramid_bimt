@@ -69,7 +69,12 @@ MAILING_BODY_DEFAULT = u"""
 Enter the main body of the email. It will be injected between the
 "Hello <fullname>" and "Best wishes, <app_title> Team".
 
-You can use any user attributes in the email like so: ${user.fullname}
+You can use any user attributes in the email like so: ${user.fullname}.
+Also available to use is:
+    - {request}
+    - {app_title}
+    - {password} (only when mail trigger is after_user_created or
+        after_user_changed_password)
 """
 
 

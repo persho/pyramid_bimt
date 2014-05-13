@@ -8,6 +8,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
+from pyramid_mailer import get_mailer
 
 import colander
 import mock
@@ -23,8 +24,14 @@ class TestLoginViewsFunctional(unittest.TestCase):
             'mail.default_sender': 'test_sender',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB(auditlog_types=True, groups=True, users=True)
+        initTestingDB(
+            auditlog_types=True,
+            groups=True,
+            users=True,
+            mailings=True
+        )
         configure(self.config)
+        self.request = testing.DummyRequest()
         add_home_view(self.config)
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
@@ -74,6 +81,8 @@ class TestLoginViewsFunctional(unittest.TestCase):
             )
 
     def test_login_reset_password(self):
+        self.config.include('pyramid_mailer.testing')
+        self.mailer = get_mailer(self.testapp.app.registry)
         resp = self.testapp.get('/login', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
@@ -81,6 +90,8 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('302 Found', resp.text)
         resp = resp.follow()
         self.assertIn('A new password was sent to your email.', resp.text)
+        self.assertEqual(self.mailer.outbox[1].subject, u'BIMT Password Reset')
+        self.assertIn(u'Öne Bar', self.mailer.outbox[1].html)
 
     def test_login_reset_password_no_user(self):
         resp = self.testapp.get('/login', status=200)
