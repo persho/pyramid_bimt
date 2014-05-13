@@ -4,6 +4,7 @@
 from flufl.enum import Enum
 from pyramid.events import subscriber
 from pyramid.renderers import render
+from pyramid.threadlocal import get_current_registry
 from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
@@ -157,7 +158,7 @@ class Mailing(Base, BaseMixin):
         """False if exclude_groups contains group named unsubscribed."""
         return 'unsubscribed' not in [g.name for g in self.exclude_groups]
 
-    def send(self, recipient):
+    def send(self, recipient, password=None):
         """Send the mailing to a recipient."""
         request = get_current_request()
         mailer = get_mailer(request)
@@ -170,7 +171,12 @@ class Mailing(Base, BaseMixin):
             body_template.seek(0)
             body = render(
                 body_template.name,
-                dict(request=request, user=recipient),
+                dict(
+                    request=request,
+                    user=recipient,
+                    app_title=get_current_registry().settings['bimt.app_title'],  # noqa
+                    password=password,
+                ),
             )
 
             mailer.send(Message(
@@ -179,6 +185,7 @@ class Mailing(Base, BaseMixin):
                 html=render('pyramid_bimt:templates/email.pt', {
                     'fullname': recipient.fullname,
                     'body': body,
+                    'app_title': get_current_registry().settings['bimt.app_title'],  # noqa
                     'unsubscribe_url': None if self.allow_unsubscribed else request.route_url('user_unsubscribe'),  # noqa
                 }),
             ))
@@ -204,7 +211,7 @@ class Mailing(Base, BaseMixin):
 @subscriber(UserCreated)
 def user_created_send_mailings(event):
     for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_created.name):  # noqa
-        mailing.send(event.user)
+        mailing.send(event.user, password=event.password)
 
 
 @subscriber(UserDisabled)
@@ -216,4 +223,4 @@ def user_disabled_send_mailings(event):
 @subscriber(UserChangedPassword)
 def user_changed_password_send_mailings(event):
     for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_changed_password.name):  # noqa
-        mailing.send(event.user)
+        mailing.send(event.user, password=event.password)
