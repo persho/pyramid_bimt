@@ -115,8 +115,7 @@ def add_portlets():
         Session.add(portlet)
 
 
-def add_mailings():
-    """Create a dummy mailing."""
+def add_dummy_mailings():
     with transaction.manager:
         trial = Group.by_name('trial')
         admins = Group.by_name('admins')
@@ -132,12 +131,29 @@ def add_mailings():
         )
         Session.add(mailing)
 
+
+def add_mailings(app_title=u'Bimt'):
+    """Create a default mailings."""
+    with transaction.manager:
+
+        user_created_body = u"""
+            <p>
+              Here are your login details for the membership area:<br>
+              u: ${user.email}<br>
+              p: ${password}
+            </p>
+            <p tal:condition="python: user.get_property('api_key', None)">
+              Here is your API key for integrating with other services: <br />  # noqa
+              API key: ${python: user.get_property('api_key')}
+            </p>
+        """
+
         mailing_created = Mailing(
             name='after_creation',
             trigger=MailingTriggers.after_user_created.name,
             days=0,
-            subject=u'Welcome to BIMT!',
-            body=u'You are succesfully registered!',
+            subject=u'Welcome to {}!'.format(app_title),
+            body=user_created_body,
         )
         Session.add(mailing_created)
 
@@ -145,17 +161,22 @@ def add_mailings():
             name='after_disabled',
             trigger=MailingTriggers.after_user_disabled.name,
             days=0,
-            subject=u'Welcome to BIMT!',
+            subject=u'Your {} is disabled!'.format(app_title),
             body=u'Your account is disabled!',
         )
         Session.add(mailing_disabled)
 
+        password_email_body = u"""
+
+         Your new password for ${app_title} is: ${password}
+
+         """
         mailing_password_changed = Mailing(
             name='after_user_changed_password',
             trigger=MailingTriggers.after_user_changed_password.name,
             days=0,
-            subject=u'Welcome to BIMT!',
-            body=u'Your password is changed!',
+            subject=u'{} Password Reset'.format(app_title),
+            body=password_email_body,
         )
         Session.add(mailing_password_changed)
 
@@ -165,6 +186,7 @@ def add_default_content():  # pragma: no cover (bw compat only)
     add_audit_log_event_types()
     add_groups()
     add_users()
+    add_mailings()
 
 
 def main(argv=sys.argv):
