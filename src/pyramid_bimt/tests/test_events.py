@@ -30,9 +30,10 @@ class TestUserCreatedEvent(unittest.TestCase):
         from pyramid_bimt.events import UserCreated
         request = testing.DummyRequest()
         user = _make_user()
-        event = UserCreated(request, user, u'foö')
+        event = UserCreated(request, user, u'test_password', comment=u'foö')
         self.assertEqual(event.request, request)
         self.assertEqual(event.user, user)
+        self.assertEqual(event.password, u'test_password')
         self.assertEqual(event.comment, u'foö')
 
     def test_logged_to_audit_log(self):
@@ -41,7 +42,9 @@ class TestUserCreatedEvent(unittest.TestCase):
         request = testing.DummyRequest()
         user = _make_user()
 
-        request.registry.notify(UserCreated(request, user, u'foö'))
+        request.registry.notify(
+            UserCreated(request, user, u'test_password', comment=u'foö')
+        )
         entries = user.audit_log_entries
 
         self.assertEqual(len(entries), 1)
@@ -135,9 +138,11 @@ class TestUserChangedPasswordEvent(unittest.TestCase):
         from pyramid_bimt.events import UserChangedPassword
         request = testing.DummyRequest()
         user = _make_user()
-        event = UserChangedPassword(request, user, u'foö')
+        password = u'test_password'
+        event = UserChangedPassword(request, user, password, comment=u'foö')
         self.assertEqual(event.request, request)
         self.assertEqual(event.user, user)
+        self.assertEqual(event.password, password)
         self.assertEqual(event.comment, u'foö')
 
     def test_logged_to_audit_log(self):
@@ -146,7 +151,9 @@ class TestUserChangedPasswordEvent(unittest.TestCase):
         request = testing.DummyRequest()
         user = _make_user()
 
-        request.registry.notify(UserChangedPassword(request, user, u'foö'))
+        request.registry.notify(
+            UserChangedPassword(request, user, u'test_password', comment=u'foö')  # noqa
+        )
         entries = user.audit_log_entries
 
         self.assertEqual(len(entries), 1)

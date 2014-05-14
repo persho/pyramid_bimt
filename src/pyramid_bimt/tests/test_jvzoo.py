@@ -134,7 +134,7 @@ class TestJVZooViewIntegration(unittest.TestCase):
         self.config.include('pyramid_mailer.testing')
         self.mailer = get_mailer(testing.DummyRequest())
         add_routes_auth(self.config)
-        initTestingDB(auditlog_types=True, groups=True)
+        initTestingDB(auditlog_types=True, groups=True, mailings=True)
         self.jvzoo_group = _make_jvzoo_group()
 
     def tearDown(self):
@@ -310,17 +310,6 @@ class TestJVZooViewIntegration(unittest.TestCase):
             u'regular until 2014-01-30',
         )
 
-        self.assertEqual(len(self.mailer.outbox), 1)
-        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn('Hello Foo Bär'.decode('utf-8'), self.mailer.outbox[0].html)  # noqa
-        self.assertIn('u: bar@bar.com', self.mailer.outbox[0].html)
-        self.assertIn('p: secret', self.mailer.outbox[0].html)
-        self.assertIn('BIMT Team', self.mailer.outbox[0].html)
-        self.assertIn(
-            '<a href="http://example.com/login">http://example.com/login</a>',
-            self.mailer.outbox[0].html,
-        )
-
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
     @mock.patch('pyramid_bimt.views.jvzoo.generate')
@@ -334,8 +323,6 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
         self.test_new_user_no_trial()
 
-        self.assertIn('API key: secret_key', self.mailer.outbox[0].html)
-
 
 class TestJVZooViewFunctional(unittest.TestCase):
 
@@ -346,7 +333,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB(auditlog_types=True, groups=True)
+        initTestingDB(auditlog_types=True, groups=True, mailings=True)
         _make_jvzoo_group()
         configure(self.config)
         app = self.config.make_wsgi_app()
@@ -394,15 +381,11 @@ class TestJVZooViewFunctional(unittest.TestCase):
             u'Enabled by JVZoo, transaction id: 123, type: SALE, note: trial until {}'.format(  # noqa
                 date.today() + timedelta(days=7)),
         )
-
         self.assertEqual(len(self.mailer.outbox), 1)
         self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn('Hello John Smith', self.mailer.outbox[0].html)
-        self.assertIn('u: john.smith@email.com', self.mailer.outbox[0].html)
-        self.assertNotIn('API', self.mailer.outbox[0].html)
-        self.assertRegexpMatches(self.mailer.outbox[0].html, 'p: .{10}\n')
-        self.assertIn('BIMT Team', self.mailer.outbox[0].html)
-        self.assertIn(
-            '<a href="http://localhost/login">http://localhost/login</a>',
-            self.mailer.outbox[0].html,
-        )
+        self.assertIn(u'Hello John Smith', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'Here are your login details for the membership area', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'u: john.smith@email.com', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'p: ', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'Best wishes', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'<a href="http://blog.bigimtoolbox.com/">visit our blog</a>', self.mailer.outbox[0].html)  # noqa

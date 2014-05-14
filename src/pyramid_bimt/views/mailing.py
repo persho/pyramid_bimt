@@ -4,6 +4,7 @@
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
+from pyramid.threadlocal import get_current_registry
 from pyramid.view import view_config
 from pyramid_basemodel import Session
 from pyramid_bimt.models import Group
@@ -201,7 +202,11 @@ class MailingEdit(MailingAdd):
             recipients=[self.request.user.email, ],
             html=render(
                 'pyramid_bimt:templates/email.pt',
-                {'fullname': self.request.user.fullname, 'body': body}),
+                {
+                    'fullname': self.request.user.fullname,
+                    'app_title': get_current_registry().settings['bimt.app_title'],  # noqa
+                    'body': body
+                }),
         ))
 
         self.request.session.flash(

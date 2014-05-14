@@ -2,10 +2,15 @@
 """Mailing models."""
 
 from flufl.enum import Enum
+from pyramid.events import subscriber
 from pyramid.renderers import render
+from pyramid.threadlocal import get_current_registry
 from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid_bimt.events import UserChangedPassword
+from pyramid_bimt.events import UserCreated
+from pyramid_bimt.events import UserDisabled
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from sqlalchemy import Column
@@ -64,7 +69,12 @@ MAILING_BODY_DEFAULT = u"""
 Enter the main body of the email. It will be injected between the
 "Hello <fullname>" and "Best wishes, <app_title> Team".
 
-You can use any user attributes in the email like so: ${user.fullname}
+You can use any user attributes in the email like so: ${user.fullname}.
+Also available to use is:
+    - {request}
+    - {app_title}
+    - {password} (only when mail trigger is after_user_created or
+        after_user_changed_password)
 """
 
 
@@ -75,6 +85,9 @@ class MailingTriggers(Enum):
     after_last_payment = 'x days after last_payment'
     before_valid_to = 'x days before valid_to'
     never = 'never'
+    after_user_created = 'immediatelly after user is created'
+    after_user_disabled = 'immediatelly after user is disabled'
+    after_user_changed_password = 'immediatelly after user changes password'
 
 
 class Mailing(Base, BaseMixin):
@@ -150,7 +163,7 @@ class Mailing(Base, BaseMixin):
         """False if exclude_groups contains group named unsubscribed."""
         return 'unsubscribed' not in [g.name for g in self.exclude_groups]
 
-    def send(self, recipient):
+    def send(self, recipient, password=None):
         """Send the mailing to a recipient."""
         request = get_current_request()
         mailer = get_mailer(request)
@@ -163,7 +176,12 @@ class Mailing(Base, BaseMixin):
             body_template.seek(0)
             body = render(
                 body_template.name,
-                dict(request=request, user=recipient),
+                dict(
+                    request=request,
+                    user=recipient,
+                    app_title=get_current_registry().settings['bimt.app_title'],  # noqa
+                    password=password,
+                ),
             )
 
             mailer.send(Message(
@@ -172,6 +190,7 @@ class Mailing(Base, BaseMixin):
                 html=render('pyramid_bimt:templates/email.pt', {
                     'fullname': recipient.fullname,
                     'body': body,
+                    'app_title': get_current_registry().settings['bimt.app_title'],  # noqa
                     'unsubscribe_url': None if self.allow_unsubscribed else request.route_url('user_unsubscribe'),  # noqa
                 }),
             ))
@@ -187,3 +206,26 @@ class Mailing(Base, BaseMixin):
     def by_name(self, mailing_name):
         """Get a Mailing by name."""
         return Mailing.query.filter_by(name=mailing_name).first()
+
+    @classmethod
+    def by_trigger_name(self, trigger_name):
+        """Get a Mailing by triggername."""
+        return Mailing.query.filter_by(trigger=trigger_name).all()
+
+
+@subscriber(UserCreated)
+def user_created_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_created.name):  # noqa
+        mailing.send(event.user, password=event.password)
+
+
+@subscriber(UserDisabled)
+def user_disabled_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_disabled.name):  # noqa
+        mailing.send(event.user)
+
+
+@subscriber(UserChangedPassword)
+def user_changed_password_send_mailings(event):
+    for mailing in Mailing.by_trigger_name(MailingTriggers.after_user_changed_password.name):  # noqa
+        mailing.send(event.user, password=event.password)

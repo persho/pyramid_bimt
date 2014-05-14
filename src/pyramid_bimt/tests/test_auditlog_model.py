@@ -86,8 +86,8 @@ class TestAuditLogEventType(unittest.TestCase):
 class TestAuditLogEntryModel(unittest.TestCase):
 
     def setUp(self):
-        initTestingDB()
         self.config = testing.setUp()
+        initTestingDB()
 
     def tearDown(self):
         Session.remove()

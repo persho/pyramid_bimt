@@ -3,6 +3,7 @@
 
 from pyramid import testing
 from pyramid_basemodel import Session
+from pyramid_bimt import add_routes_auth
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
@@ -91,7 +92,6 @@ class TestSendMailingsScript(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
         }
-        self.config = testing.setUp(settings=settings)
         self.request = testing.DummyRequest()
         self.config = testing.setUp(request=self.request, settings=settings)
         self.config.include('pyramid_mailer.testing')
@@ -212,3 +212,57 @@ class TestSendMailingsScript(unittest.TestCase):
         send_mailings()
         self.assertEqual(len(self.mailer.outbox), 1)
         self.assertEqual(self.mailer.outbox[0].subject, 'foo')
+
+
+class TestMailingEvents(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.request = testing.DummyRequest()
+        self.config = testing.setUp(request=self.request, settings=settings)
+        self.config.scan('pyramid_bimt.models.mailing')
+        self.config.include('pyramid_mailer.testing')
+        self.mailer = get_mailer(self.request)
+        initTestingDB(users=True, groups=True, mailings=True, auditlog_types=True)  # noqa
+        add_routes_auth(self.config)
+        self.user = User(email='foo@bar.com')
+        Session.add(self.user)
+        Session.flush()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_user_created_mailing(self):
+        from pyramid_bimt.events import UserCreated
+        self.request.registry.notify(UserCreated(self.request, self.user, u'test_password'))  # noqa
+
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn(u'Here are your login details for the membership area:', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'Login to the members\' area: http://example.com/login', self.mailer.outbox[0].html)  # noqa
+
+    def test_user_disabled_mailing(self):
+        from pyramid_bimt.events import UserDisabled
+        self.request.registry.notify(UserDisabled(self.request, self.user))
+
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(
+            self.mailer.outbox[0].subject,
+            u'Your BIMT account is disabled.'
+        )
+        self.assertIn(u'Your account is disabled.', self.mailer.outbox[0].html)
+
+    def test_after_user_changed_password(self):
+        from pyramid_bimt.events import UserChangedPassword
+        self.request.registry.notify(
+            UserChangedPassword(self.request, self.user, u'test_password')
+        )
+        # one mailing for user creation
+        self.assertEqual(len(self.mailer.outbox), 2)
+        self.assertEqual(self.mailer.outbox[1].subject, u'BIMT Password Reset')
+        self.assertIn(u'Your new password', self.mailer.outbox[1].html)
+        self.assertIn(u'test_password', self.mailer.outbox[1].html)
+        self.assertIn(u'Login to the members\' area: http://example.com/login', self.mailer.outbox[0].html)  # noqa

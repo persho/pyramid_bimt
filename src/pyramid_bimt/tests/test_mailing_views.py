@@ -11,7 +11,7 @@ from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import User
 from pyramid_bimt.scripts.populate import add_groups
-from pyramid_bimt.scripts.populate import add_mailings
+from pyramid_bimt.scripts.populate import add_dummy_mailings
 from pyramid_bimt.scripts.populate import add_users
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.tests.test_user_views import _make_user
@@ -171,7 +171,7 @@ class TestMailingEdit(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB(groups=True, mailings=True)
+        initTestingDB(groups=True, test_mailings=True)
         add_routes_mailing(self.config)
 
         from pyramid_bimt.views.mailing import MailingEdit
@@ -317,7 +317,7 @@ class TestMailUnsubscribe(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB(groups=True, mailings=True, users=True)
+        initTestingDB(groups=True, test_mailings=True, users=True)
         add_routes_mailing(self.config)
 
         from pyramid_bimt.views.mailing import MailingEdit
@@ -404,7 +404,7 @@ class TestBefore(unittest.TestCase):
     def test_set_value_for_send_immediately_button(self):
         add_groups()
         add_users()
-        add_mailings()
+        add_dummy_mailings()
         self.request.context = Mailing.by_id(1)
 
         schema = colander.Schema()
