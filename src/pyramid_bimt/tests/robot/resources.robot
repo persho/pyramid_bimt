@@ -186,6 +186,10 @@ I click delete audit log entry
     [Arguments]  ${value}
     Click Element  xpath=//*[.="${value}"]/../td/a[contains(.,"Delete")]
 
+I click delete first audit log entry of type
+    [Arguments]  ${value}
+    Click Element  xpath=//span[contains(.,"${value}")]/../../td/a[contains(.,"Delete")]
+
 I click sort by
     [Arguments]  ${value}
     Click Element  xpath=//*[.="${value}"]

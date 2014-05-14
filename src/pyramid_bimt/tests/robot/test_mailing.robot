@@ -21,7 +21,7 @@ Scenario: Add new mailing
       And I input text  name=subject  Welcome!
       And I input text  name=body  Welcome to BIMT!
       And I click button  Submit
-     Then location should be  http://localhost:8080/mailing/1/edit
+     Then location should be  http://localhost:8080/mailing/2/edit
       And page should contain  Mailing "welcome email" added.
 
 Scenario: Edit mailing
@@ -38,9 +38,9 @@ Scenario: Test mailing
      When I go to  http://localhost:8080/mailing/1/edit
       And I click button  Test
      Then location should be  http://localhost:8080/mailing/1/edit
-      And page should contain  Mailing "introduction email" sent to "admin@bar.com".
+      And page should contain  Mailing "welcome_email" sent to "admin@bar.com".
       And last email should contain  To: admin@bar.com
-      And last email should contain  Subject: [Mailing Test] Let's introduce ourselves!
+      And last email should contain  Subject: =?utf-8?q?=5BMailing_Test=5D_=C3=9Cber_Welcome!?=
       And last email should contain encoded  This mailing would be sent to:
       And last email should contain encoded  one@bar.com
       And last email should contain encoded  Best wishes,
@@ -50,14 +50,14 @@ Scenario: Send mailing immediately
     Given I log in as admin
      When I go to  http://localhost:8080/mailing/1/edit
       And I click button  Send immediately
-     Then page should contain  Immediately send mailing "introduction email" to all 1 recipients without date constraints?
+     Then page should contain  Immediately send mailing "welcome_email" to all 1 recipients without date constraints?
      Wait Until Element Is Visible  xpath=//button[.='OK']  timeout=3
       And when I click button  OK
      Then location should be  http://localhost:8080/mailing/1/edit
-      And page should contain  Mailing "introduction email" sent to 1 recipients.
+      And page should contain  Mailing "welcome_email" sent to 1 recipients.
       And last email should contain  To: one@bar.com
-      And last email should contain  Subject: Let's introduce ourselves!
-      And last email should contain encoded  Welcome to BIMT!
+      And last email should contain  Subject: =?utf-8?q?=C3=9Cber_Welcome!?=
+      And last email should contain  Welcome=20to=20this=20=FCber=20amazing
       And last email should contain encoded  Best wishes,
       And last email should contain encoded  ${APP_TITLE} Team
 
