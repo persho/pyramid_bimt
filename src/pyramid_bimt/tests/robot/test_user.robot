@@ -24,28 +24,25 @@ Scenario: Add new user
 
 Scenario: Edit user
     Given I log in as admin
-     When I go to  http://localhost:8080/user/3/edit
+     When I go to  http://localhost:8080/user/2/edit
       And I input text  name=email  ovca@xyz.xyz
       And I input text  name=fullname  Ovca Xyz
       And I unselect checkbox admins
       And I click button  Save
-     Then location should be  http://localhost:8080/user/3
+     Then location should be  http://localhost:8080/user/2
       And page should contain  User "ovca@xyz.xyz" modified.
       And page should contain  Ovca Xyz
 
-Scenario: Disable user
+Scenario: Disable and enable user
     I log in as admin
     Go to  http://localhost:8080/users
-    I click disable user  ovca@xyz.xyz
-    User is strike through and disabled  ovca@xyz.xyz
-    Page Should Contain  User "ovca@xyz.xyz" disabled.
-
-Scenario: Enable user
-    I log in as admin
+    I click disable user  one@bar.com
+    User is strike through and disabled  one@bar.com
+    Page Should Contain  User "one@bar.com" disabled.
     Go to  http://localhost:8080/users
-    I click enable user  ovca@xyz.xyz
-    User is enabled  ovca@xyz.xyz
-    Page Should Contain  User "ovca@xyz.xyz" enabled.
+    I click enable user  one@bar.com
+    User is enabled  one@bar.com
+    Page Should Contain  User "one@bar.com" enabled.
 
 
 *** Keywords ***

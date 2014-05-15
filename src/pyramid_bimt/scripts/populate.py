@@ -24,6 +24,24 @@ import transaction
 SECRET_ENC = u'$6$rounds=90000$hig2KnPEdjRThLyK$UzWLANWcJzO6YqphWT5nbSC4'\
     'RkYKLIvSbAT/XnsO4m6xtr5qsw5d4glhJWzonIqpBocwXiS9qMpia46woVSBc0'
 
+PASSWORD_EMAIL_BODY = u"""
+<p>Your new password for ${app_title} is: ${password}</p>
+<p>Login to the members' area: ${request.route_url('login')}</p>
+"""
+
+USER_CREATED_BODY = u"""
+<p>
+  Here are your login details for the membership area:<br>
+  u: ${user.email}<br>
+  p: ${password}
+</p>
+<p tal:condition="python: user.get_property('api_key', None)">
+  Here is your API key for integrating with other services: <br />  # noqa
+  API key: ${python: user.get_property('api_key')}
+</p>
+<p>Login to the members' area: ${request.route_url('login')}</p>
+"""
+
 
 def default_audit_log_event_types():
     """Return a list of all default Audit log event types.
@@ -100,22 +118,40 @@ def add_users():
         Session.add(one)
 
 
-def add_portlets():
-    """Create a dummy portlet."""
+def add_mailings(app_title=u'BIMT'):
+    """Create default mailings."""
     with transaction.manager:
-        admins = Group.by_name('admins')
 
-        portlet = Portlet(
-            name='dummy',
-            groups=[admins, ],
-            position=PortletPositions.below_sidebar.name,
-            weight=-127,
-            html=u'You are admin.',
+        mailing_created = Mailing(
+            name='after_creation',
+            trigger=MailingTriggers.after_user_created.name,
+            days=0,
+            subject=u'Welcome to {}!'.format(app_title),
+            body=USER_CREATED_BODY,
         )
-        Session.add(portlet)
+        Session.add(mailing_created)
+
+        mailing_disabled = Mailing(
+            name='after_disabled',
+            trigger=MailingTriggers.after_user_disabled.name,
+            days=0,
+            subject=u'Your {} account is disabled.'.format(app_title),
+            body=u'Your account is disabled.',
+        )
+        Session.add(mailing_disabled)
+
+        mailing_password_changed = Mailing(
+            name='after_user_changed_password',
+            trigger=MailingTriggers.after_user_changed_password.name,
+            days=0,
+            subject=u'{} Password Reset'.format(app_title),
+            body=PASSWORD_EMAIL_BODY,
+        )
+        Session.add(mailing_password_changed)
 
 
-def add_dummy_mailings():
+def add_demo_mailing():
+    """Create a dummy mailing."""
     with transaction.manager:
         trial = Group.by_name('trial')
         admins = Group.by_name('admins')
@@ -132,55 +168,19 @@ def add_dummy_mailings():
         Session.add(mailing)
 
 
-def add_mailings(app_title=u'BIMT'):
-    """Create a default mailings."""
+def add_demo_portlet():
+    """Create a dummy portlet."""
     with transaction.manager:
+        admins = Group.by_name('admins')
 
-        user_created_body = u"""
-            <p>
-              Here are your login details for the membership area:<br>
-              u: ${user.email}<br>
-              p: ${password}
-            </p>
-            <p tal:condition="python: user.get_property('api_key', None)">
-              Here is your API key for integrating with other services: <br />  # noqa
-              API key: ${python: user.get_property('api_key')}
-            </p>
-            <p>Login to the members' area: ${request.route_url('login')}</p>
-        """
-
-        mailing_created = Mailing(
-            name='after_creation',
-            trigger=MailingTriggers.after_user_created.name,
-            days=0,
-            subject=u'Welcome to {}!'.format(app_title),
-            body=user_created_body,
+        portlet = Portlet(
+            name='dummy',
+            groups=[admins, ],
+            position=PortletPositions.below_sidebar.name,
+            weight=-127,
+            html=u'You are admin.',
         )
-        Session.add(mailing_created)
-
-        mailing_disabled = Mailing(
-            name='after_disabled',
-            trigger=MailingTriggers.after_user_disabled.name,
-            days=0,
-            subject=u'Your {} account is disabled.'.format(app_title),
-            body=u'Your account is disabled.',
-        )
-        Session.add(mailing_disabled)
-
-        password_email_body = u"""
-
-        <p>Your new password for ${app_title} is: ${password}</p>
-         <p>Login to the members' area: ${request.route_url('login')}</p>
-
-         """
-        mailing_password_changed = Mailing(
-            name='after_user_changed_password',
-            trigger=MailingTriggers.after_user_changed_password.name,
-            days=0,
-            subject=u'{} Password Reset'.format(app_title),
-            body=password_email_body,
-        )
-        Session.add(mailing_password_changed)
+        Session.add(portlet)
 
 
 def add_default_content():  # pragma: no cover (bw compat only)

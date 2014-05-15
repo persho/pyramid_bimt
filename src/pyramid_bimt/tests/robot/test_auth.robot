@@ -21,11 +21,12 @@ Scenario: User logs out
     Then I am logged out
 
 Scenario: User resets its password
+         Sleep  2s  so that user creation welcome email is delivered before sending reset email
     When I go to Login Form
      And I input text  name=email  one@bar.com
      And I click button  Reset password
     Then page should contain  A new password was sent to your email.
      And last email should contain  To: one@bar.com
-     And last email should contain  Subject: ${APP_TITLE} Password Reset
-     And last email should contain encoded  your new password for ${APP_TITLE} is
-     And last email should contain encoded  http://localhost:8080/login
+     And last email should contain  Subject: BIMT Password Reset
+     And last email should contain encoded  Login to the members' area: http://localhost:8080/login
+

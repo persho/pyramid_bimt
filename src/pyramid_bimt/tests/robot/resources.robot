@@ -144,9 +144,11 @@ I log out
     Page Should Contain  You have been logged out.
     I am logged out
 
+
 Last email should contain
     [Arguments]  ${value}
     Wait Until Created  ${MAIL_DIR}
+    Wait Until Keyword Succeeds  10 sec  1 sec  Directory Should Not Be Empty  ${MAIL_DIR}
     @{mails}=       List Files In Directory  ${MAIL_DIR}
     ${mail_path}=   Join Path  ${MAIL_DIR}  @{mails}[-1]
     ${mail}=        Get File  ${mail_path}
@@ -154,8 +156,22 @@ Last email should contain
 
 Last email should contain encoded
     [Arguments]  ${value}
-    ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
+    ${value_encoded}=  Evaluate  quopri.encodestring("${value}", 1)  modules=quopri
     Last email should contain  ${value_encoded}
+
+Last email subject should be
+    [Arguments]  ${value}
+    ${value_encoded}=  Evaluate  email.header.Header("${value}", 'utf-8').encode()  modules=email
+    Last email should contain  Subject: ${value_encoded}
+
+Last email recipient should be
+    [Arguments]  ${value}
+    Last email should contain  To: ${value}
+
+Remove last email
+    @{mails}=       List Files In Directory  ${MAIL_DIR}
+    ${mail_path}=   Join Path  ${MAIL_DIR}  @{mails}[-1]
+    Remove File  ${mail_path}
 
 I add group
     [Arguments]  ${group}
@@ -185,6 +201,10 @@ User is enabled
 I click delete audit log entry
     [Arguments]  ${value}
     Click Element  xpath=//*[.="${value}"]/../td/a[contains(.,"Delete")]
+
+I click delete first audit log entry of type
+    [Arguments]  ${value}
+    Click Element  xpath=//*[contains(.,"${value}")]/../td/a[contains(.,"Delete")]
 
 I click sort by
     [Arguments]  ${value}
