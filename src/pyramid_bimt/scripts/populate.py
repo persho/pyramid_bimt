@@ -100,40 +100,8 @@ def add_users():
         Session.add(one)
 
 
-def add_portlets():
-    """Create a dummy portlet."""
-    with transaction.manager:
-        admins = Group.by_name('admins')
-
-        portlet = Portlet(
-            name='dummy',
-            groups=[admins, ],
-            position=PortletPositions.below_sidebar.name,
-            weight=-127,
-            html=u'You are admin.',
-        )
-        Session.add(portlet)
-
-
-def add_dummy_mailings():
-    with transaction.manager:
-        trial = Group.by_name('trial')
-        admins = Group.by_name('admins')
-
-        mailing = Mailing(
-            name='welcome_email',
-            groups=[trial, ],
-            exclude_groups=[admins, ],
-            trigger=MailingTriggers.after_created.name,
-            days=1,
-            subject=u'Über Welcome!',
-            body=u'Welcome to this über amazing BIMT app!',
-        )
-        Session.add(mailing)
-
-
 def add_mailings(app_title=u'BIMT'):
-    """Create a default mailings."""
+    """Create default mailings."""
     with transaction.manager:
 
         user_created_body = u"""
@@ -181,6 +149,39 @@ def add_mailings(app_title=u'BIMT'):
             body=password_email_body,
         )
         Session.add(mailing_password_changed)
+
+
+def add_demo_mailing():
+    """Create a dummy mailing."""
+    with transaction.manager:
+        trial = Group.by_name('trial')
+        admins = Group.by_name('admins')
+
+        mailing = Mailing(
+            name='welcome_email',
+            groups=[trial, ],
+            exclude_groups=[admins, ],
+            trigger=MailingTriggers.after_created.name,
+            days=1,
+            subject=u'Über Welcome!',
+            body=u'Welcome to this über amazing BIMT app!',
+        )
+        Session.add(mailing)
+
+
+def add_demo_portlet():
+    """Create a dummy portlet."""
+    with transaction.manager:
+        admins = Group.by_name('admins')
+
+        portlet = Portlet(
+            name='dummy',
+            groups=[admins, ],
+            position=PortletPositions.below_sidebar.name,
+            weight=-127,
+            html=u'You are admin.',
+        )
+        Session.add(portlet)
 
 
 def add_default_content():  # pragma: no cover (bw compat only)

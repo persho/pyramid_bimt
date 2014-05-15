@@ -11,7 +11,7 @@ from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import User
 from pyramid_bimt.scripts.populate import add_groups
-from pyramid_bimt.scripts.populate import add_dummy_mailings
+from pyramid_bimt.scripts.populate import add_demo_mailing
 from pyramid_bimt.scripts.populate import add_users
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.tests.test_user_views import _make_user
@@ -171,7 +171,7 @@ class TestMailingEdit(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB(groups=True, test_mailings=True)
+        initTestingDB(groups=True, mailings=True)
         add_routes_mailing(self.config)
 
         from pyramid_bimt.views.mailing import MailingEdit
@@ -187,7 +187,7 @@ class TestMailingEdit(unittest.TestCase):
         self.assertEqual(self.view.appstruct(), {})
 
     def test_appstruct_full_context(self):
-        self.request.context = Mailing.by_id(1)
+        self.request.context = Mailing.by_name('welcome_email')
         self.assertEqual(self.view.appstruct(), {
             'name': 'welcome_email',
             'groups': ['3', ],
@@ -218,12 +218,12 @@ class TestMailingEdit(unittest.TestCase):
 
     def test_test_success(self):
         add_users()
-        self.request.user = User.by_id(1)
-        self.request.context = Mailing.by_id(1)
+        self.request.user = User.by_email('admin@bar.com')
+        self.request.context = Mailing.by_name('welcome_email')
 
         result = self.view.test_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/1/edit')
+        self.assertEqual(result.location, '/mailing/4/edit')
 
         self.assertEqual(
             self.request.session.pop_flash(),
@@ -239,7 +239,7 @@ class TestMailingEdit(unittest.TestCase):
 
     def test_test_success_non_unicode(self):
         add_users()
-        self.request.user = User.by_id(1)
+        self.request.user = User.by_email('admin@bar.com')
         self.request.context = _make_mailing(
             id=1,
             name='foo',
@@ -262,11 +262,11 @@ class TestMailingEdit(unittest.TestCase):
     def test_send_immediately_success(self, get_current_request):
         get_current_request.return_value = self.request
         add_users()
-        self.request.context = Mailing.by_id(1)
+        self.request.context = Mailing.by_name('welcome_email')
 
         result = self.view.send_immediately_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/1/edit')
+        self.assertEqual(result.location, '/mailing/4/edit')
 
         self.assertEqual(
             self.request.session.pop_flash(),
@@ -317,7 +317,7 @@ class TestMailUnsubscribe(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
-        initTestingDB(groups=True, test_mailings=True, users=True)
+        initTestingDB(groups=True, mailings=True, users=True)
         add_routes_mailing(self.config)
 
         from pyramid_bimt.views.mailing import MailingEdit
@@ -332,7 +332,7 @@ class TestMailUnsubscribe(unittest.TestCase):
     def test_in_unsubscribed(self, get_current_request):
         get_current_request.return_value = self.request
         add_routes_user(self.config)
-        self.request.user = User.by_id(1)
+        self.request.user = User.by_email('admin@bar.com')
         self.request.context = _make_mailing(
             id=123, name='excluded',
             groups=[Group.by_name('admins'), Group.by_name('enabled')],
@@ -353,7 +353,7 @@ class TestMailUnsubscribe(unittest.TestCase):
     def test_not_in_unsubscribed(self, get_current_request):
         get_current_request.return_value = self.request
         add_routes_user(self.config)
-        self.request.user = User.by_id(1)
+        self.request.user = User.by_email('admin@bar.com')
         self.request.context = _make_mailing(
             id=123, name='excluded',
             groups=[Group.by_name('admins'), Group.by_name('enabled')],
@@ -404,8 +404,8 @@ class TestBefore(unittest.TestCase):
     def test_set_value_for_send_immediately_button(self):
         add_groups()
         add_users()
-        add_dummy_mailings()
-        self.request.context = Mailing.by_id(1)
+        add_demo_mailing()
+        self.request.context = Mailing.by_name('welcome_email')
 
         schema = colander.Schema()
         form = deform.Form(schema, buttons=['foo', 'bar', 'send_immediately'])
