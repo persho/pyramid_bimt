@@ -147,6 +147,7 @@ I log out
 Last email should contain
     [Arguments]  ${value}
     Wait Until Created  ${MAIL_DIR}
+    Wait Until Keyword Succeeds  10 sec  1 sec  Directory Should Not Be Empty  ${MAIL_DIR}
     @{mails}=       List Files In Directory  ${MAIL_DIR}
     ${mail_path}=   Join Path  ${MAIL_DIR}  @{mails}[-1]
     ${mail}=        Get File  ${mail_path}
@@ -156,6 +157,11 @@ Last email should contain encoded
     [Arguments]  ${value}
     ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
     Last email should contain  ${value_encoded}
+
+Remove last email
+    @{mails}=       List Files In Directory  ${MAIL_DIR}
+    ${mail_path}=   Join Path  ${MAIL_DIR}  @{mails}[-1]
+    Remove File  ${mail_path}
 
 I add group
     [Arguments]  ${group}
@@ -188,7 +194,7 @@ I click delete audit log entry
 
 I click delete first audit log entry of type
     [Arguments]  ${value}
-    Click Element  xpath=//span[contains(.,"${value}")]/../../td/a[contains(.,"Delete")]
+    Click Element  xpath=//*[contains(.,"${value}")]/../td/a[contains(.,"Delete")]
 
 I click sort by
     [Arguments]  ${value}

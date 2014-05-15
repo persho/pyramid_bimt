@@ -26,6 +26,6 @@ Scenario: User resets its password
      And I click button  Reset password
     Then page should contain  A new password was sent to your email.
      And last email should contain  To: one@bar.com
-     And last email should contain  Subject: ${APP_TITLE} Password Reset
-     And last email should contain encoded  your new password for ${APP_TITLE} is
-     And last email should contain encoded  http://localhost:8080/login
+     And last email should contain  Subject: BIMT Password Reset
+     And last email should contain  <p>Login=20to=20the=20members'=20area:=20http://loc=\nalhost:8080/login</p>
+
