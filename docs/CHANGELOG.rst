@@ -2,15 +2,16 @@ Changelog
 =========
 
 
-0.7.3 (unreleased)
-------------------
+0.8 (2014-05-15)
+----------------
+
 - Refactor robot tests so none of them depend on each other. All of
   them expect clean DB. Apps have to change robot suite initialization to
   always use clean DB.
   [ferewuz]
 
-- Remove hard-coded emails (welcome, password reset, etc.) and make them
-  Mailings, refs #186.
+- [DB MIGRAITON REQUIRED] Remove hard-coded emails (welcome, password reset,
+  etc.) and make them Mailings, refs #186.
   [ferewuz]
 
 - Add event triggers for Mailings (after password change, after user created,
@@ -19,6 +20,12 @@ Changelog
 
 - Add support for AJAX loading of data into jQuery.dataTables, refs #358.
   [ferewuz, zupo]
+
+- Auto-kill rabbitmq connections on app start.
+  [matejc]
+
+- Split models.py into several sub-modules.
+  [matejc]
 
 - Portlets changed, they are now rendered using a template. Fixes #355.
   [ferewuz]
