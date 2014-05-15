@@ -85,8 +85,8 @@ class MailingTriggers(Enum):
     after_last_payment = 'x days after last_payment'
     before_valid_to = 'x days before valid_to'
     never = 'never'
-    after_user_created = 'immediatelly after user is created'
-    after_user_disabled = 'immediatelly after user is disabled'
+    after_user_created = 'immediately after user is created'
+    after_user_disabled = 'immediately after user is disabled'
     after_user_changed_password = 'immediatelly after user changes password'
 
 

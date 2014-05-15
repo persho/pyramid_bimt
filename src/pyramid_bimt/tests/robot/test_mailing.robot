@@ -40,7 +40,7 @@ Scenario: Test mailing
      Then location should be  http://localhost:8080/mailing/4/edit
       And page should contain  Mailing "welcome_email" sent to "admin@bar.com".
       And last email should contain  To: admin@bar.com
-      And last email should contain  Subject: =?utf-8?q?=5BMailing_Test=5D_=C3=9Cber_Welcome!?=
+      And last email subject should be  [Mailing Test] Über Welcome!
       And last email should contain encoded  This mailing would be sent to:
       And last email should contain encoded  one@bar.com
       And last email should contain encoded  Best wishes,
@@ -55,9 +55,9 @@ Scenario: Send mailing immediately
       And when I click button  OK
      Then location should be  http://localhost:8080/mailing/4/edit
       And page should contain  Mailing "welcome_email" sent to 1 recipients.
-      And last email should contain  To: one@bar.com
-      And last email should contain  Subject: =?utf-8?q?=C3=9Cber_Welcome!?=
-      And last email should contain  Welcome=20to=20this=20=FCber=20amazing
+      And last email recipient should be  one@bar.com
+      And last email subject should be  Über Welcome!
+      And last email should contain encoded  Welcome to this
       And last email should contain encoded  Best wishes,
       And last email should contain encoded  ${APP_TITLE} Team
 

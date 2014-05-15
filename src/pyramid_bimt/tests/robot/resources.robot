@@ -144,6 +144,7 @@ I log out
     Page Should Contain  You have been logged out.
     I am logged out
 
+
 Last email should contain
     [Arguments]  ${value}
     Wait Until Created  ${MAIL_DIR}
@@ -155,8 +156,17 @@ Last email should contain
 
 Last email should contain encoded
     [Arguments]  ${value}
-    ${value_encoded}=  Evaluate  quopri.encodestring('${value}', 1)  modules=quopri
+    ${value_encoded}=  Evaluate  quopri.encodestring("${value}", 1)  modules=quopri
     Last email should contain  ${value_encoded}
+
+Last email subject should be
+    [Arguments]  ${value}
+    ${value_encoded}=  Evaluate  email.header.Header("${value}", 'utf-8').encode()  modules=email
+    Last email should contain  Subject: ${value_encoded}
+
+Last email recipient should be
+    [Arguments]  ${value}
+    Last email should contain  To: ${value}
 
 Remove last email
     @{mails}=       List Files In Directory  ${MAIL_DIR}
