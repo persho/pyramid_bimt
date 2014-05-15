@@ -4,6 +4,10 @@ Changelog
 
 0.7.3 (unreleased)
 ------------------
+- Refactor robot tests so none of them depend on each other. All of
+  them expect clean DB. Apps have to change robot suite initialization to
+  always use clean DB.
+  [ferewuz]
 
 - Remove hard-coded emails (welcome, password reset, etc.) and make them
   Mailings, refs #186.
