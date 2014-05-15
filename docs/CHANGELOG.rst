@@ -5,6 +5,14 @@ Changelog
 0.7.3 (unreleased)
 ------------------
 
+- Remove hard-coded emails (welcome, password reset, etc.) and make them
+  Mailings, refs #186.
+  [ferewuz]
+
+- Add event triggers for Mailings (after password change, after user created,
+  etc.), refs #320.
+  [ferewuz]
+
 - Add support for AJAX loading of data into jQuery.dataTables, refs #358.
   [ferewuz, zupo]
 
