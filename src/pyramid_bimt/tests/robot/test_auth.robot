@@ -21,7 +21,7 @@ Scenario: User logs out
     Then I am logged out
 
 Scenario: User resets its password
-         Sleep  2s  so that user creation welcome email is delivered before sending reset email
+         Sleep  3s  so that user creation welcome email is delivered before sending reset email
     When I go to Login Form
      And I input text  name=email  one@bar.com
      And I click button  Reset password
