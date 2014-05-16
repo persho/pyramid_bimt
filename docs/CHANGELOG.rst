@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.9 (unreleased)
-----------------
+0.8.1 (2014-05-16)
+------------------
 
-- Nothing changed yet.
+- Minor fixes from deploying 0.8.
+  [zupo]
 
 
 0.8 (2014-05-15)
