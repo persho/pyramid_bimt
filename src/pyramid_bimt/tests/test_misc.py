@@ -27,6 +27,9 @@ class TestCheckSettings(unittest.TestCase):
         self.settings_full_production.update({
             'bimt.jvzoo_secret_key': '',
             'bimt.piwik_site_id': '',
+            'bimt.amqp_username': '',
+            'bimt.amqp_password': '',
+            'bimt.amqp_apiurl': '',
             'mail.default_sender': 'test@xyz.xyz',
             'mail.host': '',
             'mail.password': '',
@@ -97,7 +100,7 @@ class TestCheckSettings(unittest.TestCase):
         self.assertIn('bimt.jvzoo_secret_key', cm.exception.message)
 
 
-class TestAutoKillConnactions(unittest.TestCase):
+class TestAutoKillConnections(unittest.TestCase):
 
     def setUp(self):
         from pyramid_bimt import kill_connections

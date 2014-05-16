@@ -159,6 +159,11 @@ Review it, remove commented stuff and test::
 
     $ bin/alembic -c etc/development.ini -n app:main upgrade head
 
+Then also test the downgrade step::
+
+    $ bin/alembic -c etc/development.ini -n app:main downgrade -1
+
+
 
 .. note::
 

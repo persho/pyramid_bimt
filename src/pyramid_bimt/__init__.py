@@ -38,6 +38,9 @@ REQUIRED_SETTINGS = [
 REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.jvzoo_secret_key',
     'bimt.piwik_site_id',
+    'bimt.amqp_username',
+    'bimt.amqp_password',
+    'bimt.amqp_apiurl',
     'mail.default_sender',
     'mail.host',
     'mail.password',
@@ -185,11 +188,12 @@ def configure(config, settings={}):
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore=ignores)
 
-    kill_connections(
-        username=settings.get('bimt.amqp_username', ''),
-        password=settings.get('bimt.amqp_password', ''),
-        apiurl=settings.get('bimt.amqp_apiurl', '')
-    )
+    if 'production.ini' in ' '.join(sys.argv).lower():  # pragma: no cover
+        kill_connections(
+            username=settings.get('bimt.amqp_username', ''),
+            password=settings.get('bimt.amqp_password', ''),
+            apiurl=settings.get('bimt.amqp_apiurl', '')
+        )
 
 
 def check_required_settings(config):
