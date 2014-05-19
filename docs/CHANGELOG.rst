@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.8.3 (unreleased)
+0.8.3 (2014-05-19)
 ------------------
 
 - Fixed a bug where a password reset would send out two Mailings: welcome
