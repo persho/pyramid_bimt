@@ -46,6 +46,18 @@ attribute, like so:
     <th data-sort-disabled="true">Bar</th>
 
 
+Configure sorting with `query string` URL parameters
+----------------------------------------------------
+
+You can append `query string` parameters to a URL displaying a datatable to
+configure how the table will be sorted. A URL like this will make the table
+sorted on the 5th column (counting from zero), in `descending` order::
+
+.. code-block:: html
+
+    http://localhost:8080/?iSortCol_0=4&sSortDir_0=desc
+
+
 Dynamic tables with AJAX loading
 --------------------------------
 

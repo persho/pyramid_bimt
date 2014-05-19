@@ -5,6 +5,10 @@ Changelog
 0.8.4 (unreleased)
 ------------------
 
+- Support for overriding sorting settings on datatables with query string
+  URL parameters.
+  [zupo]
+
 - Support for fuzzy timestamps with jquery.timeago.js.
   [zupo]
 
