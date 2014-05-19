@@ -10,6 +10,7 @@ from js.deform import deform_js
 from js.jquery import jquery
 from js.jquery_datatables import jquery_datatables_js
 from js.jquery_maskedinput import jquery_maskedinput
+from js.jquery_timeago import timeago
 from js.modernizr import modernizr
 from pkg_resources import resource_filename
 from pyramid.threadlocal import get_current_registry
@@ -71,6 +72,7 @@ bimt_assets = Group([
     bootstrap,
     modernizr,
     fontawesome,
+    timeago,
     bimt_js,
     bimt_css,
     bootbox_js,

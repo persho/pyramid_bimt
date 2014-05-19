@@ -11,6 +11,9 @@
             selector: "*[data-toggle='tooltip']"
         });
 
+        // Enable jquery.timeago.js
+        $("time.timeago").timeago();
+
         // Enable 'secret' spans
         $("span.secret").click(function () {
             $(this).text($(this).data('secret'));

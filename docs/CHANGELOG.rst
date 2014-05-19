@@ -5,7 +5,8 @@ Changelog
 0.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Support for fuzzy timestamps with jquery.timeago.js.
+  [zupo]
 
 
 0.8.3 (2014-05-19)
