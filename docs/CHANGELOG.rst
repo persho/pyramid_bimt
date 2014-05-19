@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-y (unreleased)
---------------
+0.8.1 (unreleased)
+------------------
 
 - Nothing changed yet.
 
@@ -27,8 +27,8 @@ y (unreleased)
   etc.) and make them Mailings, refs #186.
   [ferewuz]
 
-- Add event triggers for Mailings (after password change, after user created,
-  etc.), refs #320.
+- [DB MIGRAITON REQUIRED] Add event triggers for Mailings (after password
+  change, after user created, etc.), refs #320.
   [ferewuz]
 
 - Add support for AJAX loading of data into jQuery.dataTables, refs #358.
@@ -54,7 +54,7 @@ y (unreleased)
 0.7.1 (2014-04-24)
 ------------------
 
-- Support for unsubscribing from Mailings.
+- [DB MIGRAITON REQUIRED] Support for unsubscribing from Mailings.
   [matejc]
 
 
