@@ -90,8 +90,8 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('302 Found', resp.text)
         resp = resp.follow()
         self.assertIn('A new password was sent to your email.', resp.text)
-        self.assertEqual(self.mailer.outbox[1].subject, u'BIMT Password Reset')
-        self.assertIn(u'Öne Bar', self.mailer.outbox[1].html)
+        self.assertEqual(self.mailer.outbox[0].subject, u'BIMT Password Reset')
+        self.assertIn(u'Öne Bar', self.mailer.outbox[0].html)
 
     def test_login_reset_password_no_user(self):
         resp = self.testapp.get('/login', status=200)

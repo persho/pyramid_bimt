@@ -261,8 +261,8 @@ class TestMailingEvents(unittest.TestCase):
             UserChangedPassword(self.request, self.user, u'test_password')
         )
         # one mailing for user creation
-        self.assertEqual(len(self.mailer.outbox), 2)
-        self.assertEqual(self.mailer.outbox[1].subject, u'BIMT Password Reset')
-        self.assertIn(u'Your new password', self.mailer.outbox[1].html)
-        self.assertIn(u'test_password', self.mailer.outbox[1].html)
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'BIMT Password Reset')
+        self.assertIn(u'Your new password', self.mailer.outbox[0].html)
+        self.assertIn(u'test_password', self.mailer.outbox[0].html)
         self.assertIn(u'Login to the members\' area: http://example.com/login', self.mailer.outbox[0].html)  # noqa

@@ -83,6 +83,18 @@ class UserCreated(PyramidBIMTEvent):
         self.log_event(comment=comment)
 
 
+@implementer(IUserChangedPassword)
+class UserChangedPassword(PyramidBIMTEvent):
+    """Emitted whenever a user changes its password."""
+
+    def __init__(self, request, user, password, comment=None):
+        self.request = request
+        self.user = user
+        self.password = password
+        self.comment = comment
+        self.log_event(comment=comment)
+
+
 @implementer(IUserLoggedIn)
 class UserLoggedIn(PyramidBIMTEvent):
     """Emitted whenever a user logs in."""
@@ -91,11 +103,6 @@ class UserLoggedIn(PyramidBIMTEvent):
 @implementer(IUserLoggedOut)
 class UserLoggedOut(PyramidBIMTEvent):
     """Emitted whenever a user logs out."""
-
-
-@implementer(IUserChangedPassword)
-class UserChangedPassword(UserCreated):
-    """Emitted whenever a user changes its password."""
 
 
 @implementer(IUserEnabled)

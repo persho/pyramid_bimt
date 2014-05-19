@@ -5,13 +5,16 @@ Changelog
 0.8.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed a bug where a password reset would send out two Mailings: welcome
+  mailing and password reset mailing. Only the latter should be sent.
+  [zupo]
 
 
 0.8.2 (2014-05-19)
 ------------------
 
-- Nothing changed yet.
+- Brown-bag release.
+  [zupo]
 
 
 0.8.1 (2014-05-16)
