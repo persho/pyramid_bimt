@@ -153,9 +153,9 @@ class Mailing(Base, BaseMixin):
         default=MAILING_BODY_DEFAULT,
         info={'colanderalchemy': dict(
             title='Body',
-            description='Enter the body of the email. It will be rendered as'
-            'HTML code, so wrap your paragraphs in <p>; you can add links with'
-            '<a href="#">, etc.',
+            description='Enter the body of the email. It will be rendered as '
+            'HTML code, so wrap your paragraphs in <p>; you can add links '
+            'with <a href="#">, etc.',
             widget=deform.widget.TextAreaWidget(rows=10, cols=60),
         )},
     )
