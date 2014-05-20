@@ -42,6 +42,7 @@ setup(
         'js.bootstrap',
         'js.deform',
         'js.jquery',
+        'js.jquery-timeago',
         'js.jquery_datatables',
         'js.jquery_maskedinput',
         'passlib',

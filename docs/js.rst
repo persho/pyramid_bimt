@@ -131,3 +131,19 @@ confirmation for, like so:
           ),
       )
 
+
+Fuzzy timestamps
+----------------
+
+To display a nice "xx time ago" fuzzy timestamp instead of the boring standard
+date/time representation, do the following:
+
+
+.. code-block:: python
+
+    <time class="timeago" datetime="${context.created.strftime('%Y-%m-%dT%H:%M:%SZ')}">
+        ${context.created.strftime('%Y-%m-%d %H:%M:%S')}
+    </time>
+
+This assumes you store all datetimes internally as UTC.
+
