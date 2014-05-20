@@ -17,13 +17,15 @@ def _make_group(
     name='foo',
     product_id=13,
     validity=31,
-    trial_validity=7
+    trial_validity=7,
+    forward_ipn_to_url='http://example.com',
 ):
     return Group(
         name=name,
         product_id=product_id,
         validity=validity,
         trial_validity=trial_validity,
+        forward_ipn_to_url='http://example.com',
     )
 
 
@@ -70,6 +72,7 @@ class TestGroupAdd(unittest.TestCase):
         'product_id': 13,
         'validity': 30,
         'trial_validity': 7,
+        'forward_ipn_to_url': 'http://example.com',
         'users': [1, ],
     }
 
@@ -105,6 +108,7 @@ class TestGroupAdd(unittest.TestCase):
         self.assertEqual(group.product_id, 13)
         self.assertEqual(group.validity, 30)
         self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(1), ])
 
         self.assertEqual(
@@ -118,6 +122,7 @@ class TestGroupEdit(unittest.TestCase):
         'product_id': 13,
         'validity': 31,
         'trial_validity': 7,
+        'forward_ipn_to_url': 'http://example.com',
         'users': [2, ],
     }
 
@@ -146,6 +151,7 @@ class TestGroupEdit(unittest.TestCase):
             'product_id': 13,
             'validity': 31,
             'trial_validity': 7,
+            'forward_ipn_to_url': 'http://example.com',
             'users': ['2', ],
         })
 
@@ -161,6 +167,7 @@ class TestGroupEdit(unittest.TestCase):
         self.assertEqual(group.product_id, 13)
         self.assertEqual(group.validity, 31)
         self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(2), ])
         self.assertEqual(
             self.request.session.pop_flash(), [u'Group "foo" modified.'])
