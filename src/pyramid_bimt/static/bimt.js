@@ -4,6 +4,14 @@
 (function ($) {
     "use strict";
 
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? null : decodeURIComponent(
+            results[1].replace(/\+/g, " "));
+    }
+
     $(document).ready(function () {
 
         // Enable bootstrap tooltips
@@ -55,9 +63,19 @@
                 }
             });
 
-            // Enable datatables
+            // Read sorting parameters from querystring
+            var iSortCol_0 = getParameterByName('iSortCol_0'),
+                sSortDir_0 = getParameterByName('sSortDir_0');
+            if (iSortCol_0 === null) {
+                iSortCol_0 = 0;
+            }
+            if (sSortDir_0 === null) {
+                sSortDir_0 = sort_direction;
+            }
+
+            // Prepare datatables settings
             var settings = {
-                "aaSorting"   : [[0, sort_direction]],
+                "aaSorting"   : [[iSortCol_0, sSortDir_0]],
                 "aoColumns"   : aoColumns,
             };
             if ($table.data('ajax') === true) {
@@ -67,11 +85,13 @@
                 settings["sAjaxSource"] = document.URL;
                 /* jshint ignore:end */
             }
+
+            // Initialize datatables
             $table.dataTable(settings);
 
-            $('.datatable').each(function () {
             // Add the placeholder for Search and Length and turn them into
             // in-line form controls
+            $('.datatable').each(function () {
                 var $datatable = $(this),
                     $dt_wrapper = $datatable.closest('.dataTables_wrapper'),
                     $search_input = $dt_wrapper.find('div[id$=_filter] input'),
