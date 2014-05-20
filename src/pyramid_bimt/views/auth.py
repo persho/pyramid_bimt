@@ -33,6 +33,7 @@ class LoginForm(FormView):
     def __call__(self):
         app_assets.need()
         form_assets.need()
+        self.request.layout_manager.layout.hide_sidebar = True
         result = super(LoginForm, self).__call__()
         if isinstance(result, dict):
             result['title'] = self.title

@@ -5,6 +5,9 @@ Changelog
 0.9 (unreleased)
 ------------------
 
+- Login-form should not display any sidebars.
+  [zupo]
+
 - [DB MIGRAITON REQUIRED] Add forward_ipn_url field to groups, so we can
   re-send jvzoo IPN request to other apps and chain it if we want to.
   [ferewuz]
