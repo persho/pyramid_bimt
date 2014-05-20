@@ -2,8 +2,15 @@ Changelog
 =========
 
 
-0.8.4 (unreleased)
+0.9 (unreleased)
 ------------------
+
+- [DB MIGRAITON REQUIRED] Add forward_ipn_url field to groups, so we can
+  re-send jvzoo IPN request to other apps and chain it if we want to.
+  [ferewuz]
+
+- Refactor of jvzoo view as complexity was over the limit.
+  [ferewuz]
 
 - Support for overriding sorting settings on datatables with query string
   URL parameters.

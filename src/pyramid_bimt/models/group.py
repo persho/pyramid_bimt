@@ -72,6 +72,17 @@ class Group(Base, BaseMixin):
         )},
     )
 
+    forward_ipn_to_url = Column(
+        String,
+        nullable=True,
+        info={'colanderalchemy': dict(
+            title='JVZoo IPN request redirect URL',
+            description='When the app gets an Instant payment notification '
+            'from JVZoo, if this field is not empty, it redirects the request '
+            'to the specified URL'
+        )},
+    )
+
     @classmethod
     def by_id(self, group_id):
         """Get a Group by id."""

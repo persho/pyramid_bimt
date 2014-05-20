@@ -14,8 +14,9 @@ from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 
-import logging
 import hashlib
+import logging
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +61,9 @@ class JVZooView(object):
             if not user:
                 user = User.by_billing_email(email)
 
-            comment = u'{} by JVZoo, transaction id: {}, type: {}, note: {}'
-            trans_id = self.request.POST.get('ctransreceipt', u'unknown')
-            trans_type = self.request.POST['ctransaction']
+            self.comment = u'{} by JVZoo, transaction id: {}, type: {}, note: {}'  # noqa
+            self.trans_id = self.request.POST.get('ctransreceipt', u'unknown')
+            self.trans_type = self.request.POST['ctransaction']
 
             # create a new user if no existing user found
             if not user:
@@ -77,8 +78,8 @@ class JVZooView(object):
                 )
                 Session.add(user)
                 self.request.registry.notify(
-                    UserCreated(self.request, user, password, comment.format(
-                        u'Created', trans_id, trans_type, '')))
+                    UserCreated(self.request, user, password, self.comment.format(  # noqa
+                        u'Created', self.trans_id, self.trans_type, '')))
                 logger.info('JVZoo created new user: {}'.format(user.email))
 
             group = Group.by_product_id(
@@ -88,56 +89,19 @@ class JVZooView(object):
                     'Cannot find group with product_id "{}"'.format(
                         self.request.POST['cproditem']))
 
-            # perform different actions for different transaction types
-            if trans_type == 'SALE':
-                if group.trial_validity:
-                    trial = True
-                    validity = timedelta(days=group.trial_validity)
-                    user.groups.append(Group.by_name('trial'))
-                else:
-                    trial = False
-                    validity = timedelta(days=group.validity)
+            # perform jvzoo transaction actions
+            self.jvzoo_transaction(user, group)
 
-                user.valid_to = date.today() + validity
-                user.last_payment = date.today()
-                user.groups.append(group)
-                user.enable()
-
-                msg = comment.format(
-                    u'Enabled', trans_id, trans_type, '{} until {}'.format(
-                        'trial' if trial else 'regular', user.valid_to))
-                logger.info(msg)
-                self.request.registry.notify(
-                    UserEnabled(self.request, user, msg))
-
-            elif trans_type == 'BILL':
-                user.valid_to = date.today() + timedelta(days=group.validity)
-                user.last_payment = date.today()
-                user.groups.append(group)
-                user.groups.remove(Group.by_name('trial'))
-                user.enable()
-
-                msg = comment.format(
-                    u'Enabled', trans_id, trans_type, 'regular until {}'.format(  # noqa
-                        user.valid_to))
-                logger.info(msg)
-                self.request.registry.notify(
-                    UserEnabled(self.request, user, msg))
-
-            elif trans_type in ['RFND', 'CGBK', 'INSF']:
-                groups_comment = 'removed from groups: {}'.format(
-                    ', '.join([g.name for g in user.groups]))
-                user.valid_to = date.today()
-                user.groups = []
-
-                logger.info('JVZoo disabled user: {}'.format(user.email))
-                self.request.registry.notify(
-                    UserDisabled(self.request, user, comment.format(
-                        u'Disabled', trans_id, trans_type, groups_comment)))
-
-            else:
-                raise ValueError(
-                    u'Unknown Transaction Type: {}'.format(trans_type))
+            # send request with same parameters to the URL specified on group
+            if group.forward_ipn_to_url:
+                requests.post(
+                    group.forward_ipn_to_url,
+                    params=self.request.POST,
+                )
+                logger.info(
+                    'Request re-sent to {}.',
+                    group.forward_ipn_to_url
+                )
 
             logger.info('JVZoo done.')
             return 'Done.'
@@ -147,6 +111,102 @@ class JVZooView(object):
                 ex.__class__.__name__, ex.message)
             logger.exception(msg)
             return msg
+
+    def jvzoo_transaction(self, user, group):
+        """
+        Select correct jvzoo transaction and call its method
+
+        :param    user:  Selected user
+        :type     user:  pyramid_bimt.models.user.User
+        :param    group: Group that user belongs to
+        :type     group: pyramid_bimt.models.Groups.Group
+
+        """
+        if self.trans_type == 'SALE':
+            self.jvzoo_sale_transaction(user, group)
+
+        elif self.trans_type == 'BILL':
+            self.jvzoo_bill_transaction(user, group)
+
+        elif self.trans_type in ['RFND', 'CGBK', 'INSF']:
+            self.jvzoo_disable_transaction(user, group)
+
+        else:
+            raise ValueError(
+                u'Unknown Transaction Type: {}'.format(self.trans_type))
+
+    def jvzoo_sale_transaction(self, user, group):
+        """
+        Make jvzoo sale transaction
+
+        :param    user:  Selected user
+        :type     user:  pyramid_bimt.models.user.User
+        :param    group: Group that user belongs to
+        :type     group: pyramid_bimt.models.Groups.Group
+
+        """
+        if group.trial_validity:
+            trial = True
+            validity = timedelta(days=group.trial_validity)
+            user.groups.append(Group.by_name('trial'))
+        else:
+            trial = False
+            validity = timedelta(days=group.validity)
+
+        user.valid_to = date.today() + validity
+        user.last_payment = date.today()
+        user.groups.append(group)
+        user.enable()
+
+        msg = self.comment.format(
+            u'Enabled', self.trans_id, self.trans_type, '{} until {}'.format(
+                'trial' if trial else 'regular', user.valid_to))
+        logger.info(msg)
+        self.request.registry.notify(
+            UserEnabled(self.request, user, msg))
+
+    def jvzoo_bill_transaction(self, user, group):
+        """
+        Make jvzoo bill transaction
+
+        :param    user:  Selected user
+        :type     user:  pyramid_bimt.models.user.User
+        :param    group: Group that user belongs to
+        :type     group: pyramid_bimt.models.Groups.Group
+
+        """
+        user.valid_to = date.today() + timedelta(days=group.validity)
+        user.last_payment = date.today()
+        user.groups.append(group)
+        user.groups.remove(Group.by_name('trial'))
+        user.enable()
+
+        msg = self.comment.format(
+            u'Enabled', self.trans_id, self.trans_type, 'regular until {}'.format(  # noqa
+                user.valid_to))
+        logger.info(msg)
+        self.request.registry.notify(
+            UserEnabled(self.request, user, msg))
+
+    def jvzoo_disable_transaction(self, user, group):
+        """
+        Make jvzoo disable transaction
+
+        :param    user:  Selected user
+        :type     user:  pyramid_bimt.models.user.User
+        :param    group: Group that user belongs to
+        :type     group: pyramid_bimt.models.Groups.Group
+
+        """
+        groups_comment = 'removed from groups: {}'.format(
+            ', '.join([g.name for g in user.groups]))
+        user.valid_to = date.today()
+        user.groups = []
+
+        logger.info('JVZoo disabled user: {}'.format(user.email))
+        self.request.registry.notify(
+            UserDisabled(self.request, user, self.comment.format(
+                u'Disabled', self.trans_id, self.trans_type, groups_comment)))
 
     def _verify_POST(self):
         """Verifies if received POST is a valid JVZoo POST request.

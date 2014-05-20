@@ -51,6 +51,7 @@ class GroupAdd(FormView):
         'product_id',
         'validity',
         'trial_validity',
+        'forward_ipn_to_url',
     ]
 
     def __init__(self, request):
@@ -76,6 +77,7 @@ class GroupAdd(FormView):
             product_id=appstruct.get('product_id'),
             validity=appstruct.get('validity'),
             trial_validity=appstruct.get('trial_validity'),
+            forward_ipn_to_url=appstruct.get('forward_ipn_to_url'),
             users=[User.by_id(user_id) for user_id in appstruct.get('users', [])],  # noqa
         )
 
@@ -112,6 +114,7 @@ class GroupEdit(GroupAdd):
         group.product_id = appstruct.get('product_id')
         group.validity = appstruct.get('validity')
         group.trial_validity = appstruct.get('trial_validity')
+        group.forward_ipn_to_url = appstruct.get('forward_ipn_to_url')
 
         group.users = [User.by_id(user_id) for user_id in appstruct.get('users', [])]  # noqa
 
