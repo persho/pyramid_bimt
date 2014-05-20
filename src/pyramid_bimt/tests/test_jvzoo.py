@@ -113,6 +113,34 @@ class TestJVZooView(unittest.TestCase):
             'POST handling failed: ValueError: Unknown Transaction Type: FOO',
         )
 
+    @mock.patch('pyramid_bimt.views.jvzoo.requests.post')
+    @mock.patch('pyramid_bimt.views.jvzoo.UserDisabled')
+    @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
+    @mock.patch('pyramid_bimt.views.jvzoo.User')
+    @mock.patch('pyramid_bimt.views.jvzoo.Group')
+    def test_forward_ipn_url(self, Group, User, verify_POST, UserDisabled, request_post):  # noqa
+        from pyramid_bimt.views.jvzoo import JVZooView
+        post = {
+            'ccustemail': 'FOO@bar.com',
+            'ctransaction': 'RFND',
+            'ctransreceipt': 123,
+            'cproditem': 1,
+        }
+
+        verify_POST.return_value = True
+        group_mock = mock.Mock()
+        group_mock.name = 'test'
+        group_mock.forward_ipn_to_url = 'http://www.example.com'
+        Group.by_product_id.return_value = group_mock
+        User.by_email.return_value = mock.Mock(groups=[group_mock, ])
+        request = testing.DummyRequest(post=post)
+        request.registry = mock.Mock()
+        JVZooView(request).jvzoo()
+        request_post.assert_called_with(
+            'http://www.example.com',
+            params=post
+        )
+
     def test_verify_POST(self):
         """Test POST verification process."""
         from pyramid_bimt.views.jvzoo import JVZooView

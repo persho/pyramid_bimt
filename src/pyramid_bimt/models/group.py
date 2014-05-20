@@ -73,7 +73,7 @@ class Group(Base, BaseMixin):
     )
 
     forward_ipn_to_url = Column(
-        Integer,
+        String,
         nullable=True,
         info={'colanderalchemy': dict(
             title='JVZoo IPN request redirect URL',
