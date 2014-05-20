@@ -31,8 +31,9 @@ Definitions of basic terms
     BAS
         Big Article Scraper, a BIMT app: http://bigarticlescraper.com
 
-    BNH
-        Big Network Hosting, a BIMT app: http://bignetworkhosting.com
+    EBN
+        Easy Blog Network, a BIMT app: http://easyblognetworks.com. Previously,
+        this was Big Network Hosting or BNH.
 
     Travis
         Travis Continuous Integration service, where we run all tests on every
