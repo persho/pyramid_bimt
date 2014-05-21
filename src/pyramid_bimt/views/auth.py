@@ -114,5 +114,6 @@ def forbidden_redirect(context, request):
     :result: Redirect to the login form.
     :rtype: pyramid.httpexceptions.HTTPFound
     """
+    request.session.flash(u'Insufficient privileges.')
     location = request.route_path('login', _query={'came_from': request.url})
     return HTTPFound(location=location)

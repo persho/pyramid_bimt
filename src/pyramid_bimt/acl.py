@@ -4,7 +4,6 @@
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
-from pyramid.security import Authenticated
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
@@ -26,7 +25,6 @@ def groupfinder(user_email, request):
 
 class RootFactory(object):
     __acl__ = [
-        (Allow, Authenticated, 'personal'),
         (Allow, 'g:enabled', 'user'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]

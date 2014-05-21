@@ -5,6 +5,14 @@ Changelog
 0.9 (unreleased)
 ------------------
 
+- Display an "Insufficient privileges" flash message when redirecting to
+  login form because of denied access.
+  [zupo]
+
+- Remove the ``personal`` permission as it's only used in settings view, and
+  this view can easily use the ``user`` permission.
+  [zupo]
+
 - Login-form should not display any sidebars.
   [zupo]
 
