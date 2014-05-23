@@ -97,7 +97,7 @@ following way:
   and as traversal parameters (``/user/<id>``).
 * name: **unique** "string id" of an object, must be URL-friendly ASCII, used
   as a key to move values from views to templates and back, etc.
-* title: always unicode, used for user-friendly representation in the UI
+* title: always Unicode, used for user-friendly representation in the UI.
 
 
 Route naming conventions
