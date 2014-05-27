@@ -5,6 +5,11 @@ Changelog
 0.9 (unreleased)
 ------------------
 
+- Set 'admin' as default view permission to prevent accidental leaks.
+  Apps need to change view permission. Where default permission was being used,
+  now they should use: pyramid.security.NO_PERMISSION_REQUIRED.
+  [ferewuz]
+
 - Display an "Insufficient privileges" flash message when redirecting to
   login form because of denied access.
   [zupo]

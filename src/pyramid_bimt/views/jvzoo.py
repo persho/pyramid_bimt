@@ -11,6 +11,7 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Session
 from pyramid_bimt.models import User
+from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 
@@ -42,7 +43,11 @@ class JVZooView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='jvzoo', renderer='string')
+    @view_config(
+        route_name='jvzoo',
+        permission=NO_PERMISSION_REQUIRED,
+        renderer='string',
+    )
     def jvzoo(self):
         """The /jvzoo view, called by the JVZoo Notification Service."""
 
