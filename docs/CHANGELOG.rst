@@ -5,6 +5,10 @@ Changelog
 0.9 (unreleased)
 ------------------
 
+- [DB MIGRATION REQUIRED] Add login as view that allows admins and staff to
+  login as every other user. Staff group needs to be added to apps.
+  [ferewuz]
+
 - Set 'admin' as default view permission to prevent accidental leaks.
   Apps need to change view permission. Where default permission was being used,
   now they should use: pyramid.security.NO_PERMISSION_REQUIRED.
@@ -21,7 +25,7 @@ Changelog
 - Login-form should not display any sidebars.
   [zupo]
 
-- [DB MIGRAITON REQUIRED] Add forward_ipn_url field to groups, so we can
+- [DB MIGRATION REQUIRED] Add forward_ipn_url field to groups, so we can
   re-send jvzoo IPN request to other apps and chain it if we want to.
   [ferewuz]
 

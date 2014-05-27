@@ -79,8 +79,8 @@ def add_groups():
         admins = Group(name='admins')
         Session.add(admins)
 
-        admins = Group(name='staff')
-        Session.add(admins)
+        staff = Group(name='staff')
+        Session.add(staff)
 
         enabled = Group(name='enabled')
         Session.add(enabled)
