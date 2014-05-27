@@ -4,6 +4,7 @@
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
+from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
@@ -21,6 +22,7 @@ from pyramid_deform import FormView
 
 @view_config(
     route_name='login',
+    permission=NO_PERMISSION_REQUIRED,
     layout='default',
     renderer='pyramid_bimt:templates/form.pt',
 )
@@ -93,7 +95,7 @@ class LoginForm(FormView):
         }
 
 
-@view_config(route_name='logout')
+@view_config(route_name='logout', permission=NO_PERMISSION_REQUIRED)
 def logout(context, request):
     """Logout view.  Always redirects the user to where he came from.
 
@@ -107,7 +109,11 @@ def logout(context, request):
     return HTTPFound(location=location, headers=headers)
 
 
-@view_config(context=HTTPForbidden, accept='text/html')
+@view_config(
+    context=HTTPForbidden,
+    permission=NO_PERMISSION_REQUIRED,
+    accept='text/html'
+)
 def forbidden_redirect(context, request):
     """Redirect to the login form for anonymous users.
 

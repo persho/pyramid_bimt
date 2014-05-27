@@ -4,6 +4,7 @@
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
+from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.settings import asbool
 from pyramid_basemodel import Session
@@ -167,6 +168,9 @@ def configure(config, settings={}):
         settings.get('session.secret', 'secret'))
     config.set_session_factory(session_factory)
 
+    # Set 'admin' as default permission
+    config.set_default_permission('admin')
+
     # configure routes
     add_routes_auth(config)
     add_routes_user(config)
@@ -248,6 +252,7 @@ def add_home_view(config):
     individually, but not being used in apps."""
     config.add_view(
         'pyramid_bimt.home',
+        permission=NO_PERMISSION_REQUIRED,
         renderer='pyramid_bimt:templates/form.pt',
         layout='default',
     )
