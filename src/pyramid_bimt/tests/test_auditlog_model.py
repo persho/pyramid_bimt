@@ -52,9 +52,13 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(types[4].title, 'User Logged In')
         self.assertEqual(types[4].description, 'Emitted whenever a user logs in.')  # noqa
 
-        self.assertEqual(types[5].name, 'UserLoggedOut')
-        self.assertEqual(types[5].title, 'User Logged Out')
-        self.assertEqual(types[5].description, 'Emitted whenever a user logs out.')  # noqa
+        self.assertEqual(types[5].name, 'UserLoggedInAs')
+        self.assertEqual(types[5].title, 'User Logged In As')
+        self.assertEqual(types[5].description, 'Emitted whenever a user logs in as another user.')  # noqa
+
+        self.assertEqual(types[6].name, 'UserLoggedOut')
+        self.assertEqual(types[6].title, 'User Logged Out')
+        self.assertEqual(types[6].description, 'Emitted whenever a user logs out.')  # noqa
 
     def test_get_event_type_by_id(self):
         from pyramid_bimt.models import AuditLogEventType

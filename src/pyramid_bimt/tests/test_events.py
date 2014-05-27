@@ -88,6 +88,41 @@ class TestUserLoggedInEvent(unittest.TestCase):
         self.assertEqual(entries[0].comment, u'foö')
 
 
+class TestUserLoggedInAsEvent(unittest.TestCase):
+
+    def setUp(self):
+        testing.setUp()
+        initTestingDB(auditlog_types=True)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test___init__(self):
+        """Test the __init__ method."""
+        from pyramid_bimt.events import UserLoggedInAs
+        request = testing.DummyRequest()
+        user = _make_user()
+        event = UserLoggedInAs(request, user, u'foö')
+        self.assertEqual(event.request, request)
+        self.assertEqual(event.user, user)
+        self.assertEqual(event.comment, u'foö')
+
+    def test_logged_to_audit_log(self):
+        """Test that the event is logged to the Audit log."""
+        from pyramid_bimt.events import UserLoggedInAs
+        request = testing.DummyRequest()
+        user = _make_user()
+
+        request.registry.notify(UserLoggedInAs(request, user, u'foö'))
+        entries = user.audit_log_entries
+
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].user.email, 'foo@bar.com')
+        self.assertEqual(entries[0].event_type.name, 'UserLoggedInAs')
+        self.assertEqual(entries[0].comment, u'foö')
+
+
 class TestUserLoggedOutEvent(unittest.TestCase):
 
     def setUp(self):
