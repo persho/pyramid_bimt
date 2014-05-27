@@ -190,7 +190,7 @@ class TestMailingEdit(unittest.TestCase):
         self.request.context = Mailing.by_name('welcome_email')
         self.assertEqual(self.view.appstruct(), {
             'name': 'welcome_email',
-            'groups': ['3', ],
+            'groups': ['4', ],
             'exclude_groups': ['1', ],
             'trigger': MailingTriggers.after_created.name,
             'days': 1,
