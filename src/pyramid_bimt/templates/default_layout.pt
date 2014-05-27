@@ -34,7 +34,7 @@
           <tal:messages tal:repeat="message python:layout.flash_messages()">
             <div id="flash">
               <div class="alert alert-${message.level}">
-                ${message.msg}
+                <tal:message replace="structure: message.msg" />
               </div>
             </div>
           </tal:messages>

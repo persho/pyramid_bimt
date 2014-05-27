@@ -45,6 +45,14 @@ attribute, like so:
 
     <th data-sort-disabled="true">Bar</th>
 
+To change sorting direction to `descending` add ``data-sort-descending="true"``
+attribute to the ``<table>`` tag:
+
+.. code-block:: html
+
+    <table class="table datatable" data-sort-descending="true">
+
+
 
 Configure sorting with `query string` URL parameters
 ----------------------------------------------------

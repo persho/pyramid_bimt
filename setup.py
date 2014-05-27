@@ -37,6 +37,7 @@ setup(
     install_requires=[
         'ColanderAlchemy>=0.3.dev0',
         'SQLAlchemy',
+        'celery[redis]',
         'fanstatic',
         'flufl.enum',
         'js.bootstrap',
@@ -48,6 +49,7 @@ setup(
         'passlib',
         'pyramid',
         'pyramid_basemodel',
+        'pyramid_celery',
         'pyramid_deform',
         'pyramid_fanstatic',
         'pyramid_layout',
