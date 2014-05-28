@@ -20,7 +20,7 @@ Scenario: Add new Group
       And I input text  name=trial_validity  7
       And I select checkbox one@bar.com
       And I click button  Submit
-     Then location should be  http://localhost:8080/group/5/edit
+     Then location should be  http://localhost:8080/group/6/edit
       And page should contain  Group "monthly" added.
 
 Scenario: Edit group

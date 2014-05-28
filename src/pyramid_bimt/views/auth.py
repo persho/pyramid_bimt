@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
+from deform import Button
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
@@ -9,15 +10,16 @@ from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
 from pyramid_bimt.events import UserLoggedIn
+from pyramid_bimt.events import UserLoggedInAs
 from pyramid_bimt.events import UserLoggedOut
 from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 from pyramid_bimt.security import verify
-from pyramid_bimt.static import app_assets
-from pyramid_bimt.static import form_assets
-from pyramid_deform import FormView
+from pyramid_bimt.views import FormView
+
+import colander
 
 
 @view_config(
@@ -31,15 +33,7 @@ class LoginForm(FormView):
     buttons = ('login', 'reset password')
     title = 'Login'
     form_options = (('formid', 'login'), ('method', 'POST'))
-
-    def __call__(self):
-        app_assets.need()
-        form_assets.need()
-        self.request.layout_manager.layout.hide_sidebar = True
-        result = super(LoginForm, self).__call__()
-        if isinstance(result, dict):
-            result['title'] = self.title
-        return result
+    hide_sidebar = True
 
     def login_success(self, appstruct):
         came_from = self.request.params.get(
@@ -123,3 +117,58 @@ def forbidden_redirect(context, request):
     request.session.flash(u'Insufficient privileges.')
     location = request.route_path('login', _query={'came_from': request.url})
     return HTTPFound(location=location)
+
+
+class LoginAsSchema(colander.MappingSchema):
+    email = colander.SchemaNode(colander.String())
+
+
+@view_config(
+    route_name='login_as',
+    permission='staff',
+    layout='default',
+    renderer='pyramid_bimt:templates/form.pt',
+)
+class LoginAs(FormView):
+    schema = LoginAsSchema()
+    buttons = (Button(name='login_as', title=u'Login as user'), )
+    title = 'Login as user'
+    form_options = (('formid', 'login_as'), ('method', 'POST'))
+
+    def login_as_success(self, appstruct):
+
+        email = appstruct['email'].lower()
+        user = User.by_email(email)
+        if user is None:
+            self.request.session.flash(
+                u'User with that email does not exist.',
+                'error'
+            )
+        elif user.admin and not self.request.user.admin:
+            self.request.session.flash(
+                u'You do not have permission to login as admin user.',
+                'error'
+            )
+        else:
+            headers = remember(self.request, user.email)
+            self.request.registry.notify(
+                UserLoggedInAs(
+                    self.request,
+                    self.request.user,
+                    comment=u'Logged in as {}'.format(user.email)
+                )
+            )
+
+            if not user.enabled:
+                self.request.session.flash(
+                    u'User: {} is disabled.'.format(user.email),
+                    'warning'
+                )
+            else:
+                self.request.session.flash(
+                    u'You have successfully logged in as user: {}'.format(user.email)  # noqa
+                )
+                return HTTPFound(
+                    location=self.request.host_url,
+                    headers=headers
+                )

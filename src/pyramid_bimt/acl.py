@@ -26,6 +26,7 @@ def groupfinder(user_email, request):
 class RootFactory(object):
     __acl__ = [
         (Allow, 'g:enabled', 'user'),
+        (Allow, 'g:staff', 'staff'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 

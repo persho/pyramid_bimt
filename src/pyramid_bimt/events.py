@@ -50,6 +50,13 @@ class IUserDisabled(Interface):
     user = Attribute('The user who was disabled.')
 
 
+class IUserLoggedInAs(Interface):
+    """An event type that is emitted after a user logs in as another user."""
+
+    request = Attribute('The request object.')
+    user = Attribute('The user who logged in.')
+
+
 class PyramidBIMTEvent(object):
     """A base class for events raised by pyramid_bimt package."""
 
@@ -113,3 +120,8 @@ class UserEnabled(PyramidBIMTEvent):
 @implementer(IUserDisabled)
 class UserDisabled(PyramidBIMTEvent):
     """Emitted whenever a user is disabled."""
+
+
+@implementer(IUserLoggedInAs)
+class UserLoggedInAs(PyramidBIMTEvent):
+    """Emitted whenever a user logs in as another user."""

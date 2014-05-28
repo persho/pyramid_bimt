@@ -333,3 +333,106 @@ class TestDatatablesAJAXView(unittest.TestCase):
         )
 
         Session.remove()
+
+
+class TestLoginAsView(unittest.TestCase):
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
+        initTestingDB(auditlog_types=True, groups=True, users=True)
+        configure(self.config)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_loginas_view(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('admin@bar.com')
+        request = testing.DummyRequest(layout_manager=mock.Mock())
+        request.user = context
+        resp = LoginAs(request)()
+        self.assertEqual(resp['title'], 'Login as user')
+        self.assertIn('Login as user', resp['form'])
+
+    def test_loginas_view_submit_admin(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('admin@bar.com')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'one@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        resp = view.login_as_success(form_values)
+        self.assertEqual(resp.location, 'http://example.com')
+        request.session.flash.assert_called_once_with(
+            u'You have successfully logged in as user: one@bar.com'
+        )
+
+    def test_loginas_view_submit_admin_no_user(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('admin@bar.com')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'foo@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        self.assertIsNone(view.login_as_success(form_values))
+        request.session.flash.assert_called_once_with(
+            u'User with that email does not exist.',
+            'error'
+        )
+
+    def test_loginas_view_submit_admin_disabled_user(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('admin@bar.com')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'one@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        User.by_email('one@bar.com').disable()
+        self.assertIsNone(view.login_as_success(form_values))
+        request.session.flash.assert_called_once_with(
+            u'User: one@bar.com is disabled.',
+            'warning'
+        )
+
+    def test_loginas_view_submit_staff_as_admin(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.models import Group
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('one@bar.com')
+        context.groups.append(Group.by_name('staff'))
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'admin@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        self.assertIsNone(view.login_as_success(form_values))
+        request.session.flash.assert_called_once_with(
+            u'You do not have permission to login as admin user.',
+            'error'
+        )

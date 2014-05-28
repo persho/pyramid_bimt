@@ -128,6 +128,7 @@ def add_routes_other(config):
     config.add_route('raise_http_error', '/raise-error/{error_code}')
     config.add_route('config', '/config')
     config.add_route('sanity_check', '/sanity-check')
+    config.add_route('login_as', '/login-as')
 
 
 def kill_connections(username=None, password=None, apiurl=None):
