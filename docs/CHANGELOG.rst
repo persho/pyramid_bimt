@@ -14,6 +14,12 @@ Changelog
   now they should use: pyramid.security.NO_PERMISSION_REQUIRED.
   [ferewuz]
 
+- Flash messages can now contain HTML elements.
+  [zupo]
+
+- [DB MIGRAITON REQUIRED] Add support for Celery tasks.
+  [zupo]
+
 - Display an "Insufficient privileges" flash message when redirecting to
   login form because of denied access.
   [zupo]
