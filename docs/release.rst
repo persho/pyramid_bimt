@@ -63,17 +63,6 @@ of it:
     If release requires database migration in an app, bump the major version
     number.
 
-.. warning::
-
-    At the time of writing, there is a bug on Travis, that prevents releases
-    on git tags. So we currently do releases on Travis on every push to master
-    branch. The process above needs to be paused after step 2 (so before
-    giving the new development version to zest.releaser). Pause it by just not
-    answering to zest.release, open up a new terminal and push changes to
-    master. Wait a few minutes and Travis should have uploaded a new version
-    from master to our PyPI. Once it is there, return to the initial terminal
-    window and continue with zest.releaser process.
-
 
 Internal releases of third-party libs
 -------------------------------------

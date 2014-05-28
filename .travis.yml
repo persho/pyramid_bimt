@@ -37,6 +37,9 @@ deploy:
   user: niteoweb
   password:
     secure: k7TBVMXzRKqgt9boaAik45BOV8FHz5+rp5wHKM2/QA0MB0BK4tjHhTLi2nVyb0sQujPpFCWCvTYUx4jfbnaqN0wFakSH3kCnf/T61o3BtzOOX0ewqNdVuI0uqSBRgR2xqWtBGIz7zK5GOTOgMOgbqNETHbTXbQfLTJS9D6EHvv4=
+  on:
+    tags: true
+    all_branches: true
 
 notifications:
   irc:

@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.10 (unreleased)
+0.9.1 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Testing Travis' deploy-on-tag.
+  [zupo]
 
 
 0.9 (2014-05-28)
