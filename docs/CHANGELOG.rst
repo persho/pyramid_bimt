@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.9 (unreleased)
-------------------
+0.9 (2014-05-28)
+----------------
 
 - [DB MIGRATION REQUIRED] Add login as view that allows admins and staff to
   login as every other user. Staff group needs to be added to apps.
