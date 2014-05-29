@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """Python keyword for reloading database"""
-
-from bas.testing import initTestingDB
 from pyramid_basemodel import Base
 
 import transaction
@@ -9,8 +7,10 @@ import transaction
 
 class ReloadDB:
 
-    def init_db(self):
+    def init_db(self, args):
+        """Method that resets the DB for each test"""
+        app = __import__(args)
         with transaction.manager:
             Base.metadata.drop_all()
             Base.metadata.create_all()
-            initTestingDB(skip_bind=True)
+            app.testing.initTestingDB(skip_bind=True)

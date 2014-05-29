@@ -17,7 +17,7 @@ Take screenshot and dump source
     Capture Page Screenshot
 
 Suite Setup
-    Init DB
+    Init DB  ${APP_NAME}
     Reset 404 count
     Reset Javascript Exception count
     Open browser  ${APP_URL}  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
