@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.10 (unreleased)
-------------------
+0.10 (2014-05-29)
+-----------------
 
 - Change robot suite startup so it initalizes DB by itself and can use same
   server for multiple tests. Apps need to change test startup, so it uses just
