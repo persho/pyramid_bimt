@@ -3,6 +3,7 @@
 Library         HttpLibrary.HTTP
 Library         OperatingSystem
 Library         String
+Library         pyramid_bimt.tests.robot.reload_db.ReloadDB
 Documentation   A resource file containing the application specific keywords
 ...             that create our own domain specific language. This resource
 ...             implements keywords for testing HTML version of the test
@@ -16,6 +17,7 @@ Take screenshot and dump source
     Capture Page Screenshot
 
 Suite Setup
+    Init DB
     Reset 404 count
     Reset Javascript Exception count
     Open browser  ${APP_URL}  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
