@@ -48,3 +48,8 @@ notifications:
       - "irc.freenode.org#niteoweb"
     template:
       - "%{repository}/#%{build_number}/%{branch} (%{author}): %{message} %{build_url}"
+
+cache:
+  bundler: true
+  directories:
+    - /home/travis/build/niteoweb/pyramid_bimt/eggs
