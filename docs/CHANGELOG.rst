@@ -5,7 +5,9 @@ Changelog
 0.9.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add cache on travis builds, so that builds run much faster as they do not
+  need to fetch all dependencies each time
+  [ferewuz]
 
 
 0.9.1 (2014-05-28)
