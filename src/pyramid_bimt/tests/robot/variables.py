@@ -12,3 +12,5 @@ BROWSER = os.environ.get('BROWSER', "Firefox")
 REMOTE_URL = os.environ.get('REMOTE_URL', "")
 DESIRED_CAPABILITIES = os.environ.get('DESIRED_CAPABILITIES', "")
 MAIL_DIR = os.path.join(os.getcwd(), 'mail')
+
+APP_NAME = os.environ.get('APP_NAME', 'pyramid_bimt')

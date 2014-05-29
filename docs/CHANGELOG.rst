@@ -2,11 +2,16 @@ Changelog
 =========
 
 
-0.9.2 (unreleased)
+0.10 (unreleased)
 ------------------
 
+- Change robot suite startup so it initalizes DB by itself and can use same
+  server for multiple tests. Apps need to change test startup, so it uses just
+  one server and set app name as env variable.
+  [ferewuz]
+
 - Add cache on travis builds, so that builds run much faster as they do not
-  need to fetch all dependencies each time
+  need to fetch all dependencies each time.
   [ferewuz]
 
 
