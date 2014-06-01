@@ -197,7 +197,7 @@ def add_default_content():  # pragma: no cover (bw compat only)
 def main(argv=sys.argv):
     parser = argparse.ArgumentParser(
         usage='bin/py -m '
-        'pyramid_bimt.scripts.expire_subscriptions etc/production.ini',
+        'pyramid_bimt.scripts.populate etc/production.ini',
     )
     parser.add_argument(
         'config', type=str, metavar='<config>',

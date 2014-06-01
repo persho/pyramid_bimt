@@ -137,7 +137,6 @@ class AuditLogEntry(Base):
         ForeignKey('users.id'),
         info={'colanderalchemy': dict(
             title='User ID',
-            # TODO: Make values dynamic, not read at startup
             widget=users_select_widget,
         )}
     )
@@ -148,7 +147,6 @@ class AuditLogEntry(Base):
         ForeignKey('audit_log_event_types.id'),
         info={'colanderalchemy': dict(
             title='Event Type ID',
-            # TODO: Make values dynamic, not read at startup
             widget=event_types_select_widget
         )}
     )
