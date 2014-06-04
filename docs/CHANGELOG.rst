@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.10.1 (unreleased)
------------------
+0.10.1 (2014-06-04)
+-------------------
 
 - Robot DB initialization method now explicitly enables full demo content.
   [ferewuz]
