@@ -13,4 +13,7 @@ class ReloadDB:
         with transaction.manager:
             Base.metadata.drop_all()
             Base.metadata.create_all()
-            app.testing.initTestingDB(skip_bind=True)
+            app.testing.initTestingDB(
+                skip_bind=True,
+                full_demo_content=True
+            )
