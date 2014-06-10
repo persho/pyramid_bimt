@@ -5,7 +5,8 @@ Changelog
 0.10.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Chosen Jquery plugin added, so it makes all selects nicer and searchable.
+  [ferewuz]
 
 
 0.10.1 (2014-06-04)
