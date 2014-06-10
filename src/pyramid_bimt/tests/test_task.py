@@ -129,7 +129,7 @@ class TestCeleryTask(unittest.TestCase):
 
     def test_on_failure(self):
         einfo = mock.Mock(spec='exception'.split())
-        einfo.exception = Exception('problem foo')
+        einfo.exception = Exception('problem foö')
 
         with transaction.manager:
             Session.add(FooTaskModel(id=1, task_id='foo'))
@@ -145,4 +145,4 @@ class TestCeleryTask(unittest.TestCase):
             FooTaskModel.by_id(1).state,
             TaskStates.failure.name,
         )
-        self.assertEqual(FooTaskModel.by_id(1).msg, 'problem foo')
+        self.assertEqual(FooTaskModel.by_id(1).msg, u'problem foö')
