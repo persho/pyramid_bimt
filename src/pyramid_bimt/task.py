@@ -73,5 +73,5 @@ class CeleryTask(Task):
             task = self.TaskModel.by_task_id(task_id)
             if task:  # pragma: no branch
                 task.state = TaskStates.failure.name
-                task.msg = unicode(str(einfo.exception))
+                task.msg = einfo.exception.encode('ASCII', 'ignore')
             logger.exception(einfo.exception)
