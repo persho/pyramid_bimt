@@ -102,6 +102,8 @@
             });
         }
 
+        // Activate chosen jquery plugin for all selects
+        $("select").chosen({search_contains: true});
     });
 
 }(jQuery));

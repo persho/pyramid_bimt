@@ -24,12 +24,26 @@ logger = logging.getLogger(__name__)
 lib_deform = Library('deform', resource_filename('deform', 'static'))
 lib_bimt = Library('pyramid_bimt', 'static')
 
+chosen_js = Resource(
+    library=lib_bimt,
+    relpath='chosen.jquery.js',
+    depends=[jquery],
+    bottom=True,
+)
+
+chosen_css = Resource(
+    library=lib_bimt,
+    relpath='chosen.css',
+    depends=[bootstrap],
+    bottom=True,
+)
+
 bimt_css = Resource(
     library=lib_bimt,
     relpath='bimt.css',
     minified='bimt.min.css',
     minifier='cssmin',
-    depends=[bootstrap],
+    depends=[bootstrap, chosen_css],
 )
 
 bimt_js = Resource(
@@ -37,7 +51,7 @@ bimt_js = Resource(
     relpath='bimt.js',
     minified='bimt.min.js',
     minifier='jsmin',
-    depends=[jquery],
+    depends=[jquery, chosen_js],
     bottom=True,
 )
 
