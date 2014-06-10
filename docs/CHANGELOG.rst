@@ -2,11 +2,17 @@ Changelog
 =========
 
 
-0.10.2 (unreleased)
+0.10.2 (2014-06-10)
 -------------------
 
 - Chosen Jquery plugin added, so it makes all selects nicer and searchable.
   [ferewuz]
+
+- Fixed encoding errors with task.on_failure().
+  [zupo]
+
+- UniqueConstraint names must be unique.
+  [zupo]
 
 
 0.10.1 (2014-06-04)
