@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-0.10.4 (unreleased)
--------------------
+0.11 (unreleased)
+-----------------
 
-- Nothing changed yet.
+- [DB MIGRATION REQUIRED] Add task.traceback field. Apps need to add the
+  traceback column to their Task objects.
+  [zupo]
 
 
 0.10.3 (2014-06-11)

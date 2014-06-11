@@ -49,6 +49,10 @@ class FooTaskModel(Base, BaseMixin):
         Unicode,
     )
 
+    traceback = Column(
+        Unicode,
+    )
+
     state = Column(
         Enum(*[s.name for s in TaskStates], name='task_states'),
         default=TaskStates.pending.name,
@@ -89,6 +93,10 @@ class TestCeleryTask(unittest.TestCase):
         task(user_id=1)
 
         self.assertEqual(FooTaskModel.by_id(1).task_id, 'foo')
+        self.assertEqual(
+            FooTaskModel.by_id(1).state,
+            TaskStates.started.name,
+        )
 
         self.assertEqual(len(handler.records), 1)
         self.assertEqual(
@@ -101,7 +109,12 @@ class TestCeleryTask(unittest.TestCase):
 
         task = self.FooTask()
         task.after_return(
-            status=None, retval=None, task_id='foo', args=None, kwargs=None, einfo=None)  # noqa
+            status='failure', retval=None, task_id='foo', args=None, kwargs=None, einfo=None)  # noqa
+
+        self.assertEqual(
+            FooTaskModel.by_id(1).state,
+            TaskStates.failure.name,
+        )
 
         self.assertEqual(len(handler.records), 1)
         self.assertEqual(
@@ -109,27 +122,21 @@ class TestCeleryTask(unittest.TestCase):
             'END pyramid_bimt.tests.test_task.FooTask (task id: foo, result id: 1)',  # noqa
         )
 
-    def test_on_success(self):
-
-        with transaction.manager:
-            Session.add(FooTaskModel(id=1, task_id='foo', msg=u'bär'))
-
+    def test_after_return_no_task(self):
         task = self.FooTask()
-        self.assertEqual(
-            FooTaskModel.by_id(1).state,
-            TaskStates.pending.name,
-        )
+        task.after_return(
+            status='failure', retval=None, task_id='foo', args=None, kwargs=None, einfo=None)  # noqa
 
-        task.on_success(retval=None, task_id='foo', args=None, kwargs=None)
-        self.assertEqual(FooTaskModel.by_id(1).msg, u'bär')
+        self.assertEqual(len(handler.records), 1)
         self.assertEqual(
-            FooTaskModel.by_id(1).state,
-            TaskStates.success.name,
+            handler.records[0].message,
+            'END pyramid_bimt.tests.test_task.FooTask (task id: foo, result id: None)',  # noqa
         )
 
     def test_on_failure(self):
-        einfo = mock.Mock(spec='exception'.split())
+        einfo = mock.Mock(spec='exception traceback'.split())
         einfo.exception = Exception('problem foö')
+        einfo.traceback = str(einfo.exception)
 
         with transaction.manager:
             Session.add(FooTaskModel(id=1, task_id='foo'))
@@ -141,8 +148,4 @@ class TestCeleryTask(unittest.TestCase):
         )
 
         task.on_failure(None, 'foo', None, None, einfo)
-        self.assertEqual(
-            FooTaskModel.by_id(1).state,
-            TaskStates.failure.name,
-        )
-        self.assertEqual(FooTaskModel.by_id(1).msg, u'problem foö')
+        self.assertEqual(FooTaskModel.by_id(1).traceback, u'problem foö')
