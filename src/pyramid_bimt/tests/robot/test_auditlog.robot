@@ -14,8 +14,8 @@ Suite Teardown  Suite Teardown
 Scenario: Add audit log entry
     I log in as admin
     Go to  http://localhost:8080/audit-log/add
-    Select From List By Label  name=user_id  one@bar.com
-    Select From List By Label  name=event_type_id  UserCreated
+    I select from dropdown  user_id  one@bar.com
+    I select from dropdown  event_type_id  UserCreated
     Input Text  name=comment  Fake create user.
     I click button  Submit
     Location Should Be  http://localhost:8080/audit-log

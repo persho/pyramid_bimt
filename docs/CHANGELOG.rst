@@ -5,7 +5,8 @@ Changelog
 0.10.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Robot bugfixes that came with adding Chosen jquery.
+  [ferewuz]
 
 
 0.10.2 (2014-06-10)

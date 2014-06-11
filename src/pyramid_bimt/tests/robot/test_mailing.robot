@@ -16,7 +16,7 @@ Scenario: Add new mailing
      When I go to  http://localhost:8080/mailing/add
       And I input text  name=name  welcome email
       And I select checkbox trial
-      And I select from dropdown  name=trigger  x days after created
+      And I select from dropdown  trigger  x days after created
       And I input text  name=days  1
       And I input text  name=subject  Welcome!
       And I input text  name=body  Welcome to BIMT!
