@@ -76,8 +76,11 @@ I Select radio button
     Select Radio Button  ${selector}  ${value}
 
 I Select From Dropdown
-    [Arguments]  ${selector}  ${value}
-    Select From List  ${selector}  ${value}
+    [Arguments]  ${name}  ${value}
+    # A bit hacky but only way so it works with chosen jquery plugin
+    # as we can't select (now hidden) select options
+    Click Element  xpath=//select[@name="${name}"]/../div
+    Click Element  xpath=//select[@name="${name}"]/../div/div/ul[@class="chosen-results"]/li[text()="${value}"]
 
 I Select checkbox
     [Arguments]  ${value}

@@ -16,7 +16,7 @@ Scenario: Add new portlet
      When I go to  http://localhost:8080/portlet/add
       And I input text  name=name  downtime notice
       And I select checkbox admins
-      And I select from dropdown  name=position  Above Footer
+      And I Select From Dropdown  position  Above Footer
       And I input text  name=html  Site will be down this weekend!
       And I click button  Submit
      Then location should be  http://localhost:8080/portlet/2/edit
