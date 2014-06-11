@@ -43,6 +43,7 @@ class CeleryTask(Task):
                 user_id=kwargs['user_id'],
                 task_id=self.request.id,
                 task_name=self.name,
+                state=TaskStates.started.name,
             )
             Session.add(result)
             Session.flush()
@@ -55,23 +56,18 @@ class CeleryTask(Task):
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         """Log end of task execution."""
         result = self.TaskModel.by_task_id(task_id)
-        result_id = result.id if result else 'None'
+        if result:
+            result.state = TaskStates[status.lower()].name
+            result_id = result.id
+        else:
+            result_id = None
         logger.info('END {} (task id: {}, result id: {})'.format(
             self.name, task_id, result_id))
 
-    def on_success(self, retval, task_id, args, kwargs):
-        """Set Task.state to TaskStates.success."""
-        with transaction.manager:
-            task = self.TaskModel.by_task_id(task_id)
-            task.state = TaskStates.success.name
-
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        """Set Task.state to TaskStates.failure.
-
-        Also, save error message to task, so we can display it to user."""
+        """Save traceback to Task.traceback."""
         with transaction.manager:
             task = self.TaskModel.by_task_id(task_id)
             if task:  # pragma: no branch
-                task.state = TaskStates.failure.name
-                task.msg = unicode(str(einfo.exception), 'utf-8')
+                task.traceback = unicode(einfo.traceback, 'utf-8')
             logger.exception(einfo.exception)
