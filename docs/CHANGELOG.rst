@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.10.3 (unreleased)
+0.10.3 (2014-06-11)
 -------------------
 
 - Robot bugfixes that came with adding Chosen jquery.
