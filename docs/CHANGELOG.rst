@@ -9,6 +9,10 @@ Changelog
   traceback column to their Task objects.
   [zupo]
 
+- [DB MIGRATION REQUIRED] Add GroupProperty that can be use by apps similar to
+  UserProperty, to save additional data.
+  [ferewuz]
+
 
 0.10.3 (2014-06-11)
 -------------------

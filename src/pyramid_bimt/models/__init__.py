@@ -3,6 +3,7 @@
 from .auditlog import AuditLogEntry  # noqa
 from .auditlog import AuditLogEventType  # noqa
 from .group import Group  # noqa
+from .group import GroupProperty  # noqa
 from .group import user_group_table  # noqa
 from .mailing import Mailing  # noqa
 from .mailing import MailingTriggers  # noqa

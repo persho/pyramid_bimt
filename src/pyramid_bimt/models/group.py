@@ -8,7 +8,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Table
+from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.orm import relationship
 
 
 user_group_table = Table(
@@ -28,6 +30,33 @@ user_group_table = Table(
     ),
     UniqueConstraint('user_id', 'group_id', name='user_id_group_id'),
 )
+
+_marker = object()
+
+
+class GroupProperty(Base, BaseMixin):
+    """A key value store for group properties."""
+
+    __tablename__ = 'group_properties'
+
+    UniqueConstraint('key', 'group_id', name='key_group_id')
+
+    #: unique for any key + group_id combination
+    key = Column(
+        String,
+        unique=False,
+        nullable=False,
+    )
+
+    #: value for the given key
+    value = Column(Unicode)
+
+    #: group id of the owner of this property
+    group_id = Column(
+        Integer,
+        ForeignKey('groups.id'),
+        nullable=False
+    )
 
 
 class Group(Base, BaseMixin):
@@ -82,6 +111,49 @@ class Group(Base, BaseMixin):
             'to the specified URL'
         )},
     )
+
+    #: shorthand for accessing group's properties
+    properties = relationship(
+        'GroupProperty', cascade='all,delete-orphan')
+
+    def get_property(self, key, default=_marker):
+        """Get a Group's property by key.
+
+        :param key: Key by which to find the property.
+        :type key: Unicode
+        :param default: The return value if no property is found. Raises
+            ValueError by default.
+        :type default: anything
+        :return: value of the property
+        :rtype: Unicode
+        """
+        result = GroupProperty.query.filter_by(group_id=self.id, key=key)
+        if result.count() < 1:
+            if default == _marker:
+                raise KeyError(u'Property "{}" not found.'.format(key))
+            else:
+                return default
+        return result.one().value
+
+    def set_property(self, key, value, strict=False):
+        """Set a Group's property by key.
+
+        :param key: Key by which to save the property.
+        :type key: Unicode
+        :param value: Value of the property.
+        :type value: Unicode
+        :param strict: If True, raise an error if property of given key key
+            does not yet exists. In other words, update an existing property or
+            fail. False by default.
+        :type strict: bool
+        """
+        result = GroupProperty.query.filter_by(group_id=self.id, key=key)
+        if result.count() < 1 and strict:
+            raise KeyError('Property "{}" not found.'.format(key))
+        elif result.count() < 1 and not strict:
+            self.properties.append(GroupProperty(key=key, value=value))
+        else:
+            result.one().value = value
 
     @classmethod
     def by_id(self, group_id):

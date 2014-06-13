@@ -3,6 +3,7 @@
 
 from pyramid_bimt import add_routes_group
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
 from pyramid import testing
@@ -19,13 +20,29 @@ def _make_group(
     validity=31,
     trial_validity=7,
     forward_ipn_to_url='http://example.com',
+    properties=None,
 ):
+    if not properties:  # pragma: no branch
+        properties = [_make_property()]
     return Group(
         name=name,
         product_id=product_id,
         validity=validity,
         trial_validity=trial_validity,
         forward_ipn_to_url='http://example.com',
+        properties=properties,
+    )
+
+
+def _make_property(
+    id=1,
+    key=u'foo',
+    value=u'bar'
+):
+    return GroupProperty(
+        id=id,
+        key=key,
+        value=value,
     )
 
 
@@ -74,6 +91,7 @@ class TestGroupAdd(unittest.TestCase):
         'trial_validity': 7,
         'forward_ipn_to_url': 'http://example.com',
         'users': [1, ],
+        'properties': [{u'key': u'foo', u'value': u'bar'}, ],
     }
 
     def setUp(self):
@@ -110,6 +128,7 @@ class TestGroupAdd(unittest.TestCase):
         self.assertEqual(group.trial_validity, 7)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(1), ])
+        self.assertEqual(group.get_property('foo'), 'bar')
 
         self.assertEqual(
             self.request.session.pop_flash(), [u'Group "foo" added.'])
@@ -124,6 +143,10 @@ class TestGroupEdit(unittest.TestCase):
         'trial_validity': 7,
         'forward_ipn_to_url': 'http://example.com',
         'users': [2, ],
+        'properties': [
+            {u'key': u'foo', u'value': u'bar'},   # existing property
+            {u'key': u'baz', u'value': u'bam'},   # new property
+        ],
     }
 
     def setUp(self):
@@ -153,10 +176,14 @@ class TestGroupEdit(unittest.TestCase):
             'trial_validity': 7,
             'forward_ipn_to_url': 'http://example.com',
             'users': ['2', ],
+            'properties': [{'key': u'foo', 'value': u'bar'}, ],
         })
 
     def test_save_success(self):
         self.request.context = Group.by_id(1)
+
+        # add a property that will get updated on save_success()
+        self.request.context.set_property(key=u'foo', value=u'var')
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
@@ -169,5 +196,26 @@ class TestGroupEdit(unittest.TestCase):
         self.assertEqual(group.trial_validity, 7)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(2), ])
+        self.assertEqual(group.get_property('foo'), 'bar')
+        self.assertEqual(group.get_property('baz'), 'bam')
+        self.assertEqual(
+            self.request.session.pop_flash(), [u'Group "foo" modified.'])
+
+    def test_save_success_remove_properties(self):
+        self.request.context = Group.by_id(1)
+
+        self.APPSTRUCT['properties'] = []
+        result = self.view.save_success(self.APPSTRUCT)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, '/group/1/edit')
+
+        group = Group.by_id(1)
+        self.assertEqual(group.name, 'foo')
+        self.assertEqual(group.product_id, 13)
+        self.assertEqual(group.validity, 31)
+        self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
+        self.assertEqual(group.users, [User.by_id(2), ])
+        self.assertIsNone(group.get_property('foo', None))
         self.assertEqual(
             self.request.session.pop_flash(), [u'Group "foo" modified.'])

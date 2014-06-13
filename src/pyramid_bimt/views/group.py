@@ -7,12 +7,14 @@ from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import FormView
 
 import colander
+import copy
 import deform
 
 
@@ -52,11 +54,16 @@ class GroupAdd(FormView):
         'validity',
         'trial_validity',
         'forward_ipn_to_url',
+        'properties',
     ]
 
     def __init__(self, request):
         self.request = request
-        self.schema = SQLAlchemySchemaNode(Group, includes=self.fields)
+        self.schema = SQLAlchemySchemaNode(
+            Group,
+            includes=self.fields,
+            overrides={'properties': {'includes': ['key', 'value']}},
+        )
 
         # we don't like the way ColanderAlchemy renders SA Relationships so
         # we manually inject a suitable SchemaNode for users
@@ -79,6 +86,8 @@ class GroupAdd(FormView):
             trial_validity=appstruct.get('trial_validity'),
             forward_ipn_to_url=appstruct.get('forward_ipn_to_url'),
             users=[User.by_id(user_id) for user_id in appstruct.get('users', [])],  # noqa
+            properties=[GroupProperty(key=prop['key'], value=prop['value'])
+                        for prop in appstruct.get('properties', [])],
         )
 
         Session.add(group)
@@ -89,7 +98,7 @@ class GroupAdd(FormView):
 
     def appstruct(self):
         appstruct = dict()
-        for field in self.fields + ['users', ]:
+        for field in self.fields + ['users', 'properties']:
             if self.request.params.get(field) is not None:
                 appstruct[field] = self.request.params[field]
 
@@ -118,6 +127,19 @@ class GroupEdit(GroupAdd):
 
         group.users = [User.by_id(user_id) for user_id in appstruct.get('users', [])]  # noqa
 
+        # remove properties that are not present in appstruct
+        for prop in copy.copy(group.properties):
+            if prop.key not in [p['key'] for p in appstruct['properties']]:
+                group.properties.remove(prop)
+
+        # update/create properties present in appstruct
+        for prop in appstruct['properties']:
+            if group.get_property(prop['key'], None) is not None:
+                group.set_property(key=prop['key'], value=prop['value'])
+            else:
+                group.properties.append(
+                    GroupProperty(key=prop['key'], value=prop['value']))
+
         self.request.session.flash(u'Group "{}" modified.'.format(group.name))
         return HTTPFound(
             location=self.request.route_path('group_edit', group_id=group.id))
@@ -134,4 +156,13 @@ class GroupEdit(GroupAdd):
 
         if context.users:
             appstruct['users'] = [str(u.id) for u in context.users]
+
+        if context.properties:
+            appstruct['properties'] = [
+                {'key': prop.key, 'value': prop.value}
+                for prop in context.properties
+            ]
+        else:
+            del appstruct['properties']
+
         return appstruct
