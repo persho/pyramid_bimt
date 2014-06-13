@@ -204,7 +204,7 @@ Changelog
 - Flash messages can now contain HTML elements.
   [zupo]
 
-- [DB MIGRAITON REQUIRED] Add support for Celery tasks.
+- [DB MIGRATION REQUIRED] Add support for Celery tasks.
   [zupo]
 
 - Display an "Insufficient privileges" flash message when redirecting to
