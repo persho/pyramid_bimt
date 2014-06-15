@@ -151,3 +151,35 @@ class TestGetAll(unittest.TestCase):
         groups = Group.get_all(limit=1).all()
         self.assertEqual(len(groups), 1)
         self.assertEqual(groups[0].name, 'bar')
+
+
+class TestUserProperties(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        self.group = _make_group()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_get_property(self):
+        with self.assertRaises(KeyError) as cm:
+            self.group.get_property('foo')
+        self.assertEqual(cm.exception.message, 'Property "foo" not found.')
+
+    def test_get_property_with_default_value(self):
+        self.assertEqual(
+            self.group.get_property('foo', default=u'bar'), u'bar',)
+
+    def test_set_property(self):
+        self.group.set_property('foo', u'bar')
+        self.assertEqual(self.group.get_property('foo'), u'bar')
+
+        self.group.set_property('foo', u'baz')
+        self.assertEqual(self.group.get_property('foo'), u'baz')
+
+    def test_set_property_strict(self):
+        with self.assertRaises(KeyError) as cm:
+            self.group.set_property('foo', u'bar', strict=True)
+        self.assertEqual(cm.exception.message, 'Property "foo" not found.')

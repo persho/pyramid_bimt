@@ -6,6 +6,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt import events
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import Portlet
@@ -76,19 +77,34 @@ def add_audit_log_event_types():
 def add_groups():
     """Init the 'admins', 'enabled', 'trial', 'unsubscribed' groups."""
     with transaction.manager:
-        admins = Group(name='admins')
+        admins = Group(
+            name='admins',
+            properties=[GroupProperty(key=u'bimt', value=u'on'), ],
+        )
         Session.add(admins)
 
-        staff = Group(name='staff')
+        staff = Group(
+            name='staff',
+            properties=[GroupProperty(key=u'bimt', value=u'on'), ],
+        )
         Session.add(staff)
 
-        enabled = Group(name='enabled')
+        enabled = Group(
+            name='enabled',
+            properties=[GroupProperty(key=u'bimt', value=u'on'), ],
+        )
         Session.add(enabled)
 
-        trial = Group(name='trial')
+        trial = Group(
+            name='trial',
+            properties=[GroupProperty(key=u'bimt', value=u'on'), ],
+        )
         Session.add(trial)
 
-        unsubscribed = Group(name='unsubscribed')
+        unsubscribed = Group(
+            name='unsubscribed',
+            properties=[GroupProperty(key=u'bimt', value=u'on'), ],
+        )
         Session.add(unsubscribed)
 
 
