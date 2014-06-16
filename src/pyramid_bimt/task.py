@@ -39,16 +39,21 @@ class CeleryTask(Task):
     def __call__(self, *args, **kwargs):
         """Create a TaskModel object and log start of task execution."""
         with transaction.manager:
-            task = self.TaskModel(
-                user_id=kwargs['user_id'],
-                task_id=self.request.id,
-                task_name=self.name,
-                args=args,
-                kwargs=kwargs,
-                state=TaskStates.started.name,
-            )
-            Session.add(task)
-            Session.flush()
+            if kwargs.get('app_task_id'):
+                task = self.TaskModel.by_id(kwargs['app_task_id'])
+                task.task_id = self.request.id
+                task.state = TaskStates.retry.name
+            else:
+                task = self.TaskModel(
+                    user_id=kwargs['user_id'],
+                    task_id=self.request.id,
+                    task_name=self.name,
+                    args=args,
+                    kwargs=kwargs,
+                    state=TaskStates.started.name,
+                )
+                Session.add(task)
+                Session.flush()
             logger.info(
                 'START {} (celery task id: {}, app task id: {})'.format(
                     self.name, self.request.id, task.id))

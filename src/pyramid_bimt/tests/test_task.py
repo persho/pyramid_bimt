@@ -140,6 +140,20 @@ class TestCeleryTask(unittest.TestCase):
             '(celery task id: foo, app task id: 1)',
         )
 
+    def test__call__reuse_existing_TaskModel(self):
+        self.test__call__()
+        task = self.FooTask()
+        task.request_stack = mock.Mock()
+        task.request_stack.top.id = 'bar'
+
+        FooTaskModel.by_id(1).task_id = 'foo'
+        FooTaskModel.by_id(1).state = TaskStates.started.name
+
+        task(user_id=1, app_task_id=1)
+
+        FooTaskModel.by_id(1).task_id = 'bar'
+        FooTaskModel.by_id(1).state = TaskStates.retry.name
+
     def test_after_return(self):
         Session.add(FooTaskModel(task_id='foo'))
 

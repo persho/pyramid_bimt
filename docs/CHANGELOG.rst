@@ -5,6 +5,10 @@ Changelog
 0.11 (unreleased)
 -----------------
 
+- A single TaskModel instance can now be reused by multiple celery tasks.
+  Common use-case is rerunning failed tasks.
+  [zupo]
+
 - Present a nice error message to user when task fails.
   [zupo]
 
