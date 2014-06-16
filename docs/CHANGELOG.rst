@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.11 (unreleased)
+0.11 (2014-06-16)
 -----------------
 
 - A single TaskModel instance can now be reused by multiple celery tasks.
