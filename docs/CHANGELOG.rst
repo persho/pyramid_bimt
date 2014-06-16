@@ -11,6 +11,10 @@ Changelog
 - Render HTML in bootstrap tooltips.
   [zupo]
 
+- [DB MIGRATION REQUIRED] App's TaskModel needs new columns: traceback,
+  args and kwargs.
+  [zupo]
+
 - [DB MIGRATION REQUIRED] Add GroupProperty that can be used by apps similar
   to UserProperty, to save additional data.
   [ferewuz]

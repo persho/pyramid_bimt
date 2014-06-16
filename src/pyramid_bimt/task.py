@@ -60,11 +60,11 @@ class CeleryTask(Task):
         task = self.TaskModel.by_task_id(task_id)
         if task:
             task.state = TaskStates[status.lower()].name
-            task_id = task.id
+            app_task_id = task.id
         else:
-            task_id = None
+            app_task_id = None
         logger.info('END {} (celery task id: {}, app task id: {})'.format(
-            self.name, task_id, task_id))
+            self.name, task_id, app_task_id))
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """Save traceback to Task.traceback."""
