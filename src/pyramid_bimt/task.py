@@ -72,4 +72,6 @@ class CeleryTask(Task):
             task = self.TaskModel.by_task_id(task_id)
             if task:  # pragma: no branch
                 task.traceback = unicode(einfo.traceback, 'utf-8')
+                task.msg = u'An unexpected error occurred when running this '\
+                    u'task. Please contact support and provide task ID number.'
             logger.exception(einfo.exception)
