@@ -16,6 +16,7 @@
 
         // Enable bootstrap tooltips
         $("body").tooltip({
+            html: true,
             selector: "*[data-toggle='tooltip']"
         });
 

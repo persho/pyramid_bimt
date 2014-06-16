@@ -19,6 +19,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from zope.testing.loggingsupport import InstalledHandler
 
+import json
 import mock
 import transaction
 import unittest
@@ -53,10 +54,44 @@ class FooTaskModel(Base, BaseMixin):
         Unicode,
     )
 
+    args = Column(
+        String,
+    )
+
+    kwargs = Column(
+        String,
+    )
+
     state = Column(
         Enum(*[s.name for s in TaskStates], name='task_states'),
         default=TaskStates.pending.name,
     )
+
+    @property
+    def args(self):
+        """Get args as list of values from DB."""
+        if not self.args_raw:
+            return []
+
+        return json.loads(self.args_raw)
+
+    @args.setter
+    def args(self, args):
+        """Store args to DB as JSON dump."""
+        self.args_raw = json.dumps(args)
+
+    @property
+    def kwargs(self):
+        """Get kwargs as dict of values from DB."""
+        if not self.kwargs_raw:
+            return {}
+
+        return json.loads(self.kwargs_raw)
+
+    @kwargs.setter
+    def kwargs(self, kwargs):
+        """Store args to DB as JSON dump."""
+        self.kwargs_raw = json.dumps(kwargs)
 
     @classmethod
     def by_id(class_, id):
@@ -101,8 +136,23 @@ class TestCeleryTask(unittest.TestCase):
         self.assertEqual(len(handler.records), 1)
         self.assertEqual(
             handler.records[0].message,
-            'START pyramid_bimt.tests.test_task.FooTask (task id: foo, result id: 1)',  # noqa
+            'START pyramid_bimt.tests.test_task.FooTask '
+            '(celery task id: foo, app task id: 1)',
         )
+
+    def test__call__reuse_existing_TaskModel(self):
+        self.test__call__()
+        task = self.FooTask()
+        task.request_stack = mock.Mock()
+        task.request_stack.top.id = 'bar'
+
+        FooTaskModel.by_id(1).task_id = 'foo'
+        FooTaskModel.by_id(1).state = TaskStates.started.name
+
+        task(user_id=1, app_task_id=1)
+
+        FooTaskModel.by_id(1).task_id = 'bar'
+        FooTaskModel.by_id(1).state = TaskStates.retry.name
 
     def test_after_return(self):
         Session.add(FooTaskModel(task_id='foo'))
@@ -119,7 +169,8 @@ class TestCeleryTask(unittest.TestCase):
         self.assertEqual(len(handler.records), 1)
         self.assertEqual(
             handler.records[0].message,
-            'END pyramid_bimt.tests.test_task.FooTask (task id: foo, result id: 1)',  # noqa
+            'END pyramid_bimt.tests.test_task.FooTask '
+            '(celery task id: foo, app task id: 1)',
         )
 
     def test_after_return_no_task(self):
@@ -130,7 +181,8 @@ class TestCeleryTask(unittest.TestCase):
         self.assertEqual(len(handler.records), 1)
         self.assertEqual(
             handler.records[0].message,
-            'END pyramid_bimt.tests.test_task.FooTask (task id: foo, result id: None)',  # noqa
+            'END pyramid_bimt.tests.test_task.FooTask '
+            '(celery task id: foo, app task id: None)',  # noqa
         )
 
     def test_on_failure(self):

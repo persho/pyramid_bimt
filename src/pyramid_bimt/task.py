@@ -39,30 +39,37 @@ class CeleryTask(Task):
     def __call__(self, *args, **kwargs):
         """Create a TaskModel object and log start of task execution."""
         with transaction.manager:
-            result = self.TaskModel(
-                user_id=kwargs['user_id'],
-                task_id=self.request.id,
-                task_name=self.name,
-                state=TaskStates.started.name,
-            )
-            Session.add(result)
-            Session.flush()
+            if kwargs.get('app_task_id'):
+                task = self.TaskModel.by_id(kwargs['app_task_id'])
+                task.task_id = self.request.id
+                task.state = TaskStates.retry.name
+            else:
+                task = self.TaskModel(
+                    user_id=kwargs['user_id'],
+                    task_id=self.request.id,
+                    task_name=self.name,
+                    args=args,
+                    kwargs=kwargs,
+                    state=TaskStates.started.name,
+                )
+                Session.add(task)
+                Session.flush()
             logger.info(
-                'START {} (task id: {}, result id: {})'.format(
-                    self.name, self.request.id, result.id))
+                'START {} (celery task id: {}, app task id: {})'.format(
+                    self.name, self.request.id, task.id))
 
         return self.run(*args, **kwargs)
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         """Log end of task execution."""
-        result = self.TaskModel.by_task_id(task_id)
-        if result:
-            result.state = TaskStates[status.lower()].name
-            result_id = result.id
+        task = self.TaskModel.by_task_id(task_id)
+        if task:
+            task.state = TaskStates[status.lower()].name
+            app_task_id = task.id
         else:
-            result_id = None
-        logger.info('END {} (task id: {}, result id: {})'.format(
-            self.name, task_id, result_id))
+            app_task_id = None
+        logger.info('END {} (celery task id: {}, app task id: {})'.format(
+            self.name, task_id, app_task_id))
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         """Save traceback to Task.traceback."""
@@ -70,4 +77,6 @@ class CeleryTask(Task):
             task = self.TaskModel.by_task_id(task_id)
             if task:  # pragma: no branch
                 task.traceback = unicode(einfo.traceback, 'utf-8')
+                task.msg = u'An unexpected error occurred when running this '\
+                    u'task. Please contact support and provide task ID number.'
             logger.exception(einfo.exception)
