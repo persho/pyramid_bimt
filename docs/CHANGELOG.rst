@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-0.12 (unreleased)
+0.11.1 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- UserCreated event now fired on manual user creation and not only when Jvzoo
+  creates new User.
+  [ferewuz]
 
 
 0.11 (2014-06-16)

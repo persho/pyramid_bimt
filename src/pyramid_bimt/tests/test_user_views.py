@@ -246,7 +246,11 @@ class TestUserAdd(unittest.TestCase):
         initTestingDB(groups=True, auditlog_types=True)
 
         from pyramid_bimt.views.user import UserAdd
-        self.request = testing.DummyRequest()
+        self.request = testing.DummyRequest(
+            user=mock.Mock(email='admin@bar.com'),
+            registry=mock.Mock()
+        )
+        self.request.registry.notify = mock.Mock()
         self.view = UserAdd(self.request)
 
     def tearDown(self):
@@ -262,10 +266,12 @@ class TestUserAdd(unittest.TestCase):
 
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
-    def test_submit_success(self):
+    @mock.patch('pyramid_bimt.views.user.UserCreated')
+    def test_submit_success(self, UserCreated):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, '/user/1')
+        self.assertTrue(self.request.registry.notify.called)
 
         user = User.by_id(1)
         self.assertEqual(user.email, 'foo@bar.com')
@@ -277,6 +283,12 @@ class TestUserAdd(unittest.TestCase):
         self.assertEqual(user.last_payment, date(2014, 1, 1))
         self.assertEqual(user.groups, [Group.by_id(1), ])
         self.assertEqual(user.get_property('foo'), 'bar')
+        UserCreated.assert_called_with(
+            self.request,
+            user,
+            'secret',
+            u'Created manually by admin@bar.com'
+        )
 
         self.assertEqual(
             self.request.session.pop_flash(), [u'User "foo@bar.com" added.'])
