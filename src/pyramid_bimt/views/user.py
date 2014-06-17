@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
+from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import Group
@@ -152,6 +153,14 @@ class UserAdd(FormView):
 
         Session.add(user)
         Session.flush()
+        self.request.registry.notify(
+            UserCreated(
+                self.request,
+                user,
+                appstruct['password'],
+                u'Created manually by {}'.format(self.request.user.email)
+            )
+        )
         self.request.session.flash(u'User "{}" added.'.format(user.email))
         return HTTPFound(
             location=self.request.route_path('user_view', user_id=user.id))
