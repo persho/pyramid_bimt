@@ -181,6 +181,7 @@ class AuditLogEntry(Base):
         offset=None,
         search=None,
         limit=100,
+        security=True,
     ):
         """Return all auditlog entries.
 
