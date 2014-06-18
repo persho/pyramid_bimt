@@ -5,6 +5,10 @@ Changelog
 0.11.1 (unreleased)
 -----------------
 
+- Load javascript plugins also after AJAX calls to get confirmation, timeago,
+  and other funcionalities in datatables.
+  [ferewuz]
+
 - UserCreated event now fired on manual user creation and not only when Jvzoo
   creates new User.
   [ferewuz]
