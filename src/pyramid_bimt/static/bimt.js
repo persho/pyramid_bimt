@@ -12,8 +12,7 @@
             results[1].replace(/\+/g, " "));
     }
 
-    $(document).ready(function () {
-
+    function enableDefaultPlugins() {
         // Enable bootstrap tooltips
         $("body").tooltip({
             html: true,
@@ -49,6 +48,14 @@
                 }
             });
         });
+
+        // Activate chosen jquery plugin for all selects
+        $("select").chosen({search_contains: true});
+    }
+
+    $(document).ready(function () {
+
+        enableDefaultPlugins();
 
         if ($('.datatable').length > 0 && $('.datatable').dataTable) {
             // Read columns configuration from DOM
@@ -103,8 +110,10 @@
             });
         }
 
-        // Activate chosen jquery plugin for all selects
-        $("select").chosen({search_contains: true});
+    });
+
+    $( document ).ajaxComplete(function() {
+        enableDefaultPlugins();
     });
 
 }(jQuery));
