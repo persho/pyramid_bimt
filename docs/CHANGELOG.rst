@@ -5,6 +5,9 @@ Changelog
 0.11.1 (unreleased)
 -----------------
 
+- Two new TaskStates: rerun and terminated.
+  [zupo]
+
 - Load javascript plugins also after AJAX calls to get confirmation, timeago,
   and other funcionalities in datatables.
   [ferewuz]

@@ -152,10 +152,11 @@ class TestCeleryTask(unittest.TestCase):
         task(user_id=1, app_task_id=1)
 
         FooTaskModel.by_id(1).task_id = 'bar'
-        FooTaskModel.by_id(1).state = TaskStates.retry.name
+        FooTaskModel.by_id(1).state = TaskStates.rerun.name
 
     def test_after_return(self):
-        Session.add(FooTaskModel(task_id='foo'))
+        with transaction.manager:
+            Session.add(FooTaskModel(task_id='foo'))
 
         task = self.FooTask()
         task.after_return(
