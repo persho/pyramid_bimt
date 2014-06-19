@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.11.1 (unreleased)
------------------
+0.11.1 (2014-06-19)
+-------------------
 
 - Two new TaskStates: rerun and terminated.
   [zupo]
