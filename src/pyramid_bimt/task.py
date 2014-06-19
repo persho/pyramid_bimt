@@ -19,13 +19,15 @@ if os.environ.get('SENTRY_DSN'):  # pragma: no cover
 
 
 class TaskStates(Enum):
-    pending = 'Pending'
+    pending = 'Pending'         # unknown state
     received = 'Received'
     started = 'Started'
     success = 'Finished'
     failure = 'Failed'
     revoked = 'Revoked'
-    retry = 'Retrying'
+    terminated = 'Terminated'   # manual revoke(terminate=True) via UI
+    retry = 'Retrying'          # automatic retry with celery Retry exception
+    rerun = 'Rerunning'         # manual rerun via UI
 
 
 class CeleryTask(Task):
@@ -42,7 +44,7 @@ class CeleryTask(Task):
             if kwargs.get('app_task_id'):
                 task = self.TaskModel.by_id(kwargs['app_task_id'])
                 task.task_id = self.request.id
-                task.state = TaskStates.retry.name
+                task.state = TaskStates.rerun.name
             else:
                 task = self.TaskModel(
                     user_id=kwargs['user_id'],
@@ -62,12 +64,13 @@ class CeleryTask(Task):
 
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         """Log end of task execution."""
-        task = self.TaskModel.by_task_id(task_id)
-        if task:
-            task.state = TaskStates[status.lower()].name
-            app_task_id = task.id
-        else:
-            app_task_id = None
+        with transaction.manager:
+            task = self.TaskModel.by_task_id(task_id)
+            if task:
+                task.state = TaskStates[status.lower()].name
+                app_task_id = task.id
+            else:
+                app_task_id = None
         logger.info('END {} (celery task id: {}, app task id: {})'.format(
             self.name, task_id, app_task_id))
 
@@ -79,4 +82,4 @@ class CeleryTask(Task):
                 task.traceback = unicode(einfo.traceback, 'utf-8')
                 task.msg = u'An unexpected error occurred when running this '\
                     u'task. Please contact support and provide task ID number.'
-            logger.exception(einfo.exception)
+        logger.exception(einfo.exception)
