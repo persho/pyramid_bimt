@@ -81,6 +81,8 @@ class DatatablesDataView(object):
     def __call__(self):
         """Returns data that can be fed via AJAX into jQuery.dataTables."""
         # get query parameters
+        filter_by_name = self.request.GET.get('filter_by.name', None)
+        filter_by_value = self.request.GET.get('filter_by.value', None)
         start = int(self.request.GET.get('iDisplayStart', '0'))
         end = start + int(self.request.GET.get('iDisplayLength', '10'))
         search = self.request.GET.get('sSearch', None)
@@ -88,12 +90,20 @@ class DatatablesDataView(object):
             int(self.request.GET.get('iSortCol_0', '0'))]
         order_direction = self.request.GET.get('sSortDir_0', 'asc')
 
+        security = False if self.request.user.admin else True
+        if filter_by_name and filter_by_value:
+            filter_by = {filter_by_name: filter_by_value}
+        else:
+            filter_by = None
+
         data = []
         for item in self.model.get_all(
-            search=search,
-            order_by=order_by,
-            order_direction=order_direction,
-            offset=(start, end)
+                filter_by=filter_by,
+                search=search,
+                order_by=order_by,
+                order_direction=order_direction,
+                offset=(start, end),
+                security=security,
         ).all():
             for key in self.columns.keys():  # reset columns
                 self.columns[key] = None
@@ -105,9 +115,13 @@ class DatatablesDataView(object):
             # An unaltered copy of sEcho sent from the client side.
             'sEcho': int(self.request.GET.get('sEcho', '0')),
             # Total records before any filtering/searching
-            'iTotalRecords': self.model.get_all().count(),
+            'iTotalRecords': self.model.get_all(security=security).count(),
             # Total records after filtering/records before pagination
-            'iTotalDisplayRecords': self.model.get_all(search=search).count(),
+            'iTotalDisplayRecords': self.model.get_all(
+                filter_by=filter_by,
+                search=search,
+                security=security
+            ).count(),
             # List of result contents for current set
             'aaData': data,
         }

@@ -250,7 +250,7 @@ class TestFormView(unittest.TestCase):
 class TestDatatablesAJAXView(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
-        self.request = testing.DummyRequest()
+        self.request = testing.DummyRequest(user=mock.Mock())
 
         from pyramid_bimt.views import DatatablesDataView
         self.view = DatatablesDataView(self.request)
@@ -283,7 +283,13 @@ class TestDatatablesAJAXView(unittest.TestCase):
         self.view()
 
         self.view.model.get_all.assert_any_call(
-            search=None, order_by='foo', order_direction='asc', offset=(0, 10))
+            filter_by=None,
+            search=None,
+            order_by='foo',
+            order_direction='asc',
+            offset=(0, 10),
+            security=False,
+        )
 
     def test_arbitrary_query_parameters(self):
         self.request.GET['iDisplayStart'] = '5'
@@ -296,12 +302,34 @@ class TestDatatablesAJAXView(unittest.TestCase):
         self.view()
 
         self.view.model.get_all.assert_any_call(
-            search='foo', order_by='bar', order_direction='desc', offset=(5, 55))  # noqa
+            filter_by=None,
+            search='foo',
+            order_by='bar',
+            order_direction='desc',
+            offset=(5, 55),
+            security=False,
+        )
 
-    def test_integration(self):
-        from pyramid_bimt.models import AuditLogEntry
+
+class TestDatatablesAJAXViewIntegration(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest(user=mock.Mock())
+
         from pyramid_bimt.views import DatatablesDataView
+        from pyramid_bimt.models import AuditLogEntry
+
+        self.view = DatatablesDataView(self.request)
         initTestingDB(auditlog_types=True)
+
+        self.view.model = mock.Mock()
+        self.view.columns = OrderedDict()
+        self.view.columns['foo'] = None
+        self.view.columns['bar'] = None
+
+        Session.add(AuditLogEntry(comment=u'föo'))
+        Session.add(AuditLogEntry(comment=u'bär'))
+        Session.flush()
 
         class DummyDatatablesAJAXView(DatatablesDataView):
 
@@ -315,13 +343,17 @@ class TestDatatablesAJAXView(unittest.TestCase):
                 self.columns['id'] = entry.id
                 self.columns['comment'] = entry.comment
 
-        Session.add(AuditLogEntry(comment=u'föo'))
-        Session.add(AuditLogEntry(comment=u'bär'))
-        Session.flush()
+        self.datatable_view = DummyDatatablesAJAXView
+
+    def tearDown(self):
+        testing.tearDown()
+        Session.remove()
+
+    def test_integration(self):
 
         self.request.GET['sSearch'] = u'föo'
 
-        resp = DummyDatatablesAJAXView(self.request)()
+        resp = self.datatable_view(self.request)()
         self.assertEqual(resp['sEcho'], 0)
         self.assertEqual(resp['iTotalRecords'], 2)
         self.assertEqual(resp['iTotalDisplayRecords'], 1)
@@ -332,7 +364,37 @@ class TestDatatablesAJAXView(unittest.TestCase):
             ],
         )
 
-        Session.remove()
+    def test_integration_filter_by_id(self):
+
+        self.request.GET['filter_by.name'] = 'id'
+        self.request.GET['filter_by.value'] = 1
+
+        resp = self.datatable_view(self.request)()
+        self.assertEqual(resp['sEcho'], 0)
+        self.assertEqual(resp['iTotalRecords'], 2)
+        self.assertEqual(resp['iTotalDisplayRecords'], 1)
+        self.assertEqual(
+            resp['aaData'],
+            [
+                [1, u'föo']
+            ],
+        )
+
+    def test_integration_filter_by_comment(self):
+
+        self.request.GET['filter_by.name'] = 'comment'
+        self.request.GET['filter_by.value'] = u'föo'
+
+        resp = self.datatable_view(self.request)()
+        self.assertEqual(resp['sEcho'], 0)
+        self.assertEqual(resp['iTotalRecords'], 2)
+        self.assertEqual(resp['iTotalDisplayRecords'], 1)
+        self.assertEqual(
+            resp['aaData'],
+            [
+                [1, u'föo']
+            ],
+        )
 
 
 class TestLoginAsView(unittest.TestCase):

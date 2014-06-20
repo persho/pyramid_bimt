@@ -5,7 +5,10 @@ Changelog
 0.11.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add option for additional filtering in datatables ajax views. When
+  'filter_by.name' and 'filter_by_value' are in GET request, ajax view will
+  filter results by that field.
+  [ferewuz]
 
 
 0.11.1 (2014-06-19)
