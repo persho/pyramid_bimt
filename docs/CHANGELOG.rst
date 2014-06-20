@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.11.2 (unreleased)
+0.11.2 (2014-06-20)
 -------------------
 
 - Add option for additional filtering in datatables ajax views. When
