@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.11.3 (unreleased)
+0.11.3 (2014-06-21)
 -------------------
 
 - Add support for assigning CSS classes to rows in AJAX generated DataTables
