@@ -109,7 +109,18 @@ class DatatablesDataView(object):
                 self.columns[key] = None
 
             self.populate_columns(item)
-            data.append(self.columns.values())
+
+            row = {}
+
+            # support for assigning classes to TRs
+            if self.columns.get('DT_RowClass'):  # pragma: no branch
+                row['DT_RowClass'] = self.columns['DT_RowClass']
+                del self.columns['DT_RowClass']
+
+            for index, value in enumerate(self.columns.values()):
+                row[index] = value
+
+            data.append(row)
 
         return {
             # An unaltered copy of sEcho sent from the client side.

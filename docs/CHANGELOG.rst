@@ -5,7 +5,9 @@ Changelog
 0.11.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add support for assigning CSS classes to rows in AJAX generated DataTables
+  tables.
+  [zupo]
 
 
 0.11.2 (2014-06-20)
