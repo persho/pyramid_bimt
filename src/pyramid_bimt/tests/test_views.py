@@ -270,7 +270,7 @@ class TestDatatablesAJAXView(unittest.TestCase):
         result = self.view()
         self.assertEqual(result['sEcho'], 1)
 
-    def test_iTotalRecords_iTotalDisplayrecors(self):
+    def test_iTotalRecords_iTotalDisplayrecords(self):
         self.view.model.get_all.return_value.all.return_value = []
         self.view.model.get_all.return_value.count.return_value = 1
 
@@ -342,6 +342,7 @@ class TestDatatablesAJAXViewIntegration(unittest.TestCase):
             def populate_columns(self, entry):
                 self.columns['id'] = entry.id
                 self.columns['comment'] = entry.comment
+                self.columns['DT_RowClass'] = 'info'
 
         self.datatable_view = DummyDatatablesAJAXView
 
@@ -360,9 +361,8 @@ class TestDatatablesAJAXViewIntegration(unittest.TestCase):
         self.assertEqual(
             resp['aaData'],
             [
-                [1, u'föo']
-            ],
-        )
+                {0: 1, 1: u'föo', 'DT_RowClass': 'info'},
+            ])
 
     def test_integration_filter_by_id(self):
 
@@ -376,7 +376,7 @@ class TestDatatablesAJAXViewIntegration(unittest.TestCase):
         self.assertEqual(
             resp['aaData'],
             [
-                [1, u'föo']
+                {0: 1, 1: u'föo', 'DT_RowClass': 'info'},
             ],
         )
 
@@ -392,7 +392,7 @@ class TestDatatablesAJAXViewIntegration(unittest.TestCase):
         self.assertEqual(
             resp['aaData'],
             [
-                [1, u'föo']
+                {0: 1, 1: u'föo', 'DT_RowClass': 'info'},
             ],
         )
 
