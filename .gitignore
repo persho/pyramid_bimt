@@ -7,7 +7,7 @@ bms-app.db
 build/
 develop-eggs/
 docs/html/
-htmlcov/
+cover/
 include/
 lib/
 local

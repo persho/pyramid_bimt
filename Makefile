@@ -6,15 +6,6 @@ options =
 
 all: docs tests
 
-coverage: htmlcov/index.html
-
-htmlcov/index.html: src/pyramid_bimt/*.py src/pyramid_bimt/scripts/*.py  \
-		src/pyramid_bimt/views/*.py src/pyramid_bimt/tests/*.py bin/coverage
-	@bin/nosetests --with-coverage --cover-package=pyramid_bimt
-	@bin/coverage html -i --omit "*/eggs/*,*/site-packages/*,lib/*"
-	@touch $@
-	@echo "Coverage report was generated at '$@'."
-
 docs: docs/html/index.html
 
 docs/html/index.html: README.rst docs/*.rst src/pyramid_bimt/*.py bin/sphinx-build
@@ -38,7 +29,7 @@ bin/python:
 
 tests: .installed.cfg
 	@bin/nosetests --with-coverage --cover-package=pyramid_bimt \
-		--cover-min-percentage=100
+		--cover-min-percentage=100 --cover-html
 	@bin/flake8 setup.py
 	@bin/code-analysis
 
@@ -55,7 +46,7 @@ graphviz: .installed.cfg
 
 clean:
 	@rm -rf .coverage .installed.cfg .mr.developer.cfg .Python bin build \
-		develop-eggs dist docs/html htmlcov lib include man parts \
+		develop-eggs dist docs/html cover lib include man parts \
 		src/pyramid_bimt.egg-info
 
 .PHONY: all docs tests clean
