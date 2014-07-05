@@ -104,6 +104,40 @@ To redeploy, manually push latest changes to Heroku (not GitHub):
     $ git push heroku master
 
 
+Heroku Buildpacks
+-----------------
+
+If you need to install a third-party library (such as lftp, unzip, etc.) on
+Heroku you should use custom Heroku Buildpacks to achieve it. Each library
+should have its dedicated buildpack.
+
+First enable support for multiple buildpacks:
+
+.. code-block:: bash
+
+    $ heroku config:add BUILDPACK_URL=git://github.com/ddollar/heroku-buildpack-multi.git
+
+Then add appropriate buildpacks to ``.buildpacks`` and push to Heroku.
+
+.. code-block:: bash
+
+    $ cat .buildpacks
+    git://github.com/heroku/heroku-buildpack-python.git
+    git://github.com/niteoweb/heroku-buildpack-unzip.git#v1.0
+
+
+Versioning
+""""""""""
+
+Make sure you always use a specific version of a third-party buildpack, never
+use buildpacks directly from master branch. In order to do so, fork a
+third-party buildpack to the ``niteoweb`` GitHub organization and tag it:
+
+.. code-block:: bash
+
+    $ git tag v1.0
+
+
 Useful add-ons
 --------------
 
