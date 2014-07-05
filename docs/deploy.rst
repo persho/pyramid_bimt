@@ -138,6 +138,23 @@ third-party buildpack to the ``niteoweb`` GitHub organization and tag it:
     $ git tag v1.0
 
 
+Testing buildpack changes using Anvil
+"""""""""""""""""""""""""""""""""""""
+
+You need the [heroku-anvil CLI plugin](https://github.com/ddollar/heroku-anvil).
+
+.. code-block:: bash
+
+    heroku plugins:install https://github.com/ddollar/heroku-anvil
+
+
+The anvil will run `bin/test` on your app.
+
+.. code-block:: bash
+
+    heroku build -b .
+
+
 Useful add-ons
 --------------
 
