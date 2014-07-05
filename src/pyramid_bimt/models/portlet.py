@@ -3,9 +3,9 @@
 
 
 from flufl.enum import Enum
+from pyramid.renderers import render
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
-from pyramid.renderers import render
 from sqlalchemy import Column
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey

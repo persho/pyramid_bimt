@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tests for Group views."""
 
+from pyramid import testing
+from pyramid.httpexceptions import HTTPFound
+from pyramid_basemodel import Session
 from pyramid_bimt import add_routes_group
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
-from pyramid import testing
-from pyramid.httpexceptions import HTTPFound
-from pyramid_basemodel import Session
 
 import mock
 import unittest

@@ -5,7 +5,7 @@ from pyramid import testing
 
 import unittest
 
-from zope.testing.loggingsupport import InstalledHandler
+from zope.testing.loggingsupport import InstalledHandler  # noqa
 handler = InstalledHandler('pyramid_bimt.security')
 
 

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Default layout for BIMT apps. Every app can roll its own if needed."""
 
-from pyramid_layout.layout import layout_config
-from pyramid_layout.panel import panel_config
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import PortletPositions
+from pyramid_layout.layout import layout_config
+from pyramid_layout.panel import panel_config
 
 import os
 

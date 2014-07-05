@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tests for Portlet views."""
 
+from pyramid import testing
+from pyramid.httpexceptions import HTTPFound
+from pyramid_basemodel import Session
 from pyramid_bimt import add_routes_portlet
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.testing import initTestingDB
-from pyramid import testing
-from pyramid.httpexceptions import HTTPFound
-from pyramid_basemodel import Session
 
 import mock
 import unittest

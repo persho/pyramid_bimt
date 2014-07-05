@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """List, add, edit, remove and disable/enable portlets views."""
 
+from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
@@ -11,7 +12,6 @@ from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import FormView
-from colanderalchemy import SQLAlchemySchemaNode
 
 import colander
 import deform
