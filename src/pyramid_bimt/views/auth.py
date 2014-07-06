@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
-from deform import Button
 from colanderalchemy import SQLAlchemySchemaNode
+from deform import Button
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
+from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedInAs
 from pyramid_bimt.events import UserLoggedOut
-from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate

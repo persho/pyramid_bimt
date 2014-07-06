@@ -2,9 +2,9 @@
 """Task model definition."""
 
 from celery import Task
+from flufl.enum import Enum
 from pyramid_basemodel import Session
 from raven import Client
-from flufl.enum import Enum
 
 import logging
 import os

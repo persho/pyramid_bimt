@@ -3,9 +3,9 @@
 
 from pyramid.paster import bootstrap
 from pyramid.renderers import render
+from pyramid_bimt.sanity_check import sanity_check
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
-from pyramid_bimt.sanity_check import sanity_check
 
 import argparse
 import logging

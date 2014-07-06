@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Tests for the Group model."""
 
-from pyramid_bimt.models import Group
 from pyramid import testing
 from pyramid_basemodel import Session
+from pyramid_bimt.models import Group
 from pyramid_bimt.testing import initTestingDB
 from sqlalchemy.exc import IntegrityError
 

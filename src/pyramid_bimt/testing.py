@@ -10,10 +10,10 @@ from pyramid.view import view_defaults
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.scripts.populate import add_audit_log_event_types
-from pyramid_bimt.scripts.populate import add_groups
-from pyramid_bimt.scripts.populate import add_mailings
 from pyramid_bimt.scripts.populate import add_demo_mailing
 from pyramid_bimt.scripts.populate import add_demo_portlet
+from pyramid_bimt.scripts.populate import add_groups
+from pyramid_bimt.scripts.populate import add_mailings
 from pyramid_bimt.scripts.populate import add_users
 from simplejson import JSONDecodeError
 from sqlalchemy import create_engine

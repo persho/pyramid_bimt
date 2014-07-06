@@ -15,9 +15,9 @@ from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
 
 import argparse
-import sys
 import inspect
 import re
+import sys
 import transaction
 
 # This is a result of calling encrypt('secret'), and we have it pre-computed

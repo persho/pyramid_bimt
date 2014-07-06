@@ -5,8 +5,8 @@ from datetime import date
 from datetime import timedelta
 from pyramid.paster import bootstrap
 from pyramid_bimt.models import Mailing
-from pyramid_bimt.models import User
 from pyramid_bimt.models import MailingTriggers
+from pyramid_bimt.models import User
 from sqlalchemy.sql.expression import func
 
 import argparse

@@ -4,6 +4,7 @@
 from datetime import date
 from datetime import timedelta
 from flufl.enum import Enum
+from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.view import view_config
 from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
@@ -11,7 +12,6 @@ from pyramid_bimt.events import UserEnabled
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Session
 from pyramid_bimt.models import User
-from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 

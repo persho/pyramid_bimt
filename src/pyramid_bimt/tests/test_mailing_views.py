@@ -10,8 +10,8 @@ from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import User
-from pyramid_bimt.scripts.populate import add_groups
 from pyramid_bimt.scripts.populate import add_demo_mailing
+from pyramid_bimt.scripts.populate import add_groups
 from pyramid_bimt.scripts.populate import add_users
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.tests.test_user_views import _make_user

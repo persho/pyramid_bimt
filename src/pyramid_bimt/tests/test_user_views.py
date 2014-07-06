@@ -11,8 +11,8 @@ from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
-from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.security import verify
+from pyramid_bimt.testing import initTestingDB
 
 import copy
 import mock
