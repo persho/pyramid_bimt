@@ -42,6 +42,7 @@ REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.amqp_username',
     'bimt.amqp_password',
     'bimt.amqp_apiurl',
+    'bimt.kill_cloudamqp_connections',
     'mail.default_sender',
     'mail.host',
     'mail.password',
@@ -193,7 +194,8 @@ def configure(config, settings={}):
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore=ignores)
 
-    if 'production.ini' in ' '.join(sys.argv).lower():  # pragma: no cover
+    if 'production.ini' in ' '.join(sys.argv).lower() and \
+            settings.get('bimt.kill_cloudamqp_connections', True):  # pragma: no cover  # noqa
         kill_connections(
             username=settings.get('bimt.amqp_username', ''),
             password=settings.get('bimt.amqp_password', ''),
