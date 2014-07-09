@@ -5,7 +5,10 @@ Changelog
 0.11.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- CloudAMQP connections killing now optional. Apps need to set
+  'bimt.kill_cloudamqp_connections' to False to not kill connections on
+  startup.
+  [ferewuz]
 
 
 0.11.3 (2014-06-21)
