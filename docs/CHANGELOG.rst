@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.11.4 (unreleased)
+0.11.4 (2014-07-09)
 -------------------
 
 - CloudAMQP connections killing now optional. Apps need to set
