@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Group models."""
 
+from pyramid.security import Allow
+from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from sqlalchemy import Column
@@ -63,6 +65,16 @@ class Group(Base, BaseMixin):
     """A class representing a Group."""
 
     __tablename__ = 'groups'
+
+    @property
+    def __acl__(self):
+        # only admins can manage admins
+        if self.name == 'admins':
+            return [
+                (Allow, 'g:admins', 'manage_users'),
+                DENY_ALL,
+            ]
+        return []  # traverse to GroupFactory's acl
 
     name = Column(
         String,

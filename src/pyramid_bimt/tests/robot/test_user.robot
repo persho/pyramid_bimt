@@ -11,50 +11,77 @@ Suite Teardown  Suite Teardown
 
 *** Test Cases ***
 
-Scenario: Add new user
-    Given I log in as admin
+Scenario: Staff member adds a new user
+    Given I am logged in as a staff member
      When I go to  http://localhost:8080/user/add
-      And I input text  name=email  user@xyz.xyz
+      And I input text  name=email  user@xyz.Xyz
       And I input text  name=fullname  User Xyz
-      And I select checkbox admins
+      And I select checkbox staff
       And I select checkbox enabled
       And I click button  Submit
-     Then location should be  http://localhost:8080/user/3
-      And page should contain  User "user@xyz.xyz" added.
+     Then location should be  http://localhost:8080/user/4
+      And page should contain  User "user@xyz.Xyz" added.
 
-Scenario: Edit user
-    Given I log in as admin
-     When I go to  http://localhost:8080/user/2/edit
+Scenario: Staff member edits a user
+    Given I am logged in as a staff member
+     When I go to  http://localhost:8080/user/3/edit
       And I input text  name=email  ovca@xyz.xyz
       And I input text  name=fullname  Ovca Xyz
-      And I unselect checkbox admins
+      And I unselect checkbox staff
       And I click button  Save
-     Then location should be  http://localhost:8080/user/2
+     Then location should be  http://localhost:8080/user/3
       And page should contain  User "ovca@xyz.xyz" modified.
       And page should contain  Ovca Xyz
 
-Scenario: Disable and enable user
-    I log in as admin
-    Go to  http://localhost:8080/users
-    I click disable user  one@bar.com
-    User is strike through and disabled  one@bar.com
-    Page Should Contain  User "one@bar.com" disabled.
-    Go to  http://localhost:8080/users
-    I click enable user  one@bar.com
-    User is enabled  one@bar.com
-    Page Should Contain  User "one@bar.com" enabled.
+Scenario: Staff member disables and re-enables user
+    Given I am logged in as a staff member
+     When I go to  http://localhost:8080/users
+      And I click disable user  one@bar.com
+     Then user is striked-through and disabled  one@bar.com
+      And Page should contain  User "one@bar.com" disabled.
+     When I go to  http://localhost:8080/users
+      And I click enable user  one@bar.com
+     Then user is enabled  one@bar.com
+      And page should contain  User "one@bar.com" enabled.
 
+Scenario: Staff member logs in as another user
+   Given I am logged in as a staff member
+    When I go to  http://localhost:8080/login-as
+     And I input text  name=email  one@bar.com
+     And I click button  Login as user
+    Then I am logged in
+     And page should contain  You have successfully logged in as user: one@bar.com
+
+Scenario: User cannot add users
+   Given I am logged in as a user
+    When I Go to  http://localhost:8080/user/add
+    Then page should contain  Insufficient privileges.
+
+Scenario: User cannot view the list of users
+   Given I am logged in as a user
+    When I go to  http://localhost:8080/users
+    Then page should contain  Insufficient privileges.
+
+Scenario: User cannot view a single user
+   Given I am logged in as a user
+    When I go to  http://localhost:8080/user/1
+    Then page should contain  Insufficient privileges.
+
+Scenario: User cannot edit users
+   Given I am logged in as a user
+    When I Go to  http://localhost:8080/user/1/edit
+    Then page should contain  Insufficient privileges.
 
 *** Keywords ***
 
-I select checkbox admins
-    Select Checkbox  css=input[value="1"]
-
-I select checkbox enabled
+I select checkbox staff
     Select Checkbox  css=input[value="2"]
 
-I unselect checkbox admins
-    Unselect Checkbox  css=input[value="1"]
+I select checkbox enabled
+    Select Checkbox  css=input[value="3"]
+
+I unselect checkbox staff
+    Unselect Checkbox  css=input[value="2"]
 
 I unselect checkbox enabled
-    Unselect Checkbox  css=input[value="2"]
+    Unselect Checkbox  css=input[value="3"]

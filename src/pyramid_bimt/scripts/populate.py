@@ -112,9 +112,11 @@ def add_users():
     """Init the 'admin@bar.com' and 'one@bar.com' user accounts."""
     with transaction.manager:
         admins = Group.by_name('admins')
+        staff = Group.by_name('staff')
         enabled = Group.by_name('enabled')
         trial = Group.by_name('trial')
 
+        # Create the admin user account
         admin = User(
             email=u'admin@bar.com',
             password=SECRET_ENC,
@@ -125,7 +127,18 @@ def add_users():
         admin.groups.append(enabled)
         Session.add(admin)
 
-        # Init the normal user account
+        # Create the staff member account
+        staff_member = User(
+            email=u'staff@bar.com',
+            password=SECRET_ENC,
+            fullname=u'Stäff Member',
+            properties=[UserProperty(key=u'bimt', value=u'on'), ],
+        )
+        staff_member.groups.append(enabled)
+        staff_member.groups.append(staff)
+        Session.add(staff_member)
+
+        # Create the normal user account
         one = User(
             email=u'one@bar.com',
             password=SECRET_ENC,

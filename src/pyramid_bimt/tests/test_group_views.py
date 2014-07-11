@@ -175,7 +175,7 @@ class TestGroupEdit(unittest.TestCase):
             'validity': 31,
             'trial_validity': 7,
             'forward_ipn_to_url': 'http://example.com',
-            'users': ['2', ],
+            'users': ['3', ],
             'properties': [{'key': u'foo', 'value': u'bar'}, ],
         })
 

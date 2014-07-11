@@ -18,7 +18,7 @@ import copy
 import deform
 
 
-@view_defaults(permission='admin')
+@view_defaults(permission='manage_groups')
 class GroupView(object):
     def __init__(self, context, request):
         self.request = request
@@ -41,7 +41,7 @@ class GroupView(object):
 @view_config(
     route_name='group_add',
     layout='default',
-    permission='admin',
+    permission='manage_groups',
     renderer='pyramid_bimt:templates/form.pt',
 )
 class GroupAdd(FormView):
@@ -108,7 +108,7 @@ class GroupAdd(FormView):
 @view_config(
     route_name='group_edit',
     layout='default',
-    permission='admin',
+    permission='manage_groups',
     renderer='pyramid_bimt:templates/form.pt',
 )
 class GroupEdit(GroupAdd):

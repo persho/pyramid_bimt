@@ -3,9 +3,12 @@
 
 from datetime import date
 from pyramid import testing
+from pyramid.security import Allow
+from pyramid.security import DENY_ALL
 from pyramid_basemodel import Session
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.tests.test_group_model import _make_group
 from sqlalchemy.exc import IntegrityError
 
 import unittest
@@ -46,6 +49,21 @@ class TestUserModel(unittest.TestCase):
             Session.flush()
         self.assertIn(
             'column billing_email is not unique', cm.exception.message)
+
+    def test_acl_admin(self):
+        user = _make_user(email='foo@bar.com')
+        user.groups = [_make_group(name='admins')]
+        self.assertEqual(
+            user.__acl__,
+            [
+                (Allow, 'g:admins', 'manage_users'),
+                DENY_ALL,
+            ])
+
+    def test_acl_non_admin(self):
+        user = _make_user(email='foo@bar.com')
+        user.groups = []
+        self.assertEqual(user.__acl__, [])  # traverse to UserFactory's acl
 
 
 class TestUserById(unittest.TestCase):
@@ -160,7 +178,26 @@ class TestAdmin(unittest.TestCase):
         self.assertTrue(User.by_email('admin@bar.com').admin)
 
     def test_user_is_not_admin(self):
+        self.assertFalse(User.by_email('staff@bar.com').admin)
         self.assertFalse(User.by_email('one@bar.com').admin)
+
+
+class TestStaff(unittest.TestCase):
+
+    def setUp(self):
+        initTestingDB(users=True, groups=True)
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_user_is_staff_member(self):
+        self.assertTrue(User.by_email('staff@bar.com').staff)
+        self.assertTrue(User.by_email('admin@bar.com').staff)
+
+    def test_user_is_not_staff_member(self):
+        self.assertFalse(User.by_email('one@bar.com').staff)
 
 
 class TestTrial(unittest.TestCase):
@@ -204,10 +241,10 @@ class TestEnabledDisabled(unittest.TestCase):
 
     def test_get_enabled(self):
         enabled = User.get_enabled()
-        self.assertEqual(len(enabled), 2)
+        self.assertEqual(len(enabled), 3)
         self.assertItemsEqual(
             [user.email for user in enabled],
-            ['admin@bar.com', 'one@bar.com'],
+            ['admin@bar.com', 'staff@bar.com', 'one@bar.com'],
         )
 
 

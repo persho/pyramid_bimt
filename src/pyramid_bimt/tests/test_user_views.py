@@ -13,7 +13,9 @@ from pyramid_bimt.models import User
 from pyramid_bimt.models import UserProperty
 from pyramid_bimt.security import verify
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.views.user import UserAdd
 
+import colander
 import copy
 import mock
 import unittest
@@ -167,7 +169,7 @@ class TestUserEnable(unittest.TestCase):
         initTestingDB(users=True, groups=True, auditlog_types=True)
 
         from pyramid_bimt.views.user import UserView
-        self.context = User.by_id(2)
+        self.context = User.by_email('one@bar.com')
         self.request = testing.DummyRequest(layout_manager=mock.Mock())
         self.view = UserView(self.context, self.request)
 
@@ -226,6 +228,58 @@ class TestUserEnable(unittest.TestCase):
         )
 
 
+class TestGroupsValidator(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        # add_routes_user(self.config)
+        initTestingDB(groups=True, auditlog_types=True)
+
+        self.request = testing.DummyRequest(user=mock.Mock())
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_admin_and_admins(self):
+        from pyramid_bimt.views.user import deferred_groups_validator
+        self.request.user.admin = True
+        cstruct = [str(Group.by_name('admins').id), ]
+
+        validator = deferred_groups_validator(None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_admins_and_non_admins(self):
+        from pyramid_bimt.views.user import deferred_groups_validator
+        self.request.user.admin = False
+        cstruct = [str(Group.by_name('staff').id), ]
+
+        validator = deferred_groups_validator(None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_non_admin_and_non_admins(self):
+        from pyramid_bimt.views.user import deferred_groups_validator
+        self.request.user.admin = False
+        cstruct = [str(Group.by_name('staff').id), ]
+
+        validator = deferred_groups_validator(None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_non_admin_and_admins(self):
+        from pyramid_bimt.views.user import deferred_groups_validator
+        self.request.user.admin = False
+        cstruct = [str(Group.by_name('admins').id), ]
+
+        validator = deferred_groups_validator(None, {'request': self.request})
+        with self.assertRaises(colander.Invalid) as cm:
+            validator(None, cstruct)
+
+        self.assertEqual(
+            cm.exception.msg,
+            'Only admins can add users to "admins" group.',
+        )
+
+
 class TestUserAdd(unittest.TestCase):
 
     APPSTRUCT = {
@@ -245,7 +299,6 @@ class TestUserAdd(unittest.TestCase):
         add_routes_user(self.config)
         initTestingDB(groups=True, auditlog_types=True)
 
-        from pyramid_bimt.views.user import UserAdd
         self.request = testing.DummyRequest(
             user=mock.Mock(email='admin@bar.com'),
             registry=mock.Mock()
@@ -256,6 +309,22 @@ class TestUserAdd(unittest.TestCase):
     def tearDown(self):
         Session.remove()
         testing.tearDown()
+
+    def test_groups_choices_admin(self):
+        self.request.user.admin = True
+        self.view = UserAdd(self.request)
+        choices = [
+            group for id_, group in self.view.schema['groups'].widget.values
+        ]
+        self.assertTrue('admins' in choices)
+
+    def test_groups_choices_non_admin(self):
+        self.request.user.admin = False
+        self.view = UserAdd(self.request)
+        choices = [
+            group for id_, group in self.view.schema['groups'].widget.values
+        ]
+        self.assertFalse('admins' in choices)
 
     def test_appstruct_empty_request(self):
         self.assertEqual(self.view.appstruct(), {})
@@ -303,6 +372,7 @@ class TestUserEdit(unittest.TestCase):
 
         from pyramid_bimt.views.user import UserEdit
         self.request = testing.DummyRequest()
+        self.request.user = mock.Mock()
         self.view = UserEdit(self.request)
 
     def tearDown(self):

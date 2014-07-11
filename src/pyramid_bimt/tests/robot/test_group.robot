@@ -11,8 +11,8 @@ Suite Teardown  Suite Teardown
 
 *** Test Cases ***
 
-Scenario: Add new Group
-    Given I log in as admin
+Scenario: Staff member adds a new group
+    Given I am logged in as a staff member
      When I go to  http://localhost:8080/group/add
       And I input text  name=name  monthly
       And I input text  name=product_id  1
@@ -23,15 +23,29 @@ Scenario: Add new Group
      Then location should be  http://localhost:8080/group/6/edit
       And page should contain  Group "monthly" added.
 
-Scenario: Edit group
-    Given I log in as admin
-     When I go to  http://localhost:8080/group/4/edit
+Scenario: Staff member edits a group
+    Given I am logged in as a staff member
+     When I go to  http://localhost:8080/group/3/edit
       And I input text  name=name  yearly
       And I input text  name=validity  365
       And I click button  Save
-     Then location should be  http://localhost:8080/group/4/edit
+     Then location should be  http://localhost:8080/group/3/edit
       And page should contain  Group "yearly" modified.
 
+Scenario: User cannot add groups
+   Given I am logged in as a user
+    When I Go to  http://localhost:8080/group/add
+    Then page should contain  Insufficient privileges.
+
+Scenario: User cannot view the list of groups
+   Given I am logged in as a user
+    When I go to  http://localhost:8080/groups
+    Then page should contain  Insufficient privileges.
+
+Scenario: User cannot edit groups
+   Given I am logged in as a user
+    When I Go to  http://localhost:8080/group/1/edit
+    Then page should contain  Insufficient privileges.
 
 *** Keywords ***
 
