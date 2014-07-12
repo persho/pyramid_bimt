@@ -22,7 +22,19 @@ import copy
 import deform
 
 
-@view_defaults(permission='admin')
+@colander.deferred
+def deferred_groups_validator(node, kw):
+    request = kw['request']
+
+    def validator(node, cstruct):
+        id_ = str(Group.by_name('admins').id)
+        if (not request.user.admin) and (id_ in cstruct):
+            raise colander.Invalid(
+                node, u'Only admins can add users to "admins" group.')
+    return validator
+
+
+@view_defaults(permission='manage_users')
 class UserView(object):
     def __init__(self, context, request):
         self.request = request
@@ -97,7 +109,7 @@ class UserView(object):
 @view_config(
     route_name='user_add',
     layout='default',
-    permission='admin',
+    permission='manage_users',
     renderer='pyramid_bimt:templates/form.pt',
 )
 class UserAdd(FormView):
@@ -126,12 +138,16 @@ class UserAdd(FormView):
         # we don't like the way ColanderAlchemy renders SA Relationships so
         # we manually inject a suitable SchemaNode for groups
         choices = [(group.id, group.name) for group in Group.get_all()]
+        if not request.user.admin:
+            admins = Group.by_name('admins')
+            choices.remove((admins.id, admins.name))
         self.schema.add(
             node=colander.SchemaNode(
                 colander.Set(),
                 name='groups',
                 missing=[],
                 widget=deform.widget.CheckboxChoiceWidget(values=choices),
+                validator=deferred_groups_validator,
             ),
         )
 
@@ -157,7 +173,7 @@ class UserAdd(FormView):
             UserCreated(
                 self.request,
                 user,
-                appstruct['password'],
+                appstruct.get('password'),
                 u'Created manually by {}'.format(self.request.user.email)
             )
         )
@@ -177,7 +193,7 @@ class UserAdd(FormView):
 @view_config(
     route_name='user_edit',
     layout='default',
-    permission='admin',
+    permission='manage_users',
     renderer='pyramid_bimt:templates/form.pt',
 )
 class UserEdit(UserAdd):

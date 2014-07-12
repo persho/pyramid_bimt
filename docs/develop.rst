@@ -121,6 +121,10 @@ production. To make sure that we are pinning to exact the same versions in
     $ echo -e "[buildout]\nextends = buildout.d/development.cfg" > buildout.cfg
     $ bin/buildout
 
+The ``pyramid_bimt`` package pins versions of its dependencies and publishes
+this in a ``versions-<VERSION>.cfg`` file on our internal PyPI server, next
+to the tarball of the package. Apps should use this `versions` file in their
+own ``version.cfg`` and just append app specific pins.
 
 Database migrations
 -------------------

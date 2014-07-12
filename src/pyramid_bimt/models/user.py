@@ -4,6 +4,8 @@
 from .group import Group
 from .group import user_group_table
 from datetime import date
+from pyramid.security import Allow
+from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from sqlalchemy import Column
@@ -15,6 +17,7 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
+import colander
 import deform
 
 _marker = object()
@@ -50,6 +53,16 @@ class User(Base, BaseMixin):
 
     __tablename__ = 'users'
 
+    @property
+    def __acl__(self):
+        # only admins can manage admins
+        if self.admin:
+            return [
+                (Allow, 'g:admins', 'manage_users'),
+                DENY_ALL,
+            ]
+        return []  # use UserFactory's acl
+
     #: used for logging in and system emails
     email = Column(
         String,
@@ -57,6 +70,7 @@ class User(Base, BaseMixin):
         nullable=False,
         info={'colanderalchemy': dict(
             title='Email',
+            validator=colander.Email(),
         )}
     )
 
@@ -82,6 +96,7 @@ class User(Base, BaseMixin):
         Unicode,
         info={'colanderalchemy': dict(
             title='Affiliate',
+            validator=colander.Email(),
         )}
     )
 
@@ -92,6 +107,7 @@ class User(Base, BaseMixin):
         unique=True,
         info={'colanderalchemy': dict(
             title='Billing Email',
+            validator=colander.Email(),
         )}
     )
 
@@ -170,6 +186,11 @@ class User(Base, BaseMixin):
     def admin(self):
         """True if User is in 'admins' group, False otherwise."""
         return 'admins' in [g.name for g in self.groups]
+
+    @property
+    def staff(self):
+        """True if User is in 'staff' or 'admins' group, False otherwise."""
+        return self.admin or 'staff' in [g.name for g in self.groups]
 
     @property
     def trial(self):

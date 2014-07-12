@@ -37,6 +37,7 @@ class RootFactory(object):
 class UserFactory(object):
     __acl__ = [
         (Allow, 'g:admins', ALL_PERMISSIONS),
+        (Allow, 'g:staff', 'manage_users'),
     ]
 
     def __init__(self, request):
@@ -57,6 +58,7 @@ class UserFactory(object):
 class GroupFactory(object):
     __acl__ = [
         (Allow, 'g:admins', ALL_PERMISSIONS),
+        (Allow, 'g:staff', 'manage_groups'),
     ]
 
     def __init__(self, request):

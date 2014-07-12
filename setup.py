@@ -18,7 +18,7 @@ long_description = \
 
 setup(
     name='pyramid_bimt',
-    version='0.11.5.dev0',
+    version='0.12.dev0',
     description='Base package for BIMT apps.',
     long_description=long_description,
     classifiers=[
@@ -35,10 +35,13 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'ColanderAlchemy>=0.3.dev0',
+        'Paste',
+        'ColanderAlchemy',
         'SQLAlchemy',
+        'alembic',
         'celery[redis]',
-        'fanstatic',
+        'cornice',
+        'fanstatic [cssmin,jsmin]',
         'flufl.enum',
         'js.bootstrap',
         'js.deform',
@@ -57,27 +60,29 @@ setup(
         'pyramid_raven',
         'python-dateutil',
         'requests',
+        'transaction',
+        'waitress',
     ],
     extras_require={
         'test': [
             'Sphinx',
             'coverage',
-            'fanstatic [cssmin,jsmin]',
             'flake8',
             'mock',
             'nose',
             'nose-selecttests',
+            'pyramid_robot',
+            'robotframework-debuglibrary',
+            'robotframework-httplibrary',
             'simplejson',
             'unittest2',
             'webtest',
             'zope.testing',
         ],
-        'development': [
+        'develop': [
             'Sphinx',
-            'fanstatic [cssmin,jsmin]',
             'pyramid_debugtoolbar',
             'sadisplay',
-            'waitress',
             'zest.releaser',
         ],
     },

@@ -457,13 +457,13 @@ class TestRecipients(unittest.TestCase):
         add_users()
         mailing = _make_mailing(
             name='foo',
-            groups=[Group.by_name('admins'), Group.by_name('enabled')],
+            groups=[Group.by_name('admins'), Group.by_name('staff')],
         )
         self.request.context = mailing
 
         self.assertItemsEqual(
             self.view.recipients,
-            [User.by_email('admin@bar.com'), User.by_email('one@bar.com')],
+            [User.by_email('admin@bar.com'), User.by_email('staff@bar.com')],
         )
 
     def test_exclude(self):
@@ -471,8 +471,8 @@ class TestRecipients(unittest.TestCase):
         add_users()
         mailing = _make_mailing(
             name='foo',
-            groups=[Group.by_name('admins'), Group.by_name('enabled')],
-            exclude_groups=[Group.by_name('admins')],
+            groups=[Group.by_name('enabled')],
+            exclude_groups=[Group.by_name('admins'), Group.by_name('staff')],
         )
         self.request.context = mailing
 

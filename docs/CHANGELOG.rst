@@ -2,10 +2,14 @@ Changelog
 =========
 
 
-0.11.5 (unreleased)
+0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- [MIGRATION REQUIRED] Apps should now use/extend bimt's versions.cfg.
+  [zupo]
+
+- Staff members can now manage users & groups.
+  [zupo]
 
 
 0.11.4 (2014-07-09)

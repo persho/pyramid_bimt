@@ -2,6 +2,8 @@
 """Tests for the Group model."""
 
 from pyramid import testing
+from pyramid.security import Allow
+from pyramid.security import DENY_ALL
 from pyramid_basemodel import Session
 from pyramid_bimt.models import Group
 from pyramid_bimt.testing import initTestingDB
@@ -32,6 +34,19 @@ class TestGroupModel(unittest.TestCase):
         with self.assertRaises(IntegrityError) as cm:
             Session.flush()
         self.assertIn('column name is not unique', cm.exception.message)
+
+    def test_acl_admin(self):
+        group = _make_group(name='admins')
+        self.assertEqual(
+            group.__acl__,
+            [
+                (Allow, 'g:admins', 'manage_users'),
+                DENY_ALL,
+            ])
+
+    def test_acl_non_admin(self):
+        group = _make_group(name='not-admins')
+        self.assertEqual(group.__acl__, [])  # traverse to GroupFactory's acl
 
 
 class TestGroupById(unittest.TestCase):

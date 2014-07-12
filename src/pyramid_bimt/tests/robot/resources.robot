@@ -135,6 +135,14 @@ I log in as a user
     Page Should Contain  Login successful.
     I am logged in
 
+I log in as a staff member
+    Go to  http://localhost:8080/login
+    Input Text  name=email  staff@bar.com
+    Input Text  name=password  secret
+    Click Button  Login
+    Page Should Contain  Login successful.
+    I am logged in
+
 I log in as admin
     Go to  http://localhost:8080/login
     Input Text  name=email  admin@bar.com
@@ -149,6 +157,14 @@ I log out
     Page Should Contain  You have been logged out.
     I am logged out
 
+I am logged in as an admin
+    I log in as admin
+
+I am logged in as a staff member
+    I log in as a staff member
+
+I am logged in as a user
+    I log in as a user
 
 Last email should contain
     [Arguments]  ${value}
@@ -195,7 +211,7 @@ I click enable user
     [Arguments]  ${email}
     Click Element  xpath=//*[.="${email}"]/../../td/a[contains(.,"Enable")]
 
-User is strike through and disabled
+User is striked-through and disabled
     [Arguments]  ${email}
     Page Should Contain Element  xpath=//*[.="${email}" and @style="text-decoration: line-through"]/../../td/a[contains(.,"Enable")]
 

@@ -12,15 +12,19 @@ env:
       DyQVc6Lfjz7Yd3kSpXZZaN7vRoJBzK/c95N4f8wOyxNLSpgBfE+ZbDQKPzffGteuBW
       hFKdVJQADKG+UG+a0JQX88l4kt3JrWtVtaBRyrxzXHLFJaMjcLvDe0nbTeRDgEyRTu
       ji2Q0k+EVkzurHwWxECukfbYkc2u1OrtHlWnAok=  # AWS_SECRET_KEY
+  - secure: |-
+      ZXV+WoZ+FBO+ycRYiP8rmcMSzNb1AR212H2xGLdqHdsxatBMbs4KVJoYDl7xwaCVGH
+      b8bc91A13D8DF8d/YT1MytNK/UKf5YyP6wYKeQfqFBzDjxSYxgG3apMTfFuS7lGWZx
+      mmXgOgh9KY7iw/FiJN+v7se3umyuNgJ5HXenjnQ=  # INTERNAL_PYPI_PASS
 
 install:
- - npm install jshint -g
- - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
- - make .installed.cfg
+  - npm install jshint -g
+  - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
+  - make .installed.cfg
 
 script:
- - make tests
- - make docs
+  - make tests
+  - make docs
 
 after_success:
   - sudo apt-get install s3cmd
@@ -30,6 +34,9 @@ after_success:
 
 before_deploy:
   - git fetch --unshallow
+  - bin/py prepare_versions_cfg.py
+  - VERSIONS=$(ls versions-*.cfg)
+  - curl --insecure -u niteoweb:$INTERNAL_PYPI_PASS -F ":action=file_upload" -F "content=@$VERSIONS" https://pypi.niteoweb.com
 
 deploy:
   provider: pypi
