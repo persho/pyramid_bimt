@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.12 (unreleased)
--------------------
+0.12 (2014-07-12)
+-----------------
 
 - [MIGRATION REQUIRED] Apps should now use/extend bimt's versions.cfg.
   [zupo]
