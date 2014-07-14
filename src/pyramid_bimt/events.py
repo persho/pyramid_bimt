@@ -66,7 +66,7 @@ class PyramidBIMTEvent(object):
         self.comment = comment
         self.log_event(comment=comment)
 
-    def log_event(self, comment=None):
+    def log_event(self, comment=None, read=False):
         from pyramid_bimt.models import AuditLogEntry
         from pyramid_bimt.models import AuditLogEventType
         event_type = AuditLogEventType.by_name(name=self.__class__.__name__)
@@ -74,6 +74,7 @@ class PyramidBIMTEvent(object):
             user_id=self.user.id,
             event_type_id=event_type.id,
             comment=comment,
+            read=read,
         )
         Session.add(entry)
 
@@ -106,10 +107,22 @@ class UserChangedPassword(PyramidBIMTEvent):
 class UserLoggedIn(PyramidBIMTEvent):
     """Emitted whenever a user logs in."""
 
+    def __init__(self, request, user, comment=None, read=True):
+        self.request = request
+        self.user = user
+        self.comment = comment
+        self.log_event(comment=comment, read=read)
+
 
 @implementer(IUserLoggedOut)
 class UserLoggedOut(PyramidBIMTEvent):
     """Emitted whenever a user logs out."""
+
+    def __init__(self, request, user, comment=None, read=True):
+        self.request = request
+        self.user = user
+        self.comment = comment
+        self.log_event(comment=comment, read=read)
 
 
 @implementer(IUserEnabled)

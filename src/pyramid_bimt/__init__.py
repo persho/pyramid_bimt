@@ -91,7 +91,7 @@ def add_routes_group(config):
 
 
 def add_routes_audit_log(config):
-    config.add_route('audit_log', '/audit-log', factory=AuditLogFactory)
+    config.add_route('audit_log', '/activity', factory=AuditLogFactory)
     config.add_route(
         'audit_log_add',
         '/audit-log/add',

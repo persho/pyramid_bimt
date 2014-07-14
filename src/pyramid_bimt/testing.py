@@ -10,6 +10,7 @@ from pyramid.view import view_defaults
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.scripts.populate import add_audit_log_event_types
+from pyramid_bimt.scripts.populate import add_demo_auditlog_entries
 from pyramid_bimt.scripts.populate import add_demo_mailing
 from pyramid_bimt.scripts.populate import add_demo_portlet
 from pyramid_bimt.scripts.populate import add_groups
@@ -21,6 +22,7 @@ from sqlalchemy import create_engine
 
 def initTestingDB(
     auditlog_types=False,
+    auditlog_entries=False,
     groups=False,
     users=False,
     portlets=False,
@@ -45,6 +47,9 @@ def initTestingDB(
 
     if portlets:
         add_demo_portlet()
+
+    if auditlog_entries:
+        add_demo_auditlog_entries()
 
 
 @view_defaults(permission=NO_PERMISSION_REQUIRED)

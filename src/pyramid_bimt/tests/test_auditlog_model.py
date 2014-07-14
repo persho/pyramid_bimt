@@ -75,7 +75,8 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(event_types[0].name, db_event_types[0].name)
         self.assertEqual(db_event_types.count(), len(event_types))
         self.assertEqual(
-            AuditLogEventType.get_all(filter_by={'name': 'UserLoggedOut'})[0].name,  # noqa
+            AuditLogEventType.get_all(
+                filter_by={'name': 'UserLoggedOut'})[0].name,
             'UserLoggedOut',
         )
 
@@ -131,11 +132,21 @@ class TestEntryGetAll(unittest.TestCase):
         self.config = testing.setUp()
         initTestingDB()
 
+        # for these tests, disable security
+        def get_all_new(class_, **kwargs):
+            if kwargs.get('security') is None:  # pragma: no cover
+                kwargs['security'] = False
+            return AuditLogEntry.get_all_orig(**kwargs)
+
+        AuditLogEntry.get_all_orig = AuditLogEntry.get_all
+        AuditLogEntry.get_all = classmethod(get_all_new)
+
     def tearDown(self):
+        AuditLogEntry.get_all = AuditLogEntry.get_all_orig
         Session.remove()
         testing.tearDown()
 
-    def test_no_servers(self):
+    def test_no_entries(self):
         entries = AuditLogEntry.get_all().all()
         self.assertEqual(len(entries), 0)
 

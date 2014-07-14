@@ -265,8 +265,8 @@ class TestAuditLogFactory(unittest.TestCase):
     def test_redirect_to_nonslash(self):
         from pyramid_bimt import add_routes_audit_log
         add_routes_audit_log(self.config)
-        self.request['PATH_INFO'] = '/audit-log/'
+        self.request['PATH_INFO'] = '/activity/'
         with self.assertRaises(HTTPFound) as cm:
             from pyramid_bimt.acl import AuditLogFactory
             AuditLogFactory(self.request)
-        self.assertEqual(cm.exception.location, '/audit-log')
+        self.assertEqual(cm.exception.location, '/activity')

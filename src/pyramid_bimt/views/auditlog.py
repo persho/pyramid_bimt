@@ -17,7 +17,7 @@ from pyramid_deform import FormView
 
 @view_config(
     route_name='audit_log',
-    permission='admin',
+    permission='user',
     layout='default',
     renderer='pyramid_bimt:templates/audit_log.pt',
     xhr=False,
@@ -26,12 +26,17 @@ def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
     app_assets.need()
     table_assets.need()
+
+    new = AuditLogEntry.get_all(filter_by={'read': False}).count()
+    if new:  # pragma: no branch
+        request.session.flash('{} new notifications.'.format(new))
+
     return {}
 
 
 @view_config(
     route_name='audit_log',
-    permission='admin',
+    permission='user',
     renderer='json',
     xhr=True,
 )
@@ -47,6 +52,10 @@ class AuditLogAJAX(DatatablesDataView):
     columns['action'] = None
 
     def populate_columns(self, entry):
+        if not entry.read and self.request.user == entry.user:
+            self.columns['DT_RowClass'] = 'active'
+            entry.read = True
+
         self.columns['event_type_id'] = entry.event_type.title
         self.columns['comment'] = entry.comment
         self.columns['timestamp'] = \
@@ -55,12 +64,15 @@ class AuditLogAJAX(DatatablesDataView):
             self.request.route_path('user_view', user_id=entry.user.id),
             entry.user.email,
         )
-        self.columns['action'] = """
-        <a class="btn btn-xs btn-danger" href="{}">
-          <span class="glyphicon glyphicon-remove-sign"></span> Delete
-        </a>
-        """.format(
-            self.request.route_path('audit_log_delete', entry_id=entry.id))
+        if self.request.user.admin:
+            self.columns['action'] = """
+            <a class="btn btn-xs btn-danger" href="{}">
+              <span class="glyphicon glyphicon-remove-sign"></span> Delete
+            </a>
+            """.format(
+                self.request.route_path('audit_log_delete', entry_id=entry.id))
+        else:
+            self.columns['action'] = None
 
 
 @view_config(
@@ -83,7 +95,7 @@ def audit_log_delete(request):
 class AuditLogAddEntryForm(FormView):
     schema = SQLAlchemySchemaNode(
         AuditLogEntry,
-        includes=['timestamp', 'user_id', 'event_type_id', 'comment']
+        includes=['timestamp', 'user_id', 'event_type_id', 'comment', 'read']
     )
     buttons = ('submit', )
     title = 'Add Audit log entry'
@@ -103,6 +115,7 @@ class AuditLogAddEntryForm(FormView):
             user_id=appstruct['user_id'],
             event_type_id=appstruct['event_type_id'],
             comment=appstruct['comment'],
+            read=appstruct['read'],
         )
         Session.add(entry)
         self.request.session.flash(u'Audit log entry added.')
@@ -114,4 +127,5 @@ class AuditLogAddEntryForm(FormView):
             'user_id': self.request.params.get('user_id', 0),
             'event_type_id': self.request.params.get('event_type_id', 0),
             'comment': self.request.params.get('comment', ''),
+            'read': self.request.params.get('read', False),
         }

@@ -4,6 +4,7 @@
 from pyramid.paster import bootstrap
 from pyramid_basemodel import Session
 from pyramid_bimt import events
+from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import GroupProperty
@@ -213,6 +214,26 @@ def add_demo_portlet():
             html=u'You are admin.',
         )
         Session.add(portlet)
+
+
+def add_demo_auditlog_entries():
+    """Add a dummy audit-log entry."""
+    with transaction.manager:
+        read = AuditLogEntry(
+            user=User.by_email('staff@bar.com'),
+            event_type_id=1,
+            comment='read entry',
+            read=True,
+        )
+        Session.add(read)
+
+        unread = AuditLogEntry(
+            user=User.by_email('one@bar.com'),
+            event_type_id=1,
+            comment='unread entry',
+            read=False,
+        )
+        Session.add(unread)
 
 
 def add_default_content():  # pragma: no cover (bw compat only)
