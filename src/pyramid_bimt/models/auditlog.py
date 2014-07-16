@@ -2,9 +2,12 @@
 """AuditLog models."""
 
 from datetime import datetime
+from pyramid.security import Allow
+from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.models.user import User
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
@@ -126,22 +129,27 @@ def event_types_select_widget(node, kw):
 class AuditLogEntry(Base):
     __tablename__ = 'audit_log_entries'
 
+    @property
+    def __acl__(self):
+        return [  # pragma: no cover
+            (Allow, self.user.email, 'owner'),
+        ]
+
     id = Column(
         Integer,
         primary_key=True,
     )
 
-    #: id of user that triggered the entry
     user_id = Column(
         Integer,
         ForeignKey('users.id'),
         info={'colanderalchemy': dict(
             title='User ID',
+            description='ID of user that triggered the entry.',
             widget=users_select_widget,
         )}
     )
 
-    #: entry AuditLogEventType id
     event_type_id = Column(
         Integer,
         ForeignKey('audit_log_event_types.id'),
@@ -151,19 +159,30 @@ class AuditLogEntry(Base):
         )}
     )
 
-    #: when was the entry triggered
     timestamp = Column(
         DateTime,
         default=datetime.utcnow,
-        info={'colanderalchemy': dict(title='Timestamp')}
+        info={'colanderalchemy': dict(
+            title='Timestamp',
+            description='When was the entry triggered.',
+        )}
     )
 
-    #: (optional) additional information about the entry
     comment = Column(
         Unicode,
         info={'colanderalchemy': dict(
             title='Comment',
+            description='Optional additional information about the entry.',
             missing=u'Manual audit log entry',
+        )}
+    )
+
+    read = Column(
+        Boolean,
+        default=False,
+        info={'colanderalchemy': dict(
+            title='Read',
+            description=u'True if this entry has been read, False if not.',
         )}
     )
 
@@ -199,6 +218,9 @@ class AuditLogEntry(Base):
             ``{'comment': 'foo'}``
         :type filter_by: dict
 
+        :param security: Only return entries that the current user is owner of.
+        :type security: bool
+
         :return: list of AuditLogEntry instances, wrapped in a SQLAlchemy Query
             object, so you can call ``.all()`` to convert to list, or append
             additional query parameters (such as ``.count()`` for counting)
@@ -211,6 +233,8 @@ class AuditLogEntry(Base):
             q = q.filter_by(**filter_by)
         if search:
             q = q.filter(AuditLogEntry.comment.like(u'%{}%'.format(search)))
+        if security:
+            q = q.filter_by(user=get_current_request().user)
         if offset:
             q = q.slice(offset[0], offset[1])
         q = q.limit(limit)

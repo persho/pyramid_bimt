@@ -78,11 +78,12 @@ class GroupFactory(object):
 
 class AuditLogFactory(object):
     __acl__ = [
+        (Allow, 'g:enabled', 'user'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/audit-log/':
+        if request.get('PATH_INFO') == '/activity/':
             raise HTTPFound(location=request.route_path('audit_log'))
         self.request = request
 

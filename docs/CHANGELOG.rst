@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-0.13 (unreleased)
------------------
+0.12.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Users can now see their Audit Log (which is named as Recent Activity in
+  the UI).
+  [zupo]
 
 
 0.12 (2014-07-12)

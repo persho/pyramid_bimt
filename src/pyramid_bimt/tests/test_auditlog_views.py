@@ -4,8 +4,11 @@
 from pyramid import testing
 from pyramid_basemodel import Session
 from pyramid_bimt import configure
+from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
 
+import mock
 import unittest
 import webtest
 
@@ -16,9 +19,15 @@ class TestAuditLogView(unittest.TestCase):
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
-        initTestingDB(auditlog_types=True, groups=True, users=True)
+        initTestingDB(
+            auditlog_types=True,
+            auditlog_entries=True,
+            groups=True,
+            users=True,
+        )
         configure(self.config)
-        self.request = testing.DummyRequest()
+        self.request = testing.DummyRequest(
+            user=mock.Mock())
         app = self.config.make_wsgi_app()
         self.testapp = webtest.TestApp(app)
 
@@ -29,8 +38,8 @@ class TestAuditLogView(unittest.TestCase):
     def test_audit_log(self):
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/audit-log', status=200)
-        self.assertIn('<h1>Audit Log</h1>', resp.text)
+        resp = self.testapp.get('/activity', status=200)
+        self.assertIn('<h1>Recent Activity</h1>', resp.text)
 
     def test_audit_log_delete(self):
         from pyramid_bimt.models import AuditLogEventType
@@ -48,7 +57,7 @@ class TestAuditLogView(unittest.TestCase):
         request.context = entry
         transaction.commit()
         resp = audit_log_delete(request)
-        self.assertIn('/audit-log', resp.location)
+        self.assertIn('/activity', resp.location)
 
     def test_audit_log_add(self):
         self.config.testing_securitypolicy(
@@ -64,30 +73,55 @@ class TestAuditLogView(unittest.TestCase):
             'timestamp': datetime.datetime.now(),
             'user_id': 1,
             'event_type_id': 1,
-            'comment': 'testing'
+            'comment': 'testing',
+            'read': True,
         }
         resp = audit_log_add_view.submit_success(form_values)
-        self.assertIn('/audit-log', resp.location)
+        self.assertIn('/activity', resp.location)
 
-    def test_populate_columns(self):
-        from pyramid_bimt.models import AuditLogEntry
+    def _make_view(self):
         from pyramid_bimt.views.auditlog import AuditLogAJAX
 
-        Session.add(AuditLogEntry(comment=u'föo', event_type_id=1, user_id=1))
-        Session.flush()
-
         view = AuditLogAJAX(self.request)
-        AuditLogAJAX(self.request).populate_columns(AuditLogEntry.by_id(1))
-        self.assertEqual(view.columns['comment'], u'föo')
+        view.populate_columns(AuditLogEntry.by_id(2))
+        return view
+
+    def test_populate_columns_admin(self):
+        self.request.user.admin = True
+        view = self._make_view()
+        self.assertEqual(view.columns['comment'], u'unread entry')
         self.assertEqual(
             view.columns['event_type_id'], 'User Changed Password')
         self.assertEqual(
-            view.columns['user_id'], '<a href="/user/1">admin@bar.com</a>')
+            view.columns['user_id'], '<a href="/user/3">one@bar.com</a>')
         self.assertEqual(
             view.columns['action'],
             """
-        <a class="btn btn-xs btn-danger" href="/audit-log/1/delete">
-          <span class="glyphicon glyphicon-remove-sign"></span> Delete
-        </a>
-        """,
+            <a class="btn btn-xs btn-danger" href="/audit-log/2/delete">
+              <span class="glyphicon glyphicon-remove-sign"></span> Delete
+            </a>
+            """,
         )
+
+    def test_populate_columns_user(self):
+        self.request.user.admin = False
+        view = self._make_view()
+        self.assertEqual(view.columns['comment'], u'unread entry')
+        self.assertEqual(
+            view.columns['event_type_id'], 'User Changed Password')
+        self.assertEqual(
+            view.columns['user_id'], '<a href="/user/3">one@bar.com</a>')
+        self.assertEqual(view.columns['action'], None)
+
+    def test_admin_mark_only_own_entries_as_unread(self):
+        self.request.user = User.by_email('admin@bar.com')
+
+        AuditLogEntry.by_id(2).user = User.by_email('admin@bar.com')
+        AuditLogEntry.by_id(2).read = False
+        self._make_view()
+        self.assertEqual(AuditLogEntry.by_id(2).read, True)
+
+        AuditLogEntry.by_id(2).user = User.by_email('one@bar.com')
+        AuditLogEntry.by_id(2).read = False
+        self._make_view()
+        self.assertEqual(AuditLogEntry.by_id(2).read, False)

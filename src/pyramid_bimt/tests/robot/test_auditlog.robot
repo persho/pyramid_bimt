@@ -11,20 +11,54 @@ Suite Teardown  Suite Teardown
 
 *** Test Cases ***
 
-Scenario: Add audit log entry
-    I log in as admin
-    Go to  http://localhost:8080/audit-log/add
-    I select from dropdown  user_id  one@bar.com
-    I select from dropdown  event_type_id  UserCreated
-    Input Text  name=comment  Fake create user.
-    I click button  Submit
-    Location Should Be  http://localhost:8080/audit-log
-    Page Should Contain  Audit log entry added.
-    Page Should Contain  Fake create user.
+Scenario: User views only its own Recent Activity
+   Given password reset is requested by staff member
+     And I am logged in as a user
+    When I go to  http://localhost:8080/activity
+    Then entries table should have rows  1
+     and entries table should contain row  1  User Logged In one@bar.com
 
-Scenario: Delete audit log entry
-    I log in as admin
-    Go to  http://localhost:8080/audit-log
-    I click delete first audit log entry of type  User Logged In
-    Location Should Be  http://localhost:8080/audit-log
-    Page Should Contain  Audit log entry deleted.
+Scenario: Admin views all Recent Activity
+   Given password reset is requested by staff member
+     And I am logged in as an admin
+    When I go to  http://localhost:8080/activity
+    Then entries table should have rows  2
+    Then entries table should contain row  1  User Logged In admin@bar.com Delete
+     And entries table should contain row  2  User Changed Password staff@bar.com Delete
+
+Scenario: Admin adds a new audit-log entry
+   Given I am logged in as an admin
+    When I go to  http://localhost:8080/audit-log/add
+     And I select from dropdown  user_id  one@bar.com
+     And I select from dropdown  event_type_id  UserCreated
+     And Input Text  name=comment  Fake create user.
+     And I click button  Submit
+    Then location should be  http://localhost:8080/activity
+     And entries table should have rows  2
+     And entries table should contain row  1  User Created one@bar.com Fake create user. Delete
+     And entries table should contain row  2  User Logged In admin@bar.com Delete
+
+Scenario: Admin deletes an audit log entry
+   Given I am logged in as an admin
+    When I go to  http://localhost:8080/activity
+     And I click delete first audit log entry of type  User Logged In
+    Then location should be  http://localhost:8080/activity
+     And entries table should have rows  1
+     And entries table should contain row  1  No data available in table
+
+
+*** Keywords ***
+
+Password reset is requested by staff member
+    Go To  http://localhost:8080/login
+    Input Text  name=email  staff@bar.com
+    Click Button  reset_password
+
+Entries table should contain row
+    [Arguments]  ${row_number}  ${text}
+    Table Row Should Contain  css=.table  ${row_number}  ${text}
+
+Entries table should have rows
+    [Arguments]  ${row_count}
+    ${rows}=  Get Matching XPath Count  //table[contains(@class, 'table')]/tbody/tr
+    Fail Unless Equal  ${rows}  ${row_count}
