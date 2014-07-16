@@ -2,9 +2,12 @@
 """Commonly shared view code."""
 
 from collections import OrderedDict
+from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView as BaseFormView
+
+import colander
 
 
 class FormView(BaseFormView):
@@ -136,3 +139,19 @@ class DatatablesDataView(object):
             # List of result contents for current set
             'aaData': data,
         }
+
+
+# Apps can use this validator for their settings views
+@colander.deferred
+def deferred_settings_email_validator(node, kw):
+    """Validator for setting email in settings, checks for email duplicates"""
+    request = kw['request']
+
+    def validator(node, cstruct):
+        colander.Email()(node, cstruct)
+        if request.user.email != cstruct and User.by_email(cstruct):
+            raise colander.Invalid(
+                node,
+                u'Email {} is already in use by another user.'.format(cstruct)
+            )
+    return validator
