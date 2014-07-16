@@ -3,7 +3,14 @@
   <div metal:fill-slot="content" id="content">
 
     <a href="${request.route_path('user_list')}">Back to Users overview</a>
-    <h1>${user.email}</h1>
+    <h1>
+        ${user.email}
+        <a class="btn btn-xs btn-primary" style="float:right"
+        href="${request.route_path('user_edit', user_id=user.id)}">
+            <span class="glyphicon glyphicon-edit"></span>
+            Edit
+        </a>
+    </h1>
     <table class="table">
       <tr><th>Full Name</th><td>${user.fullname}</td><th>
       <tr><th>Billing Email</th><td>${user.billing_email}</td><th>
