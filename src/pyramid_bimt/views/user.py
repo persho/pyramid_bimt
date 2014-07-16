@@ -34,6 +34,17 @@ def deferred_groups_validator(node, kw):
     return validator
 
 
+@colander.deferred
+def deferred_user_email_validator(node, kw):
+
+    def validator(node, cstruct):
+        colander.Email()(node, cstruct)
+        if User.by_email(cstruct):
+            raise colander.Invalid(
+                node, u'User with email {} already exists.'.format(cstruct))
+    return validator
+
+
 @view_defaults(permission='manage_users')
 class UserView(object):
     def __init__(self, context, request):
@@ -132,7 +143,10 @@ class UserAdd(FormView):
         self.schema = SQLAlchemySchemaNode(
             User,
             includes=self.fields,
-            overrides={'properties': {'includes': ['key', 'value']}}
+            overrides={
+                'properties': {'includes': ['key', 'value']},
+                'email': {'validator': deferred_user_email_validator}
+            }
         )
 
         # we don't like the way ColanderAlchemy renders SA Relationships so
