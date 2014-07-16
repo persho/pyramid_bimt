@@ -498,3 +498,64 @@ class TestLoginAsView(unittest.TestCase):
             u'You do not have permission to login as admin user.',
             'error'
         )
+
+
+class TestSettingsEmailValidator(unittest.TestCase):
+
+    def setUp(self):
+        from pyramid_bimt.testing import initTestingDB
+        from pyramid_bimt.models import User
+
+        self.config = testing.setUp()
+        initTestingDB(groups=True, users=True)
+
+        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_valid_same_email(self):
+        from pyramid_bimt.views import deferred_settings_email_validator
+
+        cstruct = 'one@bar.com'
+
+        validator = deferred_settings_email_validator(
+            None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_valid_different_email(self):
+        from pyramid_bimt.views import deferred_settings_email_validator
+
+        cstruct = 'test@bar.com'
+
+        validator = deferred_settings_email_validator(
+            None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_invalid_email(self):
+        from pyramid_bimt.views import deferred_settings_email_validator
+        from colander import Invalid
+
+        cstruct = 'fooooooo'
+
+        validator = deferred_settings_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(cm.exception.msg, u'Invalid email address')
+
+    def test_duplicate_email(self):
+        from pyramid_bimt.views import deferred_settings_email_validator
+        from colander import Invalid
+
+        cstruct = 'admin@bar.com'
+
+        validator = deferred_settings_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Email admin@bar.com is already in use by another user.'
+        )
