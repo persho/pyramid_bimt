@@ -18,6 +18,7 @@ from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 from pyramid_bimt.security import verify
 from pyramid_bimt.views import FormView
+from ua_parser import user_agent_parser
 
 import colander
 
@@ -35,6 +36,21 @@ class LoginForm(FormView):
     form_options = (('formid', 'login'), ('method', 'POST'))
     hide_sidebar = True
 
+    def user_agent_info(self):
+        ua = user_agent_parser.Parse(self.request.user_agent)
+
+        return u"""Logged in with IP {} on device {} with operating system: {}
+        and browser {}""".format(
+            self.request.remote_addr,
+            ua['device']['family'],
+            ua['os']['family'],
+            '{} {}.{}'.format(
+                ua['user_agent']['family'],
+                ua['user_agent']['major'],
+                ua['user_agent']['minor'],
+            ),
+        )
+
     def login_success(self, appstruct):
         came_from = self.request.params.get(
             'came_from', self.request.application_url)
@@ -47,7 +63,9 @@ class LoginForm(FormView):
             verify(password, user.password)
         ):
             headers = remember(self.request, user.email)
-            self.request.registry.notify(UserLoggedIn(self.request, user))
+            self.request.registry.notify(
+                UserLoggedIn(self.request, user, comment=self.user_agent_info())  # noqa
+            )
             self.request.session.flash(u'Login successful.')
 
             if not user.enabled:

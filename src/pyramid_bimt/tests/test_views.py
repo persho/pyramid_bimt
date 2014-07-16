@@ -8,6 +8,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.views.auth import LoginForm
 from pyramid_mailer import get_mailer
 
 import colander
@@ -40,7 +41,9 @@ class TestLoginViewsFunctional(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_login(self):
+    @mock.patch.object(LoginForm, 'user_agent_info')
+    def test_login(self, user_agent_info):
+        user_agent_info.return_value = u'test_comment'
         resp = self.testapp.get('/login', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
@@ -58,7 +61,9 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('login')
         self.assertIn('Login failed.', resp.text)
 
-    def test_login_disabled(self):
+    @mock.patch.object(LoginForm, 'user_agent_info')
+    def test_login_disabled(self, user_agent_info):
+        user_agent_info.return_value = u'test_comment'
         from pyramid_bimt.models import User
         user = User.by_email('one@bar.com')
         user.disable()

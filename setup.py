@@ -61,6 +61,7 @@ setup(
         'python-dateutil',
         'requests',
         'transaction',
+        'ua-parser',
         'waitress',
     ],
     extras_require={
