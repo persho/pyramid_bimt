@@ -280,6 +280,52 @@ class TestGroupsValidator(unittest.TestCase):
         )
 
 
+class TestUserEmailValidator(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB(groups=True, users=True)
+
+        self.request = testing.DummyRequest(user=mock.Mock())
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_valid_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+
+        cstruct = 'test@bar.com'
+
+        validator = deferred_user_email_validator(None, None)
+        self.assertFalse(validator(None, cstruct))
+
+    def test_invalid_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+        from colander import Invalid
+
+        cstruct = 'fooooooo'
+
+        validator = deferred_user_email_validator(None, None)
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(cm.exception.msg, u'Invalid email address')
+
+    def test_duplicate_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+        from colander import Invalid
+
+        cstruct = 'one@bar.com'
+
+        validator = deferred_user_email_validator(None, None)
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'User with email one@bar.com already exists.'
+        )
+
+
 class TestUserAdd(unittest.TestCase):
 
     APPSTRUCT = {
