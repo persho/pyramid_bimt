@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.12.1 (unreleased)
+0.13 (unreleased)
 -------------------
 
 - Documentation on how to use travis-artifacts for uploading robot tests logs
@@ -24,8 +24,8 @@ Changelog
   therefore DB integrity errors.
   [ferewuz]
 
-- Users can now see their Audit Log (which is named as Recent Activity in
-  the UI).
+- [MIGRATION REQUIRED] Users can now see their Audit Log (which is named as
+  Recent Activity in the UI).
   [zupo]
 
 
