@@ -39,16 +39,21 @@ class LoginForm(FormView):
     def user_agent_info(self):
         ua = user_agent_parser.Parse(self.request.user_agent)
 
-        return u"""Logged in with IP {} on device {} with operating system: {}
-        and browser {}""".format(
-            self.request.remote_addr,
-            ua['device']['family'],
-            ua['os']['family'],
-            '{} {}.{}'.format(
-                ua['user_agent']['family'],
-                ua['user_agent']['major'],
-                ua['user_agent']['minor'],
-            ),
+        device = ua['device']['family']
+        os = ua['os']['family']
+        browser = ua['user_agent']['family']
+        major = ua['user_agent']['major']
+        minor = ua['user_agent']['minor']
+        if major and minor:
+            browser += ' {}.{}'.format(major, minor)
+
+        return (
+            u'Logged in with IP {} on device {} with operating system: {}'
+            u' and browser {}').format(
+                self.request.remote_addr,
+                device,
+                os,
+                browser,
         )
 
     def login_success(self, appstruct):

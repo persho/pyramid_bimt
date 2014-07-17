@@ -107,6 +107,39 @@ class TestLoginViewsFunctional(unittest.TestCase):
                       'entered your email address.', resp.text)
 
 
+class TestUserAgentInfo(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+
+    def test_user_agent_info(self):
+        request = mock.Mock(
+            user_agent='Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X;'
+            ' en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405',
+            remote_addr='1.2.3.4'
+        )
+        view = LoginForm(request)
+        user_info = view.user_agent_info()
+        self.assertEqual(
+            user_info,
+            u'Logged in with IP 1.2.3.4 on device iPad with operating system:'
+            ' iOS and browser Mobile Safari 3.1'
+        )
+
+    def test_user_agent_info_no_major_minor(self):
+        request = mock.Mock(
+            user_agent=u'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Safari/537.36',
+            remote_addr='1.2.3.4'
+        )
+        view = LoginForm(request)
+        user_info = view.user_agent_info()
+        self.assertEqual(
+            user_info,
+            u'Logged in with IP 1.2.3.4 on device Other with operating system:'
+            ' Linux and browser Safari'
+        )
+
+
 class TestLogoutView(unittest.TestCase):
     def setUp(self):
         settings = {
