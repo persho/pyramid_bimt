@@ -5,6 +5,21 @@ Changelog
 0.12.1 (unreleased)
 -------------------
 
+- User IP, OS and browser gets logged on each login and saved as audit logs, so
+  users (and admins) can check information for each login.
+  [ferewuz]
+
+- User view now includes a link to edit view.
+  [ferewuz]
+
+- Validator for changing email in settings that checks for duplicates. Should
+  be used by all apps.
+  [ferewuz]
+
+- Additional validator when adding user, so we don't get any duplicates and
+  therefore DB integrity errors.
+  [ferewuz]
+
 - Users can now see their Audit Log (which is named as Recent Activity in
   the UI).
   [zupo]

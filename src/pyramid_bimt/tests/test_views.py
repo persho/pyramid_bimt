@@ -8,6 +8,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.views.auth import LoginForm
 from pyramid_mailer import get_mailer
 
 import colander
@@ -40,7 +41,9 @@ class TestLoginViewsFunctional(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_login(self):
+    @mock.patch.object(LoginForm, 'user_agent_info')
+    def test_login(self, user_agent_info):
+        user_agent_info.return_value = u'test_comment'
         resp = self.testapp.get('/login', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
@@ -58,7 +61,9 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('login')
         self.assertIn('Login failed.', resp.text)
 
-    def test_login_disabled(self):
+    @mock.patch.object(LoginForm, 'user_agent_info')
+    def test_login_disabled(self, user_agent_info):
+        user_agent_info.return_value = u'test_comment'
         from pyramid_bimt.models import User
         user = User.by_email('one@bar.com')
         user.disable()
@@ -100,6 +105,39 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('reset_password')
         self.assertIn('Password reset failed. Make sure you have correctly '
                       'entered your email address.', resp.text)
+
+
+class TestUserAgentInfo(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+
+    def test_user_agent_info(self):
+        request = mock.Mock(
+            user_agent='Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X;'
+            ' en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405',
+            remote_addr='1.2.3.4'
+        )
+        view = LoginForm(request)
+        user_info = view.user_agent_info()
+        self.assertEqual(
+            user_info,
+            u'Logged in with IP 1.2.3.4 on device iPad with operating system:'
+            ' iOS and browser Mobile Safari 3.1'
+        )
+
+    def test_user_agent_info_no_major_minor(self):
+        request = mock.Mock(
+            user_agent=u'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Safari/537.36',
+            remote_addr='1.2.3.4'
+        )
+        view = LoginForm(request)
+        user_info = view.user_agent_info()
+        self.assertEqual(
+            user_info,
+            u'Logged in with IP 1.2.3.4 on device Other with operating system:'
+            ' Linux and browser Safari'
+        )
 
 
 class TestLogoutView(unittest.TestCase):
