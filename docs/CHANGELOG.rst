@@ -5,7 +5,8 @@ Changelog
 0.13.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use js.timeago on audit_log.pt.
+  [zupo]
 
 
 0.13 (2014-07-17)
