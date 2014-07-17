@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.13 (unreleased)
--------------------
+0.13 (2014-07-17)
+-----------------
 
 - Documentation on how to use travis-artifacts for uploading robot tests logs
   to S3 bucket on Travis build failure.
