@@ -209,3 +209,78 @@ We have a read-only user ``bimt`` on GitHub. Use this user to clone
 
 #. If you need code that is in a branch inside the ``pyramid_bimt`` repo, then
    append ``branch=yourbranch`` to the line in ``[sources]`` above.
+
+
+Uploading robot framework logs on Amazon S3
+-------------------------------------------
+
+When you are running robot tests on Travis you cannot see logs and screenshots
+of robot tests. To help with identifying the problems you can set up your app
+so that every time the robot tests are failing, it uploads the logs to Amazon
+S3 bucket.
+
+You should prepare a S3 bucket and make IAM user with the following
+policy active on your IAM user:
+
+.. code-block:: xml
+
+    {
+      "Statement": [
+        {
+          "Action": [
+            "s3:GetBucketLocation",
+            "s3:ListAllMyBuckets"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "arn:aws:s3:::*"
+          ]
+        },
+        {
+          "Action": [
+            "s3:*"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "arn:aws:s3:::<your-bucket-name>"
+          ]
+        },
+        {
+          "Action": [
+            "s3:*"
+          ],
+          "Effect": "Allow",
+          "Resource": [
+            "arn:aws:s3:::<your-bucket-name>/*"
+          ]
+        }
+      ]
+    }
+
+In ``.travis.yml`` you have to set 4 environment variables:
+
+.. code-block:: yaml
+
+    - ARTIFACTS_AWS_REGION=<Region of your S3 bucket>
+    - ARTIFACTS_S3_BUCKET=<Name of your S3 bucket>
+
+You should also add your IAM user's ``ARTIFACTS_AWS_ACCESS_KEY_ID`` and
+``ARTIFACTS_AWS_SECRET_ACCESS_KEY``, but you should add both encrypted.
+
+.. code-block:: bash
+
+    $ travis encrypt ARTIFACTS_AWS_ACCESS_KEY_ID=<iam_user_access_key> --add
+    $ travis encrypt ARTIFACTS_AWS_SECRET_ACCESS_KEY=<iam_user_secret_key> --add
+
+Add travis-artifacts to your travis install step (preferrably with bundler as done `here <https://github.com/niteoweb/ebn/commit/9fbf24b245808dcf2bbc7142cf8c19023f174c04>`_.)
+and add travis-artifacts step to your ``after_failure`` step.
+
+.. code-block:: yaml
+
+    after_failure: # Upload robot tests screenshots on failure
+      - "travis-artifacts upload --path parts/robot/ --target-path <app_name>/$TRAVIS_BUILD_NUMBER"
+
+
+Now on every build that fails Travis will upload robot logs to your S3
+bucket, each build into different folder. You can access your robot logs
+through `Amazon console <https://niteoweb.signin.aws.amazon.com/console>`_.

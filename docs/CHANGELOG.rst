@@ -5,6 +5,10 @@ Changelog
 0.12.1 (unreleased)
 -------------------
 
+- Documentation on how to use travis-artifacts for uploading robot tests logs
+  to S3 bucket on Travis build failure.
+  [ferewuz]
+
 - User IP, OS and browser gets logged on each login and saved as audit logs, so
   users (and admins) can check information for each login.
   [ferewuz]
