@@ -58,12 +58,17 @@ class AuditLogAJAX(DatatablesDataView):
 
         self.columns['event_type_id'] = entry.event_type.title
         self.columns['comment'] = entry.comment
-        self.columns['timestamp'] = \
-            entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')
+
+        timestamp = entry.timestamp.strftime('%Y/%m/%d %H:%M:%S')
+        self.columns['timestamp'] = """
+            <time class="timeago" datetime="{}Z">{} UTC</time>
+            """.format(timestamp, timestamp)
+
         self.columns['user_id'] = '<a href="{}">{}</a>'.format(
             self.request.route_path('user_view', user_id=entry.user.id),
             entry.user.email,
         )
+
         if self.request.user.admin:
             self.columns['action'] = """
             <a class="btn btn-xs btn-danger" href="{}">

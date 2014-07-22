@@ -162,7 +162,7 @@ date/time representation, do the following:
 .. code-block:: python
 
     <time class="timeago" datetime="${context.created.strftime('%Y-%m-%dT%H:%M:%SZ')}">
-        ${context.created.strftime('%Y-%m-%d %H:%M:%S')}
+        ${context.created.strftime('%Y-%m-%d %H:%M:%S')} UTC
     </time>
 
 This assumes you store all datetimes internally as UTC.
