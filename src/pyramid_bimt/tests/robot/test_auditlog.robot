@@ -23,7 +23,7 @@ Scenario: Admin views all Recent Activity
      And I am logged in as an admin
     When I go to  http://localhost:8080/activity
     Then entries table should have rows  2
-    Then entries table should contain row  1  User Logged In admin@bar.com Delete
+    Then entries table should contain row  1  User Logged In admin@bar.com
      And entries table should contain row  2  User Changed Password staff@bar.com Delete
 
 Scenario: Admin adds a new audit-log entry
@@ -36,7 +36,7 @@ Scenario: Admin adds a new audit-log entry
     Then location should be  http://localhost:8080/activity
      And entries table should have rows  2
      And entries table should contain row  1  User Created one@bar.com Fake create user. Delete
-     And entries table should contain row  2  User Logged In admin@bar.com Delete
+     And entries table should contain row  2  User Logged In admin@bar.com
 
 Scenario: Admin deletes an audit log entry
    Given I am logged in as an admin

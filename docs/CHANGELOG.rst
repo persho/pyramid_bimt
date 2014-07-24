@@ -5,6 +5,9 @@ Changelog
 0.13.1 (unreleased)
 -------------------
 
+- Fix robot tests.
+  [zupo]
+
 - Use js.timeago on audit_log.pt.
   [zupo]
 
