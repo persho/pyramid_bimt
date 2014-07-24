@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.13.1 (unreleased)
+0.13.1 (2014-07-24)
 -------------------
 
 - Fix robot tests.
