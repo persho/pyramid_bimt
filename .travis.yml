@@ -18,7 +18,6 @@ env:
       mmXgOgh9KY7iw/FiJN+v7se3umyuNgJ5HXenjnQ=  # INTERNAL_PYPI_PASS
 
 install:
-  - npm install jshint -g
   - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
   - make .installed.cfg
 
