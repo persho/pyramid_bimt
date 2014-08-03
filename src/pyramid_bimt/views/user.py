@@ -42,6 +42,15 @@ def deferred_user_email_validator(node, kw):
         if User.by_email(cstruct):
             raise colander.Invalid(
                 node, u'User with email {} already exists.'.format(cstruct))
+
+    # skip validation if context already has email set and this email is resent
+    if (  # pragma: no branch
+        kw.get('request') and
+        isinstance(kw['request'].context, User) and
+        kw['request'].context.email == kw['request'].POST.get('email')
+    ):
+        return colander.Email()
+
     return validator
 
 

@@ -5,7 +5,9 @@ Changelog
 0.13.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix a bug that prevented admins to edit users because email validation
+  failed with "this email already exists" error.
+  [zupo]
 
 
 0.13.1 (2014-07-24)

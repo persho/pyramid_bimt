@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for User views."""
 
+from colanderalchemy import SQLAlchemySchemaNode
 from datetime import date
 from datetime import datetime
 from pyramid import testing
@@ -286,7 +287,7 @@ class TestUserEmailValidator(unittest.TestCase):
         self.config = testing.setUp()
         initTestingDB(groups=True, users=True)
 
-        self.request = testing.DummyRequest(user=mock.Mock())
+        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
 
     def tearDown(self):
         Session.remove()
@@ -297,7 +298,7 @@ class TestUserEmailValidator(unittest.TestCase):
 
         cstruct = 'test@bar.com'
 
-        validator = deferred_user_email_validator(None, None)
+        validator = deferred_user_email_validator(None, {})
         self.assertFalse(validator(None, cstruct))
 
     def test_invalid_email(self):
@@ -306,7 +307,7 @@ class TestUserEmailValidator(unittest.TestCase):
 
         cstruct = 'fooooooo'
 
-        validator = deferred_user_email_validator(None, None)
+        validator = deferred_user_email_validator(None, {})
         with self.assertRaises(Invalid) as cm:
             validator(None, cstruct)
         self.assertEqual(cm.exception.msg, u'Invalid email address')
@@ -317,13 +318,25 @@ class TestUserEmailValidator(unittest.TestCase):
 
         cstruct = 'one@bar.com'
 
-        validator = deferred_user_email_validator(None, None)
+        validator = deferred_user_email_validator(None, {})
         with self.assertRaises(Invalid) as cm:
             validator(None, cstruct)
         self.assertEqual(
             cm.exception.msg,
             u'User with email one@bar.com already exists.'
         )
+
+    def test_context_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+
+        schema = SQLAlchemySchemaNode(User)
+        self.request.context = User.by_email('one@bar.com')
+        self.request.POST['email'] = 'one@bar.com'
+
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('email'), 'one@bar.com'))
 
 
 class TestUserAdd(unittest.TestCase):
