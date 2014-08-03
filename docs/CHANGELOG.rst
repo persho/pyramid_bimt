@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.13.2 (unreleased)
+0.13.2 (2014-08-03)
 -------------------
 
 - Fix a bug that prevented admins to edit users because email validation
