@@ -115,7 +115,7 @@ class TestUserAgentInfo(unittest.TestCase):
         request = mock.Mock(
             user_agent='Mozilla/5.0 (iPad; U; CPU OS 3_2_1 like Mac OS X;'
             ' en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Mobile/7B405',
-            remote_addr='1.2.3.4'
+            client_addr='1.2.3.4'
         )
         view = LoginForm(request)
         user_info = view.user_agent_info()
@@ -129,7 +129,7 @@ class TestUserAgentInfo(unittest.TestCase):
         request = mock.Mock(
             user_agent=u'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
             '(KHTML, like Gecko) Safari/537.36',
-            remote_addr='1.2.3.4'
+            client_addr='1.2.3.4'
         )
         view = LoginForm(request)
         user_info = view.user_agent_info()
