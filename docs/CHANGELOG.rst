@@ -5,7 +5,8 @@ Changelog
 0.13.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix IP logging so it correctly logs client IP.
+  [ferewuz]
 
 
 0.13.2 (2014-08-03)
