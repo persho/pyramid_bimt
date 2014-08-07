@@ -5,9 +5,9 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.security import NO_PERMISSION_REQUIRED
-from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from pyramid.settings import asbool
 from pyramid_basemodel import Session
+from pyramid_beaker import session_factory_from_settings
 from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.acl import GroupFactory
 from pyramid_bimt.acl import MailingFactory
@@ -27,12 +27,16 @@ logger = logging.getLogger('init')
 
 
 REQUIRED_SETTINGS = [
-    'authtkt.secret',
+    'authtkt.secret',  # used for auth_tkt cookie signing
     'bimt.app_name',
     'bimt.app_title',
     'bimt.disabled_user_redirect_path',
     'script_location',
-    'session.secret',
+    'session.encrypt_key',  # a fairly long randomly generated string
+    'session.key',  # name of the cookie key used to save the session under
+    'session.secret',  # used with the HMAC to ensure session integrity
+    'session.type',  # usually 'cookie'
+    'session.validate_key',  # used to sign the AES encrypted data
     'sqlalchemy.url',
 ]
 
@@ -166,8 +170,7 @@ def configure(config, settings={}):
         get_authenticated_user, 'user', reify=True)
 
     # Setup session factory
-    session_factory = UnencryptedCookieSessionFactoryConfig(
-        settings.get('session.secret', 'secret'))
+    session_factory = session_factory_from_settings(settings)
     config.set_session_factory(session_factory)
 
     # Set 'admin' as default permission
@@ -228,9 +231,12 @@ def includeme(config):
     # Setup the DB session and such
     config.include('pyramid_basemodel')
 
+    # Add support for encrypted session cookies
+    config.include('pyramid_beaker')
+
     # Setup authentication and authorization policies.
     authentication_policy = AuthTktAuthenticationPolicy(
-        secret=config.registry.settings.get('authtkt.secret', 'secret'),
+        secret=config.registry.settings['authtkt.secret'],
         hashalg='sha512',
         callback=groupfinder,
     )

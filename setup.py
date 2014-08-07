@@ -52,6 +52,7 @@ setup(
         'passlib',
         'pyramid',
         'pyramid_basemodel',
+        'pyramid_beaker',
         'pyramid_celery',
         'pyramid_deform',
         'pyramid_fanstatic',

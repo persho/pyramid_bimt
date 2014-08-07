@@ -11,7 +11,12 @@ class TestCheckSettings(unittest.TestCase):
 
     def setUp(self):
         self.settings_full = {
-            'authtkt.secret': '',
+            'session.key': 'bimt',
+            'session.secret': 'secret',
+            'session.encrypt_key': 'secret',
+            'session.validate_key': 'secret',
+            'session.type': 'cookie',
+            'authtkt.secret': 'secret',
             'bimt.app_name': 'bimt',
             'bimt.app_secret': '',
             'bimt.app_title': 'BIMT',

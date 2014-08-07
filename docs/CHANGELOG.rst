@@ -5,6 +5,17 @@ Changelog
 0.13.3 (unreleased)
 -------------------
 
+- [MIGRATION REQUIRED] More secure handling of sessions and cookies. Apps need
+  to set the following values in their ini files:
+  * session.type
+  * session.key
+  * session.secret
+  * session.encrypt_key
+  * session.validate_key
+  * authtkt.secret
+  The session.type should be 'cookie' in production.
+  [zupo]
+
 - Fix IP logging so it correctly logs client IP.
   [ferewuz]
 
