@@ -86,6 +86,7 @@ setup(
             'pyramid_debugtoolbar',
             'sadisplay',
             'zest.releaser',
+            'psycopg2',
         ],
     },
     entry_points="""\
