@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.13.3 (unreleased)
--------------------
+0.14 (2014-08-14)
+-----------------
 
 - [MIGRATION REQUIRED] More secure handling of sessions and cookies. Apps need
   to set the following values in their ini files:
