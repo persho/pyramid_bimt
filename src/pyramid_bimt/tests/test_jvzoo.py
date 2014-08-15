@@ -191,14 +191,15 @@ class TestJVZooViewIntegration(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
-    def test_existing_user_new_subscription_payment(
-        self, verify_POST, mocked_date
+    def test_existing_trial_user_new_subscription_payment(
+        self, verify_POST, mocked_date, user=None
     ):
         from pyramid_bimt.views.jvzoo import JVZooView
-        user = self._make_user(
-            email='foo@bar.com',
-            groups=[Group.by_name('enabled'), Group.by_name('trial')],
-        )
+        if not user:
+            user = self._make_user(
+                email='foo@bar.com',
+                groups=[Group.by_name('enabled'), Group.by_name('trial')],
+            )
         post = {
             'ccustemail': 'FOO@bar.com',
             'ctransaction': 'BILL',
@@ -225,6 +226,18 @@ class TestJVZooViewIntegration(unittest.TestCase):
             u'Enabled by JVZoo, transaction id: 123, type: BILL, note: '
             u'regular until 2014-01-30',
         )
+
+    @mock.patch('pyramid_bimt.views.jvzoo.date')
+    @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')
+    def test_existing_regular_user_new_subscription_payment(
+        self, verify_POST, mocked_date
+    ):
+        """Test for the "ValueError: list.remove(x): x not in list" bug."""
+        user = self._make_user(
+            email='foo@bar.com',
+            groups=[Group.by_name('enabled')],
+        )
+        self.test_existing_trial_user_new_subscription_payment(user=user)
 
     @mock.patch('pyramid_bimt.views.jvzoo.date')
     @mock.patch('pyramid_bimt.views.jvzoo.JVZooView._verify_POST')

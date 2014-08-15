@@ -180,6 +180,7 @@ class AuditLogEntry(Base):
     read = Column(
         Boolean,
         default=False,
+        nullable=False,
         info={'colanderalchemy': dict(
             title='Read',
             description=u'True if this entry has been read, False if not.',
