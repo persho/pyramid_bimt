@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.14.1 (unreleased)
+0.14.1 (2014-08-15)
 -------------------
 
 - Fixed missing dependencies and version pins in 0.14 release.
