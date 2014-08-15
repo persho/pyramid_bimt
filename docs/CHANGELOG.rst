@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.14.2 (unreleased)
+0.14.2 (2014-08-15)
 -------------------
 
 - Fix JVZoo handling of re-curring BILL transactions. Refs #502.
