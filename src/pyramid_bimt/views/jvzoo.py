@@ -118,14 +118,12 @@ class JVZooView(object):
             return msg
 
     def jvzoo_transaction(self, user, group):
-        """
-        Select correct jvzoo transaction and call its method
+        """Select correct JVZoo transaction and call its method.
 
         :param    user:  Selected user
         :type     user:  pyramid_bimt.models.user.User
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
-
         """
         if self.trans_type == 'SALE':
             self.jvzoo_sale_transaction(user, group)
@@ -141,14 +139,12 @@ class JVZooView(object):
                 u'Unknown Transaction Type: {}'.format(self.trans_type))
 
     def jvzoo_sale_transaction(self, user, group):
-        """
-        Make jvzoo sale transaction
+        """Make JVZoo sale transaction.
 
         :param    user:  Selected user
         :type     user:  pyramid_bimt.models.user.User
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
-
         """
         if group.trial_validity:
             trial = True
@@ -171,19 +167,18 @@ class JVZooView(object):
             UserEnabled(self.request, user, msg))
 
     def jvzoo_bill_transaction(self, user, group):
-        """
-        Make jvzoo bill transaction
+        """Make JVZoo bill transaction
 
         :param    user:  Selected user
         :type     user:  pyramid_bimt.models.user.User
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
-
         """
         user.valid_to = date.today() + timedelta(days=group.validity)
         user.last_payment = date.today()
         user.groups.append(group)
-        user.groups.remove(Group.by_name('trial'))
+        if Group.by_name('trial') in user.groups:
+            user.groups.remove(Group.by_name('trial'))
         user.enable()
 
         msg = self.comment.format(
@@ -194,14 +189,12 @@ class JVZooView(object):
             UserEnabled(self.request, user, msg))
 
     def jvzoo_disable_transaction(self, user, group):
-        """
-        Make jvzoo disable transaction
+        """Make JVZoo disable transaction
 
         :param    user:  Selected user
         :type     user:  pyramid_bimt.models.user.User
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
-
         """
         groups_comment = 'removed from groups: {}'.format(
             ', '.join([g.name for g in user.groups]))

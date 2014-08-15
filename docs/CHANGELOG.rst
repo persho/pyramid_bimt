@@ -5,7 +5,11 @@ Changelog
 0.14.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix JVZoo handling of re-curring BILL transactions. Refs #502.
+  [zupo]
+
+- AuditLogEntry.read should be a required field.
+  [zupo]
 
 
 0.14.1 (2014-08-15)
