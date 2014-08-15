@@ -5,7 +5,8 @@ Changelog
 0.14.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fixed missing dependencies and version pins in 0.14 release.
+  [zupo]
 
 
 0.14 (2014-08-14)

@@ -35,8 +35,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Paste',
         'ColanderAlchemy',
+        'Paste',
         'SQLAlchemy',
         'alembic',
         'celery[redis]',
@@ -50,6 +50,7 @@ setup(
         'js.jquery_datatables',
         'js.jquery_maskedinput',
         'passlib',
+        'pycrypto',
         'pyramid',
         'pyramid_basemodel',
         'pyramid_beaker',
