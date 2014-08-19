@@ -43,7 +43,6 @@ class TestAuditLogView(unittest.TestCase):
 
     def test_audit_log_delete(self):
         from pyramid_bimt.models import AuditLogEventType
-        from pyramid_bimt.models import AuditLogEntry
         from pyramid_bimt.views.auditlog import audit_log_delete
         import transaction
         self.config.testing_securitypolicy(
