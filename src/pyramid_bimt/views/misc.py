@@ -55,6 +55,7 @@ def config(request):
             'CELERY_RESULT_BACKEND',
             'authtkt.secret',
             'bimt.jvzoo_secret_key',
+            'bimt.flower_auth',
             'session.secret',
             'DATABASE_URL',
             'SENTRY_DSN',
