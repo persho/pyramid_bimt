@@ -47,14 +47,13 @@ class LoginForm(FormView):
         if major and minor:
             browser += ' {}.{}'.format(major, minor)
 
-        return (
-            u'Logged in with IP {} on device {} with operating system: {}'
-            u' and browser {}').format(
-            self.request.client_addr,
-            device,
-            os,
-            browser,
-        )
+        return u'Logged in with IP {} on device {} with operating system: {}' \
+            u' and browser {}'.format(
+                self.request.client_addr,
+                device,
+                os,
+                browser,
+            )
 
     def login_success(self, appstruct):
         came_from = self.request.params.get(
