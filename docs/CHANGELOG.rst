@@ -5,6 +5,9 @@ Changelog
 0.14.3 (unreleased)
 -------------------
 
+- Avoid race conditions in auditlog robot tests.
+  [zupo]
+
 - Add Settings form to bimt so it can be used in apps to get rid of some DRY.
   [ferewuz]
 

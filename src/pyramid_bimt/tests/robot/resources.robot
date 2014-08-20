@@ -230,3 +230,6 @@ I click delete first audit log entry of type
 I click sort by
     [Arguments]  ${value}
     Click Element  xpath=//*[.="${value}"]
+
+I wait until table is loaded
+    Wait Until Element Is Visible  DataTables_Table_0_wrapper
