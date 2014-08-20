@@ -5,7 +5,8 @@ Changelog
 0.14.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add Settings form to bimt so it can be used in apps to get rid of some DRY.
+  [ferewuz]
 
 
 0.14.2 (2014-08-15)

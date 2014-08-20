@@ -2,12 +2,20 @@
 """Commonly shared view code."""
 
 from collections import OrderedDict
+from deform.form import Button
+from pyramid.events import subscriber
+from pyramid.httpexceptions import HTTPFound
+from pyramid.security import remember
+from pyramid_bimt.events import IUserCreated
 from pyramid_bimt.models import User
+from pyramid_bimt.security import generate
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView as BaseFormView
 
 import colander
+import deform
+import re
 
 
 class FormView(BaseFormView):
@@ -155,3 +163,72 @@ def deferred_settings_email_validator(node, kw):
                 u'Email {} is already in use by another user.'.format(cstruct)
             )
     return validator
+
+
+class SettingsSchema(colander.MappingSchema):
+    email = colander.SchemaNode(
+        colander.String(),
+        validator=deferred_settings_email_validator,
+    )
+
+    api_key = colander.SchemaNode(
+        colander.String(),
+        missing='',
+        title='API key',
+        widget=deform.widget.TextInputWidget(
+            template='readonly/textinput'
+        )
+    )
+
+
+class SettingsForm(FormView):
+    schema = SettingsSchema()
+    buttons = (
+        'save',
+        Button(name='regenerate_api_key', title='Regenerate API key'),
+        'subscribe to newsletter',
+    )
+    title = 'Settings'
+    form_options = (('formid', 'settings'), ('method', 'POST'))
+
+    def save_success(self, appstruct):
+        user = self.request.user
+        headers = None
+
+        # if email was modified, we need to re-set the user's session
+        email = appstruct['email'].lower()
+        if user.email != email:
+            user.email = email
+            headers = remember(self.request, user.email)
+        self.request.session.flash(u'Your changes have been saved.')
+        return HTTPFound(location=self.request.path_url, headers=headers)
+
+    def regenerate_api_key_success(self, appstruct):
+        self.request.user.set_property('api_key', generate_api_key())
+        self.request.session.flash(u'API key re-generated.')
+
+    def subscribe_to_newsletter_success(self, appstruct):
+        if self.request.user.unsubscribed and self.request.user.subscribe():
+            self.request.session.flash(
+                u'You have been subscribed to newsletter.')
+        else:
+            self.request.session.flash(
+                u'You are already subscribed to newsletter.')
+
+    def appstruct(self):
+        user = self.request.user
+        return {
+            'email': user.email,
+            'api_key': user.get_property('api_key', ''),
+        }
+
+
+def generate_api_key():
+    return re.sub(
+        r'(....)(....)(....)(....)', r'\1-\2-\3-\4', unicode(generate(size=16))
+    )
+
+
+@subscriber(IUserCreated)
+def set_api_key(event):
+    event.user.set_property('api_key', generate_api_key())
