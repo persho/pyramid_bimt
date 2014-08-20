@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.14.3 (unreleased)
+0.14.3 (2014-08-20)
 -------------------
 
 - Avoid race conditions in auditlog robot tests.
