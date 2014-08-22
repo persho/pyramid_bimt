@@ -2,10 +2,14 @@ Changelog
 =========
 
 
-0.14.4 (unreleased)
+0.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- [MIGRATION REQUIRED] We now run robot tests with PhantomJS as they are about
+  an order of magnitude faster than running against a full browser. Apps need
+  to do the following migration tasks:
+  * remove xvfb line from .travis.yml: ``export DISPLAY=:99.0; ...``
+  * devs need to install PhantomJS on their local machines
 
 
 0.14.3 (2014-08-20)

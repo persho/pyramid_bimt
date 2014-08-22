@@ -20,7 +20,7 @@ Suite Setup
     Init DB  ${APP_NAME}
     Reset 404 count
     Reset Javascript Exception count
-    Open browser  ${APP_URL}  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
+    Open browser  ${APP_URL}  browser=phantomjs  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
     Set window size   1024  768
 
 
