@@ -210,8 +210,34 @@ We have a read-only user ``bimt`` on GitHub. Use this user to clone
 #. If you need code that is in a branch inside the ``pyramid_bimt`` repo, then
    append ``branch=yourbranch`` to the line in ``[sources]`` above.
 
+Running robot-framework tests locally
+-------------------------------------
 
-Uploading robot framework logs on Amazon S3
+Robot tests are system tests that verify functionality from the top-most level:
+from the browser. They simulate clicking and entering data, validating
+resulting HTML. JavaScript is run before HTML is validated so our JS files
+are also tested this way. For performance purposes, by default, robot tests run
+against a headless browser implementation called `PhantomJS`.
+
+  .. code-block:: ini
+
+    # install PhantomJS
+    $ {apt-get/brew/yum} install npm
+    $ npm install -g phantomjs
+
+    # run robot tests
+    $ make robot
+
+
+To run robot tests against an actual browser for easier development and
+debugging, set the BROWSER environment variable:
+
+  .. code-block:: ini
+
+    $ BROWSER=Firefox make robot
+
+
+Uploading robot-framework logs on Amazon S3
 -------------------------------------------
 
 When you are running robot tests on Travis you cannot see logs and screenshots
