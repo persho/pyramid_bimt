@@ -115,11 +115,37 @@ class TestCheckUser(unittest.TestCase):
         testing.tearDown()
 
     @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_no_fullname(self, Group):
+    def test_fullname_is_None(self, Group):
         user = mock.Mock()
         user.id = 2
         user.email = 'foo@bar.com'
         user.fullname = None
+
+        from pyramid_bimt.sanity_check import check_user
+        self.assertEqual(
+            check_user(user),
+            ['User foo@bar.com (2) has an empty fullname.', ]
+        )
+
+    @mock.patch('pyramid_bimt.sanity_check.Group')
+    def test_fullname_is_empty_string(self, Group):
+        user = mock.Mock()
+        user.id = 2
+        user.email = 'foo@bar.com'
+        user.fullname = ''
+
+        from pyramid_bimt.sanity_check import check_user
+        self.assertEqual(
+            check_user(user),
+            ['User foo@bar.com (2) has an empty fullname.', ]
+        )
+
+    @mock.patch('pyramid_bimt.sanity_check.Group')
+    def test_fullname_is_spaces(self, Group):
+        user = mock.Mock()
+        user.id = 2
+        user.email = 'foo@bar.com'
+        user.fullname = '  '
 
         from pyramid_bimt.sanity_check import check_user
         self.assertEqual(

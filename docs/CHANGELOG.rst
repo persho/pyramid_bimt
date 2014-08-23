@@ -5,6 +5,9 @@ Changelog
 0.15 (unreleased)
 -------------------
 
+- Fullnames containing only spaces now trigger a sanity check warning.
+  [zupo]
+
 - [MIGRATION REQUIRED] We now run robot tests with PhantomJS as they are about
   an order of magnitude faster than running against a full browser. Apps need
   to do the following migration tasks:
