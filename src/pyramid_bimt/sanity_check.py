@@ -30,11 +30,11 @@ def sanity_check():
     """
     warnings = []
 
-    warnings = warnings + check_admin_user()
-    warnings = warnings + check_default_groups()
+    warnings += check_admin_user()
+    warnings += check_default_groups()
 
     for user in User.get_all():
-        warnings = warnings + check_user(user)
+        warnings += check_user(user)
     return warnings
 
 
@@ -63,7 +63,7 @@ def check_default_groups():
 
 
 def check_user(user):
-    """Get warnings related to user's membership in different groups.
+    """Get warnings related to a single user.
 
     :param user: user to be checked
     :type user: :class:`pyramid_bimt.models.User`
@@ -71,7 +71,7 @@ def check_user(user):
     :rtype: list of strings
     """
     warnings = []
-    if not user.fullname:
+    if user.fullname is None or not user.fullname.strip():
         warnings.append(
             'User {} ({}) has an empty fullname.'.format(user.email, user.id))
 
