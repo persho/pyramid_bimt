@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.15 (unreleased)
--------------------
+0.15 (2014-08-24)
+-----------------
 
 - Fullnames containing only spaces now trigger a sanity check warning.
   [zupo]
