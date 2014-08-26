@@ -58,8 +58,8 @@ class LoginForm(FormView):
     def login_success(self, appstruct):
         came_from = self.request.params.get(
             'came_from', self.request.application_url)
-        email = appstruct['email'].lower()
-        password = appstruct['password']
+        email = appstruct.get('email', '').lower()
+        password = appstruct.get('password')
         user = User.by_email(email)
         if (
             password is not None and
