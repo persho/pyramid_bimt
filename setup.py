@@ -50,6 +50,7 @@ setup(
         'js.jquery_datatables',
         'js.jquery_maskedinput',
         'passlib',
+        'psycopg2',
         'pycrypto',
         'pyramid',
         'pyramid_basemodel',
@@ -87,7 +88,6 @@ setup(
             'pyramid_debugtoolbar',
             'sadisplay',
             'zest.releaser',
-            'psycopg2',
         ],
     },
     entry_points="""\
