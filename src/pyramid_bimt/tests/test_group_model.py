@@ -6,6 +6,7 @@ from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Session
 from pyramid_bimt.models import Group
+from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.testing import initTestingDB
 from sqlalchemy.exc import IntegrityError
 
@@ -47,6 +48,12 @@ class TestGroupModel(unittest.TestCase):
     def test_acl_non_admin(self):
         group = _make_group(name='not-admins')
         self.assertEqual(group.__acl__, [])  # traverse to GroupFactory's acl
+
+    def test__repr__(self):
+        self.assertEqual(
+            repr(_make_group(id=1, name='foo')),
+            '<Group:1 (name=\'foo\')>',
+        )
 
 
 class TestGroupById(unittest.TestCase):
@@ -168,7 +175,7 @@ class TestGetAll(unittest.TestCase):
         self.assertEqual(groups[0].name, 'bar')
 
 
-class TestUserProperties(unittest.TestCase):
+class TestGroupProperties(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
@@ -177,6 +184,12 @@ class TestUserProperties(unittest.TestCase):
     def tearDown(self):
         Session.remove()
         testing.tearDown()
+
+    def test__repr__(self):
+        self.assertEqual(
+            repr(GroupProperty(id=1, key=u'foo', value=u'bar')),
+            '<GroupProperty:1 (key=u\'foo\', value=u\'bar\')>',
+        )
 
     def test_get_property(self):
         with self.assertRaises(KeyError) as cm:

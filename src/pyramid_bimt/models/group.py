@@ -60,6 +60,11 @@ class GroupProperty(Base, BaseMixin):
         nullable=False
     )
 
+    def __repr__(self):
+        """Custom representation of the GroupProperty object."""
+        return u'<{}:{} (key={}, value={})>'.format(
+            self.__class__.__name__, self.id, repr(self.key), repr(self.value))
+
 
 class Group(Base, BaseMixin):
     """A class representing a Group."""
@@ -127,6 +132,11 @@ class Group(Base, BaseMixin):
     #: shorthand for accessing group's properties
     properties = relationship(
         'GroupProperty', cascade='all,delete-orphan')
+
+    def __repr__(self):
+        """Custom representation of the Group object."""
+        return u'<{}:{} (name={})>'.format(
+            self.__class__.__name__, self.id, repr(self.name))
 
     def get_property(self, key, default=_marker):
         """Get a Group's property by key.

@@ -43,6 +43,12 @@ class TestMailingModel(unittest.TestCase):
             Session.flush()
         self.assertIn('column name is not unique', cm.exception.message)
 
+    def test__repr__(self):
+        self.assertEqual(
+            repr(_make_mailing(id=1, name='foo')),
+            '<Mailing:1 (name=\'foo\')>',
+        )
+
 
 class TestMailingById(unittest.TestCase):
 

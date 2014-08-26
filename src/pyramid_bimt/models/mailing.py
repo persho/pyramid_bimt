@@ -160,6 +160,11 @@ class Mailing(Base, BaseMixin):
         )},
     )
 
+    def __repr__(self):
+        """Custom representation of the Mailing object."""
+        return u'<{}:{} (name={})>'.format(
+            self.__class__.__name__, self.id, repr(self.name))
+
     @property
     def allow_unsubscribed(self):
         """False if exclude_groups contains group named unsubscribed."""

@@ -49,6 +49,12 @@ class TestPortletModel(unittest.TestCase):
             u'<div class="well">f\xf6\xf6b\xe4r</div>\n'
         )
 
+    def test__repr__(self):
+        self.assertEqual(
+            repr(_make_portlet(id=1, name='foo')),
+            '<Portlet:1 (name=\'foo\')>',
+        )
+
 
 class TestPortletById(unittest.TestCase):
 

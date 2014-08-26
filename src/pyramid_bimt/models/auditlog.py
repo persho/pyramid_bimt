@@ -49,6 +49,11 @@ class AuditLogEventType(Base):
         Unicode,
     )
 
+    def __repr__(self):
+        """Custom representation of the AuditLogEventType object."""
+        return u'<{}:{} (name={})>'.format(
+            self.__class__.__name__, self.id, repr(self.name))
+
     @classmethod
     def by_name(self, name):
         """Get an auditlog event type by name.
@@ -186,6 +191,13 @@ class AuditLogEntry(Base):
             description=u'True if this entry has been read, False if not.',
         )}
     )
+
+    def __repr__(self):
+        """Custom representation of the AuditLogEntry object."""
+        user = self.user and self.user.email or None
+        event_type = self.event_type and self.event_type.name or None
+        return u'<{}:{} (user={}, type={})>'.format(
+            self.__class__.__name__, self.id, repr(user), repr(event_type))
 
     @classmethod
     def by_id(self, id):

@@ -107,6 +107,11 @@ class Portlet(Base, BaseMixin):
         )},
     )
 
+    def __repr__(self):
+        """Custom representation of the Portlet object."""
+        return u'<{}:{} (name={})>'.format(
+            self.__class__.__name__, self.id, repr(self.name))
+
     def get_rendered_portlet(self):
         """Get rendered portlet html"""
         return render(

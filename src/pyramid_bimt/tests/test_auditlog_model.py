@@ -6,13 +6,15 @@ from datetime import timedelta
 from pyramid import testing
 from pyramid_basemodel import Session
 from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.testing import initTestingDB
+from pyramid_bimt.tests.test_user_model import _make_user
 
 import unittest
 
 
-def _make_entry(comment=u''):
-    entry = AuditLogEntry(comment=comment)
+def _make_entry(comment=u'', **kwargs):
+    entry = AuditLogEntry(comment=comment, **kwargs)
     Session.add(entry)
     return entry
 
@@ -26,6 +28,12 @@ class TestAuditLogEventType(unittest.TestCase):
     def tearDown(self):
         Session.remove()
         testing.tearDown()
+
+    def test__repr__(self):
+        self.assertEqual(
+            repr(AuditLogEventType.by_id(1)),
+            '<AuditLogEventType:1 (name=u\'UserChangedPassword\')>'
+        )
 
     def test_default_event_types(self):
         """Test that the list of default event types is built correctly."""
@@ -92,7 +100,7 @@ class TestAuditLogEntryModel(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        initTestingDB()
+        initTestingDB(auditlog_types=True)
 
     def tearDown(self):
         Session.remove()
@@ -103,6 +111,24 @@ class TestAuditLogEntryModel(unittest.TestCase):
         Session.flush()
         self.assertAlmostEqual(
             entry.timestamp, datetime.utcnow(), delta=timedelta(seconds=10))
+
+    def test__repr__(self):
+        entry = _make_entry(
+            id=1,
+            user=_make_user(email='foo@bar.com'),
+            event_type=AuditLogEventType.by_id(1),
+        )
+        self.assertEqual(
+            repr(entry),
+            '<AuditLogEntry:1 (user=\'foo@bar.com\', type=u\'UserChangedPassword\')>'  # noqa
+        )
+
+    def test__repr__empty_values(self):
+        entry = _make_entry()
+        self.assertEqual(
+            repr(entry),
+            '<AuditLogEntry:None (user=None, type=None)>'  # noqa
+        )
 
 
 class TestEntryById(unittest.TestCase):
