@@ -5,7 +5,12 @@ Changelog
 0.15.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- More robust login_success, sometimes appstruct['password'] is not set.
+  [zupo]
+
+- The ``psycopg`` dependency needs to be an `install requirement` so it gets
+  pushed into ``auto_requirements.txt`` in apps.
+  [zupo]
 
 
 0.15 (2014-08-24)
