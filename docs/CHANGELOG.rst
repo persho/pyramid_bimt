@@ -5,6 +5,10 @@ Changelog
 0.15.1 (unreleased)
 -------------------
 
+- Fix robot suite variables, so BROWSER environment variable gets used
+  correctly.
+  [ferewuz]
+
 - More robust login_success, sometimes appstruct['password'] is not set.
   [zupo]
 
