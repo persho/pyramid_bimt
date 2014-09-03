@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.15.1 (unreleased)
+0.15.1 (2014-09-03)
 -------------------
 
 - Fix robot suite variables, so BROWSER environment variable gets used
