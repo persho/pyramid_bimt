@@ -218,9 +218,8 @@ class TestEntryGetAll(unittest.TestCase):
         _make_entry(comment=u'bar')
         _make_entry(comment=u'baz')
         entries = AuditLogEntry.get_all(offset=(1, 2)).all()
-        self.assertEqual(len(entries), 2)
+        self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].comment, 'bar')
-        self.assertEqual(entries[1].comment, 'foo')
 
     def test_search(self):
         _make_entry(comment=u'foo')

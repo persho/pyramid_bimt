@@ -5,7 +5,9 @@ Changelog
 0.15.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- AuditLogEntry get_all method now works correctly. Limit was always overriding
+  offset setting before which was problematic in AJAX datatable view.
+  [ferewuz]
 
 
 0.15.1 (2014-09-03)

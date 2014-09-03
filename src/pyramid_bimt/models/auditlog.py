@@ -212,7 +212,7 @@ class AuditLogEntry(Base):
         filter_by=None,
         offset=None,
         search=None,
-        limit=100,
+        limit=None,
         security=True,
     ):
         """Return all auditlog entries.
@@ -250,5 +250,8 @@ class AuditLogEntry(Base):
             q = q.filter_by(user=get_current_request().user)
         if offset:
             q = q.slice(offset[0], offset[1])
-        q = q.limit(limit)
+        elif limit:
+            q = q.limit(limit)
+        else:
+            q = q.limit(100)
         return q
