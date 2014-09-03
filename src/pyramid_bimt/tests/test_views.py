@@ -61,6 +61,14 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('login')
         self.assertIn('Login failed.', resp.text)
 
+    def test_login_no_password(self):
+        resp = self.testapp.get('/login', status=200)
+        self.assertIn('<h1>Login</h1>', resp.text)
+        resp.form['email'] = 'ONE@bar.com'
+        resp.form['password'] = None
+        resp = resp.form.submit('login')
+        self.assertIn('Login failed.', resp.text)
+
     @mock.patch.object(LoginForm, 'user_agent_info')
     def test_login_disabled(self, user_agent_info):
         user_agent_info.return_value = u'test_comment'
