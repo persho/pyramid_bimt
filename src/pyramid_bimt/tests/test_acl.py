@@ -2,7 +2,6 @@
 """Tests for the ACL."""
 
 from pyramid import testing
-from pyramid.httpexceptions import HTTPFound
 
 import mock
 import unittest
@@ -102,15 +101,6 @@ class TestUserFactory(unittest.TestCase):
         self.assertEqual(self.factory['foo'].__parent__, self.factory)
         self.assertEqual(self.factory['foo'].__name__, 'foo')
 
-    def test_redirect_to_nonslash(self):
-        from pyramid_bimt import add_routes_user
-        add_routes_user(self.config)
-        self.request['PATH_INFO'] = '/users/'
-        with self.assertRaises(HTTPFound) as cm:
-            from pyramid_bimt.acl import UserFactory
-            UserFactory(self.request)
-        self.assertEqual(cm.exception.location, '/users')
-
 
 class TestGroupFactory(unittest.TestCase):
 
@@ -141,15 +131,6 @@ class TestGroupFactory(unittest.TestCase):
         self.assertEqual(self.factory['foo'], group)
         self.assertEqual(self.factory['foo'].__parent__, self.factory)
         self.assertEqual(self.factory['foo'].__name__, 'foo')
-
-    def test_redirect_to_nonslash(self):
-        from pyramid_bimt import add_routes_group
-        add_routes_group(self.config)
-        self.request['PATH_INFO'] = '/groups/'
-        with self.assertRaises(HTTPFound) as cm:
-            from pyramid_bimt.acl import GroupFactory
-            GroupFactory(self.request)
-        self.assertEqual(cm.exception.location, '/groups')
 
 
 class TestPortletFactory(unittest.TestCase):
@@ -182,15 +163,6 @@ class TestPortletFactory(unittest.TestCase):
         self.assertEqual(self.factory['foo'].__parent__, self.factory)
         self.assertEqual(self.factory['foo'].__name__, 'foo')
 
-    def test_redirect_to_nonslash(self):
-        from pyramid_bimt import add_routes_portlet
-        add_routes_portlet(self.config)
-        self.request['PATH_INFO'] = '/portlets/'
-        with self.assertRaises(HTTPFound) as cm:
-            from pyramid_bimt.acl import PortletFactory
-            PortletFactory(self.request)
-        self.assertEqual(cm.exception.location, '/portlets')
-
 
 class TestMailingFactory(unittest.TestCase):
 
@@ -222,15 +194,6 @@ class TestMailingFactory(unittest.TestCase):
         self.assertEqual(self.factory['foo'].__parent__, self.factory)
         self.assertEqual(self.factory['foo'].__name__, 'foo')
 
-    def test_redirect_to_nonslash(self):
-        from pyramid_bimt import add_routes_mailing
-        add_routes_mailing(self.config)
-        self.request['PATH_INFO'] = '/mailings/'
-        with self.assertRaises(HTTPFound) as cm:
-            from pyramid_bimt.acl import MailingFactory
-            MailingFactory(self.request)
-        self.assertEqual(cm.exception.location, '/mailings')
-
 
 class TestAuditLogFactory(unittest.TestCase):
 
@@ -261,12 +224,3 @@ class TestAuditLogFactory(unittest.TestCase):
         self.assertEqual(self.factory['foo'], entry)
         self.assertEqual(self.factory['foo'].__parent__, self.factory)
         self.assertEqual(self.factory['foo'].__name__, 'foo')
-
-    def test_redirect_to_nonslash(self):
-        from pyramid_bimt import add_routes_audit_log
-        add_routes_audit_log(self.config)
-        self.request['PATH_INFO'] = '/activity/'
-        with self.assertRaises(HTTPFound) as cm:
-            from pyramid_bimt.acl import AuditLogFactory
-            AuditLogFactory(self.request)
-        self.assertEqual(cm.exception.location, '/activity')

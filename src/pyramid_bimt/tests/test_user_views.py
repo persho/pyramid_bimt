@@ -184,7 +184,7 @@ class TestUserEnable(unittest.TestCase):
         result = self.view.enable()
         self.assertTrue(self.context.enabled)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/users')
+        self.assertEqual(result.location, '/users/')
         self.assertEqual(
             self.request.session.pop_flash(),
             [u'User "one@bar.com" already enabled, skipping.']
@@ -197,7 +197,7 @@ class TestUserEnable(unittest.TestCase):
         result = self.view.enable()
         self.assertTrue(self.context.enabled)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/users')
+        self.assertEqual(result.location, '/users/')
         self.assertEqual(
             self.request.session.pop_flash(),
             [u'User "one@bar.com" enabled.']
@@ -210,7 +210,7 @@ class TestUserEnable(unittest.TestCase):
         result = self.view.disable()
         self.assertFalse(self.context.enabled)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/users')
+        self.assertEqual(result.location, '/users/')
         self.assertEqual(
             self.request.session.pop_flash(),
             [u'User "one@bar.com" already disabled, skipping.']
@@ -222,7 +222,7 @@ class TestUserEnable(unittest.TestCase):
         result = self.view.disable()
         self.assertFalse(self.context.enabled)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/users')
+        self.assertEqual(result.location, '/users/')
         self.assertEqual(
             self.request.session.pop_flash(),
             [u'User "one@bar.com" disabled.']
@@ -398,7 +398,7 @@ class TestUserAdd(unittest.TestCase):
     def test_submit_success(self, UserCreated):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/user/1')
+        self.assertEqual(result.location, '/user/1/')
         self.assertTrue(self.request.registry.notify.called)
 
         user = User.by_id(1)
@@ -478,7 +478,7 @@ class TestUserEdit(unittest.TestCase):
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/user/2')
+        self.assertEqual(result.location, '/user/2/')
 
         user = User.by_id(2)
         self.assertEqual(user.email, 'foo@bar.com')

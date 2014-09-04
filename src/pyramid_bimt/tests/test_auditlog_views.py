@@ -10,7 +10,6 @@ from pyramid_bimt.testing import initTestingDB
 
 import mock
 import unittest
-import webtest
 
 
 class TestAuditLogView(unittest.TestCase):
@@ -28,18 +27,10 @@ class TestAuditLogView(unittest.TestCase):
         configure(self.config)
         self.request = testing.DummyRequest(
             user=mock.Mock())
-        app = self.config.make_wsgi_app()
-        self.testapp = webtest.TestApp(app)
 
     def tearDown(self):
         Session.remove()
         testing.tearDown()
-
-    def test_audit_log(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/activity', status=200)
-        self.assertIn('<h1>Recent Activity</h1>', resp.text)
 
     def test_audit_log_delete(self):
         from pyramid_bimt.models import AuditLogEventType
@@ -56,13 +47,7 @@ class TestAuditLogView(unittest.TestCase):
         request.context = entry
         transaction.commit()
         resp = audit_log_delete(request)
-        self.assertIn('/activity', resp.location)
-
-    def test_audit_log_add(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-        resp = self.testapp.get('/audit-log/add', status=200)
-        self.assertIn('<h1>Add Audit log entry</h1>', resp.text)
+        self.assertIn('/activity/', resp.location)
 
     def test_audit_log_add_submit_success(self):
         from pyramid_bimt.views.auditlog import AuditLogAddEntryForm
@@ -76,7 +61,7 @@ class TestAuditLogView(unittest.TestCase):
             'read': True,
         }
         resp = audit_log_add_view.submit_success(form_values)
-        self.assertIn('/activity', resp.location)
+        self.assertIn('/activity/', resp.location)
 
     def _make_view(self):
         from pyramid_bimt.views.auditlog import AuditLogAJAX
@@ -92,11 +77,11 @@ class TestAuditLogView(unittest.TestCase):
         self.assertEqual(
             view.columns['event_type_id'], 'User Changed Password')
         self.assertEqual(
-            view.columns['user_id'], '<a href="/user/3">one@bar.com</a>')
+            view.columns['user_id'], '<a href="/user/3/">one@bar.com</a>')
         self.assertEqual(
             view.columns['action'],
             """
-            <a class="btn btn-xs btn-danger" href="/audit-log/2/delete">
+            <a class="btn btn-xs btn-danger" href="/audit-log/2/delete/">
               <span class="glyphicon glyphicon-remove-sign"></span> Delete
             </a>
             """,
@@ -109,7 +94,7 @@ class TestAuditLogView(unittest.TestCase):
         self.assertEqual(
             view.columns['event_type_id'], 'User Changed Password')
         self.assertEqual(
-            view.columns['user_id'], '<a href="/user/3">one@bar.com</a>')
+            view.columns['user_id'], '<a href="/user/3/">one@bar.com</a>')
         self.assertEqual(view.columns['action'], None)
 
     def test_admin_mark_only_own_entries_as_unread(self):

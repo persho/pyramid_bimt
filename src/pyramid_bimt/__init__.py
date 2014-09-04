@@ -57,83 +57,83 @@ REQUIRED_SETTINGS_PRODUCTION = [
 
 
 def add_routes_auth(config):
-    config.add_route('login', '/login')
-    config.add_route('logout', '/logout')
+    config.add_route('login', '/login/')
+    config.add_route('logout', '/logout/')
 
 
 def add_routes_user(config):
-    config.add_route('user_list', '/users', factory=UserFactory)
-    config.add_route('user_add', '/user/add', factory=UserFactory)
+    config.add_route('user_list', '/users/', factory=UserFactory)
+    config.add_route('user_add', '/user/add/', factory=UserFactory)
     config.add_route(
-        'user_view', '/user/{user_id}',
+        'user_view', '/user/{user_id}/',
+        factory=UserFactory, traverse='/{user_id}/'
+    )
+    config.add_route(
+        'user_enable', '/user/{user_id}/enable/',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_enable', '/user/{user_id}/enable',
+        'user_disable', '/user/{user_id}/disable/',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_disable', '/user/{user_id}/disable',
+        'user_edit', '/user/{user_id}/edit/',
         factory=UserFactory, traverse='/{user_id}'
     )
     config.add_route(
-        'user_edit', '/user/{user_id}/edit',
-        factory=UserFactory, traverse='/{user_id}'
-    )
-    config.add_route(
-        'user_unsubscribe', '/unsubscribe', factory=UserFactory
+        'user_unsubscribe', '/unsubscribe/', factory=UserFactory
     )
 
 
 def add_routes_group(config):
-    config.add_route('group_list', '/groups', factory=GroupFactory)
-    config.add_route('group_add', '/group/add', factory=GroupFactory)
+    config.add_route('group_list', '/groups/', factory=GroupFactory)
+    config.add_route('group_add', '/group/add/', factory=GroupFactory)
     config.add_route(
-        'group_edit', '/group/{group_id}/edit',
+        'group_edit', '/group/{group_id}/edit/',
         factory=GroupFactory, traverse='/{group_id}'
     )
 
 
 def add_routes_audit_log(config):
-    config.add_route('audit_log', '/activity', factory=AuditLogFactory)
+    config.add_route('audit_log', '/activity/', factory=AuditLogFactory)
     config.add_route(
         'audit_log_add',
-        '/audit-log/add',
+        '/audit-log/add/',
         factory=AuditLogFactory,
     )
     config.add_route(
         'audit_log_delete',
-        '/audit-log/{entry_id}/delete',
+        '/audit-log/{entry_id}/delete/',
         factory=AuditLogFactory,
         traverse='/{entry_id}',
     )
 
 
 def add_routes_portlet(config):
-    config.add_route('portlet_list', '/portlets', factory=PortletFactory)
-    config.add_route('portlet_add', '/portlet/add', factory=PortletFactory)
+    config.add_route('portlet_list', '/portlets/', factory=PortletFactory)
+    config.add_route('portlet_add', '/portlet/add/', factory=PortletFactory)
     config.add_route(
-        'portlet_edit', '/portlet/{portlet_id}/edit',
+        'portlet_edit', '/portlet/{portlet_id}/edit/',
         factory=PortletFactory, traverse='/{portlet_id}'
     )
 
 
 def add_routes_mailing(config):
-    config.add_route('mailing_list', '/mailings', factory=MailingFactory)
-    config.add_route('mailing_add', '/mailing/add', factory=MailingFactory)
+    config.add_route('mailing_list', '/mailings/', factory=MailingFactory)
+    config.add_route('mailing_add', '/mailing/add/', factory=MailingFactory)
     config.add_route(
-        'mailing_edit', '/mailing/{mailing_id}/edit',
+        'mailing_edit', '/mailing/{mailing_id}/edit/',
         factory=MailingFactory, traverse='/{mailing_id}'
     )
 
 
 def add_routes_other(config):
-    config.add_route('jvzoo', '/jvzoo')
-    config.add_route('raise_js_error', '/raise-error/js')
-    config.add_route('raise_http_error', '/raise-error/{error_code}')
-    config.add_route('config', '/config')
-    config.add_route('sanity_check', '/sanity-check')
-    config.add_route('login_as', '/login-as')
+    config.add_route('jvzoo', '/jvzoo/')
+    config.add_route('raise_js_error', '/raise-error/js/')
+    config.add_route('raise_http_error', '/raise-error/{error_code}/')
+    config.add_route('config', '/config/')
+    config.add_route('sanity_check', '/sanity-check/')
+    config.add_route('login_as', '/login-as/')
 
 
 def kill_connections(username=None, password=None, apiurl=None):
@@ -188,7 +188,7 @@ def configure(config, settings={}):
     # enable views that we need in Robot tests
     ignores = ['pyramid_bimt.tests']
     if asbool(settings.get('robot_testing', 'false')):  # pragma: no cover
-        config.add_route('robot_commands', '/robot/{command}')
+        config.add_route('robot_commands', '/robot/{command}/')
         config.add_tween('pyramid_bimt.testing.inject_js_errorlogger')
         config.add_tween('pyramid_bimt.testing.log_notfound')
     else:

@@ -21,7 +21,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
     def setUp(self):
         settings = {
             'bimt.app_title': 'BIMT',
-            'bimt.disabled_user_redirect_path': '/settings',
+            'bimt.disabled_user_redirect_path': '/settings/',
             'mail.default_sender': 'test_sender',
         }
         self.config = testing.setUp(settings=settings)
@@ -44,7 +44,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
     @mock.patch.object(LoginForm, 'user_agent_info')
     def test_login(self, user_agent_info):
         user_agent_info.return_value = u'test_comment'
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
         resp.form['password'] = 'secret'
@@ -54,7 +54,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('Login successful.', resp.text)
 
     def test_login_wrong_password(self):
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
         resp.form['password'] = 'foo'
@@ -62,7 +62,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('Login failed.', resp.text)
 
     def test_login_no_password(self):
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
         resp.form['password'] = None
@@ -76,7 +76,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         user = User.by_email('one@bar.com')
         user.disable()
 
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
 
         resp.form['email'] = 'ONE@bar.com'
@@ -87,16 +87,16 @@ class TestLoginViewsFunctional(unittest.TestCase):
         # therefore we check for 404
         with self.assertRaises(HTTPNotFound) as cm:
             resp.follow()
-        if cm.exception.message != '/settings':  # pragma: no cover
+        if cm.exception.message != '/settings/':  # pragma: no cover
             self.fail(
-                'This test should fail with message /settings! '
+                'This test should fail with message /settings/! '
                 'But it fails with message {}'.format(cm.exception.message)
             )
 
     def test_login_reset_password(self):
         self.config.include('pyramid_mailer.testing')
         self.mailer = get_mailer(self.testapp.app.registry)
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'ONE@bar.com'
         resp = resp.form.submit('reset_password')
@@ -107,7 +107,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn(u'Öne Bar', self.mailer.outbox[0].html)
 
     def test_login_reset_password_no_user(self):
-        resp = self.testapp.get('/login', status=200)
+        resp = self.testapp.get('/login/', status=200)
         self.assertIn('<h1>Login</h1>', resp.text)
         resp.form['email'] = 'foo@bar.com'
         resp = resp.form.submit('reset_password')

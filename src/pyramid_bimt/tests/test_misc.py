@@ -136,3 +136,17 @@ class TestAutoKillConnections(unittest.TestCase):
             headers={'X-Reason': 'Auto-kill on app start'},
             auth=('foo', 'bar')
         )
+
+
+class RoutesTrailingSlashTest(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        from pyramid_bimt import configure
+        configure(self.config)
+
+    def test_trailing_slash(self):
+        routes = self.config.get_routes_mapper().routelist
+        for route in routes:
+            if route.name != '__deform_static/':
+                self.assertEqual(route.path[-1], '/')
