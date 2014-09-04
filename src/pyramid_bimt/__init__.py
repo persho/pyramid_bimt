@@ -188,7 +188,7 @@ def configure(config, settings={}):
     # enable views that we need in Robot tests
     ignores = ['pyramid_bimt.tests']
     if asbool(settings.get('robot_testing', 'false')):  # pragma: no cover
-        config.add_route('robot_commands', '/robot/{command}/')
+        config.add_route('robot_commands', '/robot/{command}')
         config.add_tween('pyramid_bimt.testing.inject_js_errorlogger')
         config.add_tween('pyramid_bimt.testing.log_notfound')
     else:

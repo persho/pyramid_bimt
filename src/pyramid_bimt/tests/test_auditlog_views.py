@@ -10,6 +10,42 @@ from pyramid_bimt.testing import initTestingDB
 
 import mock
 import unittest
+import webtest
+
+
+class TestAuditLogViewIntegration(unittest.TestCase):
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
+        initTestingDB(
+            auditlog_types=True,
+            auditlog_entries=True,
+            groups=True,
+            users=True,
+        )
+        configure(self.config)
+        self.request = testing.DummyRequest(
+            user=mock.Mock())
+        app = self.config.make_wsgi_app()
+        self.testapp = webtest.TestApp(app)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_audit_log(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com', permissive=True)
+        resp = self.testapp.get('/activity/')
+        self.assertIn('<h1>Recent Activity</h1>', resp.text)
+
+    def test_audit_log_add(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com', permissive=True)
+        resp = self.testapp.get('/audit-log/add/', status=200)
+        self.assertIn('<h1>Add Audit log entry</h1>', resp.text)
 
 
 class TestAuditLogView(unittest.TestCase):

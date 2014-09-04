@@ -2,8 +2,16 @@ Changelog
 =========
 
 
-0.15.2 (unreleased)
+0.16 (unreleased)
 -------------------
+
+- [MIGRATION REQUIRED] Change routes to use paths with trailing slash. Fix unit
+  and robot tests to comply with new changes.
+  Apps need to:
+  * Change app routes to contain trailing slash
+  * Change the not found view config to
+  ``@notfound_view_config(append_slash=True)``
+  [ferewuz]
 
 - AuditLogEntry get_all method now works correctly. Limit was always overriding
   offset setting before which was problematic in AJAX datatable view.

@@ -103,7 +103,7 @@ I go to
     Go to  ${location}
 
 I go to Login Form
-    Go to  http://localhost:8080/login
+    Go to  http://localhost:8080/login/
 
 I click link
     [Arguments]  ${link}
@@ -128,7 +128,7 @@ I am logged out
     Page Should Contain  Login
 
 I log in as a user
-    Go to  http://localhost:8080/login
+    Go to  http://localhost:8080/login/
     Input Text  name=email  one@bar.com
     Input Text  name=password  secret
     Click Button  Login
@@ -136,7 +136,7 @@ I log in as a user
     I am logged in
 
 I log in as a staff member
-    Go to  http://localhost:8080/login
+    Go to  http://localhost:8080/login/
     Input Text  name=email  staff@bar.com
     Input Text  name=password  secret
     Click Button  Login
@@ -144,7 +144,7 @@ I log in as a staff member
     I am logged in
 
 I log in as admin
-    Go to  http://localhost:8080/login
+    Go to  http://localhost:8080/login/
     Input Text  name=email  admin@bar.com
     Input Text  name=password  secret
     Click Button  Login

@@ -13,21 +13,21 @@ Suite Teardown  Suite Teardown
 
 Scenario: Add new portlet
     Given I log in as admin
-     When I go to  http://localhost:8080/portlet/add
+     When I go to  http://localhost:8080/portlet/add/
       And I input text  name=name  downtime notice
       And I select checkbox admins
       And I Select From Dropdown  position  Above Footer
       And I input text  name=html  Site will be down this weekend!
       And I click button  Submit
-     Then location should be  http://localhost:8080/portlet/2/edit
+     Then location should be  http://localhost:8080/portlet/2/edit/
       And page should contain  Portlet "downtime notice" added.
 
 Scenario: Edit portlet
     Given I log in as admin
-     When I go to  http://localhost:8080/portlet/1/edit
+     When I go to  http://localhost:8080/portlet/1/edit/
       And I input text  name=name  maintenance notice
       And I click button  Save
-     Then location should be  http://localhost:8080/portlet/1/edit
+     Then location should be  http://localhost:8080/portlet/1/edit/
       And page should contain  Portlet "maintenance notice" modified.
 
 
