@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Access Control Level groupfinder and factories."""
 
-from pyramid.httpexceptions import HTTPFound
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid_bimt.models import AuditLogEntry
@@ -41,8 +40,6 @@ class UserFactory(object):
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/users/':
-            raise HTTPFound(location=request.route_path('user_list'))
         self.request = request
 
     def __getitem__(self, key):
@@ -62,8 +59,6 @@ class GroupFactory(object):
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/groups/':
-            raise HTTPFound(location=request.route_path('group_list'))
         self.request = request
 
     def __getitem__(self, key):
@@ -83,8 +78,6 @@ class AuditLogFactory(object):
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/activity/':
-            raise HTTPFound(location=request.route_path('audit_log'))
         self.request = request
 
     def __getitem__(self, key):
@@ -103,8 +96,6 @@ class PortletFactory(object):
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/portlets/':
-            raise HTTPFound(location=request.route_path('portlet_list'))
         self.request = request
 
     def __getitem__(self, key):
@@ -123,8 +114,6 @@ class MailingFactory(object):
     ]
 
     def __init__(self, request):
-        if request.get('PATH_INFO') == '/mailings/':
-            raise HTTPFound(location=request.route_path('mailing_list'))
         self.request = request
 
     def __getitem__(self, key):
