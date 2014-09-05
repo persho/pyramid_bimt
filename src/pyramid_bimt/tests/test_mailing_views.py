@@ -137,7 +137,7 @@ class TestMailingAdd(unittest.TestCase):
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/1/edit')
+        self.assertEqual(result.location, '/mailing/1/edit/')
 
         mailing = Mailing.by_id(1)
         self.assertEqual(mailing.name, 'foo')
@@ -203,7 +203,7 @@ class TestMailingEdit(unittest.TestCase):
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/1/edit')
+        self.assertEqual(result.location, '/mailing/1/edit/')
 
         mailing = Mailing.by_id(1)
         self.assertEqual(mailing.name, 'bar')
@@ -223,7 +223,7 @@ class TestMailingEdit(unittest.TestCase):
 
         result = self.view.test_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/4/edit')
+        self.assertEqual(result.location, '/mailing/4/edit/')
 
         self.assertEqual(
             self.request.session.pop_flash(),
@@ -266,7 +266,7 @@ class TestMailingEdit(unittest.TestCase):
 
         result = self.view.send_immediately_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/mailing/4/edit')
+        self.assertEqual(result.location, '/mailing/4/edit/')
 
         self.assertEqual(
             self.request.session.pop_flash(),
@@ -347,7 +347,7 @@ class TestMailUnsubscribe(unittest.TestCase):
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(
             mailer.outbox[0].subject, u'Subject')
-        self.assertIn('<a href="http://example.com/unsubscribe">Unsubscribe from our Newsletter</a>', mailer.outbox[0].html)  # noqa
+        self.assertIn('<a href="http://example.com/unsubscribe/">Unsubscribe from our Newsletter</a>', mailer.outbox[0].html)  # noqa
 
     @mock.patch('pyramid_bimt.models.mailing.get_current_request')
     def test_not_in_unsubscribed(self, get_current_request):

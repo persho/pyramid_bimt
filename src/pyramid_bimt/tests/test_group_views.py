@@ -119,7 +119,7 @@ class TestGroupAdd(unittest.TestCase):
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/group/6/edit')
+        self.assertEqual(result.location, '/group/6/edit/')
 
         group = Group.by_id(6)
         self.assertEqual(group.name, 'foo')
@@ -187,7 +187,7 @@ class TestGroupEdit(unittest.TestCase):
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/group/1/edit')
+        self.assertEqual(result.location, '/group/1/edit/')
 
         group = Group.by_id(1)
         self.assertEqual(group.name, 'foo')
@@ -207,7 +207,7 @@ class TestGroupEdit(unittest.TestCase):
         self.APPSTRUCT['properties'] = []
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/group/1/edit')
+        self.assertEqual(result.location, '/group/1/edit/')
 
         group = Group.by_id(1)
         self.assertEqual(group.name, 'foo')

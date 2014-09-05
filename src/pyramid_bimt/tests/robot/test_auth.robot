@@ -27,5 +27,5 @@ Scenario: User resets its password
     Then page should contain  A new password was sent to your email.
      And last email should contain  To: one@bar.com
      And last email should contain  Subject: BIMT Password Reset
-     And last email should contain encoded  Login to the members' area: http://localhost:8080/login
+     And last email should contain encoded  Login to the members' area: http://localhost:8080/login/
 

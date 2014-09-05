@@ -14,7 +14,7 @@ Suite Teardown  Suite Teardown
 Scenario: User views only its own Recent Activity
    Given password reset is requested by staff member
      And I am logged in as a user
-    When I go to  http://localhost:8080/activity
+    When I go to  http://localhost:8080/activity/
      And I wait until table is loaded
     Then entries table should have rows  1
      and entries table should contain row  1  User Logged In one@bar.com
@@ -22,7 +22,7 @@ Scenario: User views only its own Recent Activity
 Scenario: Admin views all Recent Activity
    Given password reset is requested by staff member
      And I am logged in as an admin
-    When I go to  http://localhost:8080/activity
+    When I go to  http://localhost:8080/activity/
      And I wait until table is loaded
     Then entries table should have rows  2
     Then entries table should contain row  1  User Logged In admin@bar.com
@@ -30,24 +30,24 @@ Scenario: Admin views all Recent Activity
 
 Scenario: Admin adds a new audit-log entry
    Given I am logged in as an admin
-    When I go to  http://localhost:8080/audit-log/add
+    When I go to  http://localhost:8080/audit-log/add/
      And I select from dropdown  user_id  one@bar.com
      And I select from dropdown  event_type_id  UserCreated
      And Input Text  name=comment  Fake create user.
      And I click button  Submit
      And I wait until table is loaded
-    Then location should be  http://localhost:8080/activity
+    Then location should be  http://localhost:8080/activity/
      And entries table should have rows  2
      And entries table should contain row  1  User Created one@bar.com Fake create user. Delete
      And entries table should contain row  2  User Logged In admin@bar.com
 
 Scenario: Admin deletes an audit log entry
    Given I am logged in as an admin
-    When I go to  http://localhost:8080/activity
+    When I go to  http://localhost:8080/activity/
      And I wait until table is loaded
      And I click delete first audit log entry of type  User Logged In
      And I wait until table is loaded
-    Then location should be  http://localhost:8080/activity
+    Then location should be  http://localhost:8080/activity/
      And entries table should have rows  1
      And entries table should contain row  1  No data available in table
 
@@ -55,7 +55,7 @@ Scenario: Admin deletes an audit log entry
 *** Keywords ***
 
 Password reset is requested by staff member
-    Go To  http://localhost:8080/login
+    Go To  http://localhost:8080/login/
     Input Text  name=email  staff@bar.com
     Click Button  reset_password
 

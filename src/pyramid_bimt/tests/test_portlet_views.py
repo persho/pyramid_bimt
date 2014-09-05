@@ -116,7 +116,7 @@ class TestPortletAdd(unittest.TestCase):
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/portlet/1/edit')
+        self.assertEqual(result.location, '/portlet/1/edit/')
 
         portlet = Portlet.by_id(1)
         self.assertEqual(portlet.name, 'foo')
@@ -171,7 +171,7 @@ class TestPortletEdit(unittest.TestCase):
 
         result = self.view.save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/portlet/1/edit')
+        self.assertEqual(result.location, '/portlet/1/edit/')
 
         portlet = Portlet.by_id(1)
         self.assertEqual(portlet.name, 'bar')
