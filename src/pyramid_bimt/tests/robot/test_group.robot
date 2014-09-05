@@ -47,6 +47,16 @@ Scenario: User cannot edit groups
     When I Go to  http://localhost:8080/group/1/edit/
     Then page should contain  Insufficient privileges.
 
+Scenario: Staff member cannot edit admin group
+   Given I am logged in as a staff member
+    When I Go to  http://localhost:8080/group/1/edit/
+    Then page should contain  Insufficient privileges.
+
+Scenario: Admin can edit admin group
+   Given I am logged in as an admin
+    When I Go to  http://localhost:8080/group/1/edit/
+    Then page should contain  Edit Group
+
 *** Keywords ***
 
 I select checkbox one@bar.com

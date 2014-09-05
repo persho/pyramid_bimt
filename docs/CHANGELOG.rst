@@ -5,6 +5,9 @@ Changelog
 0.16 (unreleased)
 -------------------
 
+- Fixed bug with ACL which prevented admins to edit admins group.
+  [ferewuz]
+
 - [MIGRATION REQUIRED] Change routes to use paths with trailing slash. Fix unit
   and robot tests to comply with new changes.
   Apps need to:
