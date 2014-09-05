@@ -76,7 +76,7 @@ class Group(Base, BaseMixin):
         # only admins can manage admins
         if self.name == 'admins':
             return [
-                (Allow, 'g:admins', 'manage_users'),
+                (Allow, 'g:admins', 'manage_groups'),
                 DENY_ALL,
             ]
         return []  # traverse to GroupFactory's acl

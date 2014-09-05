@@ -41,7 +41,7 @@ class TestGroupModel(unittest.TestCase):
         self.assertEqual(
             group.__acl__,
             [
-                (Allow, 'g:admins', 'manage_users'),
+                (Allow, 'g:admins', 'manage_groups'),
                 DENY_ALL,
             ])
 
