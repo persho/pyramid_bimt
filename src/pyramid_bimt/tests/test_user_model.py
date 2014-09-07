@@ -7,6 +7,7 @@ from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Session
 from pyramid_bimt.models import User
+from pyramid_bimt.models import UserProperty
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.tests.test_group_model import _make_group
 from sqlalchemy.exc import IntegrityError
@@ -64,6 +65,12 @@ class TestUserModel(unittest.TestCase):
         user = _make_user(email='foo@bar.com')
         user.groups = []
         self.assertEqual(user.__acl__, [])  # traverse to UserFactory's acl
+
+    def test__repr__(self):
+        self.assertEqual(
+            repr(_make_user(id=1, email='foo@bar.com')),
+            '<User:1 (email=\'foo@bar.com\')>',
+        )
 
 
 class TestUserById(unittest.TestCase):
@@ -303,3 +310,9 @@ class TestUserProperties(unittest.TestCase):
         with self.assertRaises(KeyError) as cm:
             self.user.set_property('foo', u'bar', strict=True)
         self.assertEqual(cm.exception.message, 'Property "foo" not found.')
+
+    def test__repr__(self):
+        self.assertEqual(
+            repr(UserProperty(id=1, key=u'foo', value=u'bar')),
+            '<UserProperty:1 (key=u\'foo\', value=u\'bar\')>',
+        )

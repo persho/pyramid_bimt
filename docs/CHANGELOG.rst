@@ -5,6 +5,9 @@ Changelog
 0.16 (unreleased)
 -------------------
 
+- Nicer __repr__ for BIMT model classes.
+  [zupo]
+
 - Fixed bug with ACL which prevented admins to edit admins group.
   [ferewuz]
 
