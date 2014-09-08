@@ -184,13 +184,21 @@ class SettingsSchema(colander.MappingSchema):
 
 class SettingsForm(FormView):
     schema = SettingsSchema()
-    buttons = (
-        'save',
-        Button(name='regenerate_api_key', title='Regenerate API key'),
-        'subscribe to newsletter',
-    )
     title = 'Settings'
     form_options = (('formid', 'settings'), ('method', 'POST'))
+
+    def __call__(self):
+        self.buttons = (
+            'save',
+            Button(name='regenerate_api_key', title='Regenerate API key'),
+        )
+        if self.request.user.unsubscribed:
+            subscribe_button = Button(
+                name='subscribe_to_newsletter',
+                title='Subscribe to newsletter'
+            )
+            self.buttons = self.buttons + (subscribe_button, )
+        return super(SettingsForm, self).__call__()
 
     def save_success(self, appstruct):
         user = self.request.user
@@ -209,12 +217,10 @@ class SettingsForm(FormView):
         self.request.session.flash(u'API key re-generated.')
 
     def subscribe_to_newsletter_success(self, appstruct):
-        if self.request.user.unsubscribed and self.request.user.subscribe():
-            self.request.session.flash(
-                u'You have been subscribed to newsletter.')
-        else:
-            self.request.session.flash(
-                u'You are already subscribed to newsletter.')
+        self.request.session.flash(
+            u'You have been subscribed to newsletter.')
+        self.request.user.subscribe()
+        return HTTPFound(location=self.request.path_url)
 
     def appstruct(self):
         user = self.request.user
