@@ -150,13 +150,15 @@ class TestSubscription(unittest.TestCase):
         testing.tearDown()
 
     @mock.patch('pyramid_layout.layout.find_layout')
-    def test_subscribe_to_newsletter_subscribed(self, find_layout):
-        self.view.subscribe_to_newsletter_success(None)
-        self.assertEqual(
-            self.request.session['_f_'],
-            [u'You are already subscribed to newsletter.'],
-        )
-        self.assertFalse(self.request.user.unsubscribed)
+    def test_subscribe_to_newsletter_button_missing(self, find_layout):
+        response = self.view()
+        self.assertNotIn('Subscribe to newsletter', response['form'])
+
+    @mock.patch('pyramid_layout.layout.find_layout')
+    def test_subscribe_to_newsletter_button_present(self, find_layout):
+        self.request.user.unsubscribe()
+        response = self.view()
+        self.assertIn('Subscribe to newsletter', response['form'])
 
     @mock.patch('pyramid_layout.layout.find_layout')
     def test_subscribe_to_newsletter_unsubscribed(self, find_layout):

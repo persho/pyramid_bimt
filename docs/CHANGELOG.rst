@@ -4,6 +4,10 @@ Changelog
 
 0.16 (unreleased)
 -------------------
+
+- Remove subscription button from settings when user is subscribed.
+  [ferewuz]
+
 - [MIGRATION REQUIRED] We now use layout.current_page for setting page title.
   All app's views should set page title by setting:
   ``self.request.layout_manager.layout.title`` with page title.
