@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.16 (unreleased)
--------------------
+0.16 (2014-09-08)
+-----------------
 
 - Remove subscription button from settings when user is subscribed.
   [ferewuz]
