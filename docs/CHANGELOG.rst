@@ -5,7 +5,8 @@ Changelog
 0.16.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix robot api test problems.
+  [ferewuz]
 
 
 0.16 (2014-09-08)
