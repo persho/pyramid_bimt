@@ -253,42 +253,56 @@ class TestConfig(unittest.TestCase):
 class TestFormView(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
-        self.request = testing.DummyRequest()
-
-        from pyramid_bimt.views import FormView
-        self.view = FormView(self.request)
-
-        self.view.title = 'Foo Form'
-        self.view.schema = colander.MappingSchema()
 
     def tearDown(self):
         testing.tearDown()
 
+    def _get_self_view(
+        self,
+        request=testing.DummyRequest(layout_manager=mock.Mock())
+    ):
+        from pyramid_bimt.views import FormView
+        view = FormView(request)
+
+        view.title = 'Foo Form'
+        view.schema = colander.MappingSchema()
+        return view
+
     @mock.patch('pyramid_bimt.views.app_assets')
     @mock.patch('pyramid_bimt.views.form_assets')
     def test_assets(self, form_assets, app_assets):
-        self.view()
+        self._get_self_view()()
         app_assets.need.assert_called_with()
         form_assets.need.assert_called_with()
 
     def test_title(self):
-        result = self.view()
+        result = self._get_self_view()()
         self.assertEqual(result['title'], 'Foo Form')
 
+    def test_layout_current_title(self):
+        request = testing.DummyRequest(layout_manager=mock.Mock())
+        self._get_self_view(request=request)()
+        self.assertEqual(
+            request.layout_manager.layout.title,
+            'Foo Form'
+        )
+
     def test_hide_sidebar(self):
-        self.request.layout_manager = mock.Mock()
-        self.view.hide_sidebar = True
-        self.view()
-        self.request.layout_manager.layout.hide_sidebar = True
+        request = testing.DummyRequest(layout_manager=mock.Mock())
+        view = self._get_self_view(request=request)
+        view.hide_sidebar = True
+        view()
+        self.assertEqual(request.layout_manager.layout.hide_sidebar, True)
 
     def test_description(self):
-        self.view.description = 'See me maybe?'
-        result = self.view()
+        view = self._get_self_view()
+        view.description = 'See me maybe?'
+        result = view()
         self.assertEqual(result['title'], 'Foo Form')
         self.assertEqual(result['description'], 'See me maybe?')
 
     def test_no_description(self):
-        result = self.view()
+        result = self._get_self_view()()
         self.assertEqual(result['title'], 'Foo Form')
         self.assertEqual(result['description'], None)
 

@@ -17,12 +17,12 @@ class DefaultLayout(object):
         self,
         context,
         request,
-        current_page='Home',
+        title='Home',
         hide_sidebar=False,
     ):
         self.context = context
         self.request = request
-        self.current_page = current_page
+        self.title = title
         self.hide_sidebar = hide_sidebar
 
         self.app_title = self.request.registry.settings['bimt.app_title']

@@ -31,6 +31,7 @@ class PortletView(object):
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
+        self.request.layout_manager.layout.title = u'Portlets'
         table_assets.need()
 
         return {
