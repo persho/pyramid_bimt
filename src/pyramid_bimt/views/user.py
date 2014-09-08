@@ -69,6 +69,7 @@ class UserView(object):
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
+        self.request.layout_manager.layout.title = u'Users'
         return {
             'users': User.get_all(),
         }
@@ -79,6 +80,7 @@ class UserView(object):
         renderer='pyramid_bimt:templates/user.pt',
     )
     def view(self):
+        self.request.layout_manager.layout.title = self.context.email
         return {
             'user': self.context,
             'audit_log_entries': self.context.audit_log_entries,

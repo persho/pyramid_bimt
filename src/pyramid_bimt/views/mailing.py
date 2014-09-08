@@ -35,6 +35,7 @@ class MailingView(object):
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
+        self.request.layout_manager.layout.title = u'Mailings'
         table_assets.need()
 
         return {

@@ -4,6 +4,10 @@ Changelog
 
 0.16 (unreleased)
 -------------------
+- [MIGRATION REQUIRED] We now use layout.current_page for setting page title.
+  All app's views should set page title by setting:
+  ``self.request.layout_manager.layout.title`` with page title.
+  [ferewuz]
 
 - Nicer __repr__ for BIMT model classes.
   [zupo]

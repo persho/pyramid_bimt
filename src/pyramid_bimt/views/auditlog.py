@@ -24,6 +24,7 @@ from pyramid_deform import FormView
 )
 def audit_log(request):
     request.layout_manager.layout.hide_sidebar = True
+    request.layout_manager.layout.title = u'Activity'
     app_assets.need()
     table_assets.need()
 
