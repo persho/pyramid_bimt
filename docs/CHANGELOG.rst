@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.16.1 (unreleased)
+0.16.1 (2014-09-08)
 -------------------
 
 - Fix robot api test problems.
