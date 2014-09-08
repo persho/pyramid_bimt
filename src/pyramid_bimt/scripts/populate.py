@@ -33,12 +33,12 @@ PASSWORD_EMAIL_BODY = u"""
 
 USER_CREATED_BODY = u"""
 <p>
-  Here are your login details for the membership area:<br>
+  here are your login details for the membership area:<br>
   u: ${user.email}<br>
   p: ${password}
 </p>
 <p tal:condition="python: user.get_property('api_key', None)">
-  Here is your API key for integrating with other services: <br />  # noqa
+  Here is your API key for integrating with other services: <br />
   API key: ${python: user.get_property('api_key')}
 </p>
 <p>Login to the members' area: ${request.route_url('login')}</p>

@@ -247,7 +247,7 @@ class TestMailingEvents(unittest.TestCase):
 
         self.assertEqual(len(self.mailer.outbox), 1)
         self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
-        self.assertIn(u'Here are your login details for the membership area:', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'here are your login details for the membership area:', self.mailer.outbox[0].html)  # noqa
         self.assertIn(u'Login to the members\' area: http://example.com/login', self.mailer.outbox[0].html)  # noqa
 
     def test_user_disabled_mailing(self):
