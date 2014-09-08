@@ -47,6 +47,11 @@ class UserProperty(Base, BaseMixin):
         nullable=False
     )
 
+    def __repr__(self):
+        """Custom representation of the UserProperty object."""
+        return u'<{}:{} (key={}, value={})>'.format(
+            self.__class__.__name__, self.id, repr(self.key), repr(self.value))
+
 
 class User(Base, BaseMixin):
     """A class representing a User."""
@@ -142,6 +147,11 @@ class User(Base, BaseMixin):
     #: shorthand for accessing user's auditlog entries
     audit_log_entries = relationship(
         'AuditLogEntry', backref='user')
+
+    def __repr__(self):
+        """Custom representation of the User object."""
+        return u'<{}:{} (email={})>'.format(
+            self.__class__.__name__, self.id, repr(self.email))
 
     def get_property(self, key, default=_marker):
         """Get a User's property by key.
