@@ -341,7 +341,6 @@ class TestDatatablesAJAXView(unittest.TestCase):
     def test_default_query_parameters(self):
         self.view.model.get_all.return_value.all.return_value = []
         self.view()
-
         self.view.model.get_all.assert_any_call(
             filter_by=None,
             search=None,
@@ -349,6 +348,7 @@ class TestDatatablesAJAXView(unittest.TestCase):
             order_direction='asc',
             offset=(0, 10),
             security=False,
+            request=None,
         )
 
     def test_arbitrary_query_parameters(self):
@@ -368,27 +368,34 @@ class TestDatatablesAJAXView(unittest.TestCase):
             order_direction='desc',
             offset=(5, 55),
             security=False,
+            request=None,
         )
 
 
 class TestDatatablesAJAXViewIntegration(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
-        self.request = testing.DummyRequest(user=mock.Mock())
-
         from pyramid_bimt.views import DatatablesDataView
         from pyramid_bimt.models import AuditLogEntry
+        from pyramid_bimt.models import User
 
+        self.config = testing.setUp()
+        initTestingDB(auditlog_types=True, users=True, groups=True)
+        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
         self.view = DatatablesDataView(self.request)
-        initTestingDB(auditlog_types=True)
 
         self.view.model = mock.Mock()
         self.view.columns = OrderedDict()
         self.view.columns['foo'] = None
         self.view.columns['bar'] = None
 
-        Session.add(AuditLogEntry(comment=u'föo'))
-        Session.add(AuditLogEntry(comment=u'bär'))
+        Session.add(AuditLogEntry(
+            user=User.by_email('one@bar.com'),
+            comment=u'föo'
+        ))
+        Session.add(AuditLogEntry(
+            user=User.by_email('admin@bar.com'),
+            comment=u'bar'
+        ))
         Session.flush()
 
         class DummyDatatablesAJAXView(DatatablesDataView):
@@ -410,8 +417,43 @@ class TestDatatablesAJAXViewIntegration(unittest.TestCase):
         testing.tearDown()
         Session.remove()
 
-    def test_integration(self):
+    def test_integration_admin(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=True
+        )
 
+        resp = self.datatable_view(self.request)()
+        self.assertEqual(resp['sEcho'], 0)
+        self.assertEqual(resp['iTotalRecords'], 2)
+        self.assertEqual(resp['iTotalDisplayRecords'], 2)
+        self.assertEqual(
+            resp['aaData'],
+            [
+                {0: 1, 1: u'föo', 'DT_RowClass': 'info'},
+                {0: 2, 1: u'bar', 'DT_RowClass': 'info'},
+            ])
+
+    def test_integration_non_admin(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
+        resp = self.datatable_view(self.request)()
+        self.assertEqual(resp['sEcho'], 0)
+        self.assertEqual(resp['iTotalRecords'], 1)
+        self.assertEqual(resp['iTotalDisplayRecords'], 1)
+        self.assertEqual(
+            resp['aaData'],
+            [
+                {0: 1, 1: u'föo', 'DT_RowClass': 'info'},
+            ])
+
+    def test_integration_search(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=True
+        )
         self.request.GET['sSearch'] = u'föo'
 
         resp = self.datatable_view(self.request)()
@@ -544,6 +586,10 @@ class TestLoginAsView(unittest.TestCase):
         from pyramid_bimt.views.auth import LoginAs
         context = User.by_email('one@bar.com')
         context.groups.append(Group.by_name('staff'))
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
         request = testing.DummyRequest(
             layout_manager=mock.Mock(),
             session=mock.Mock(),

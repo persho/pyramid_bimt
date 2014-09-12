@@ -2,8 +2,26 @@ Changelog
 =========
 
 
-0.16.2 (unreleased)
+0.17 (unreleased)
 -------------------
+
+- [MIGRATION REQUIRED] Apps should now use permissions from
+  ``pyramid_bimt.const.BimtPermissions`` for views and explicit permission
+  checking.
+  [ferewuz]
+
+- [MIGRATION REQUIRED] Apps should now use ``request.has_permission()`` instead
+  of ``request.user.admin`` and similar.
+  [ferewuz]
+
+- [MIGRATION REQUIRED] When calling ``AuditLogEntry.get_all()`` with security
+  enabled you have to pass it current request now.
+  [ferewuz]
+
+- [MIGRATION REQUIRED] Upgrade pyramid to 1.5.1. Apps need to set renderer
+  explicitly in tests config where needed, like so:
+  ``config.include('pyramid_chameleon')``.
+  [ferewuz]
 
 - [MIGRATION REQUIRED] Apps need to add the ``make versions`` command to their
   Makefile.

@@ -243,3 +243,11 @@ class TestEntryGetAll(unittest.TestCase):
         entries = AuditLogEntry.get_all(limit=1).all()
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0].comment, 'bar')
+
+    def test_security_no_request(self):
+        with self.assertRaises(ValueError) as cm:
+            AuditLogEntry.get_all(security=True)
+        self.assertEqual(
+            cm.exception.message,
+            'You must provide request when security is True!'
+        )

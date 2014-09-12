@@ -3,7 +3,6 @@
 
 from datetime import datetime
 from pyramid.security import Allow
-from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.models.user import User
@@ -207,6 +206,7 @@ class AuditLogEntry(Base):
     @classmethod
     def get_all(
         class_,
+        request=None,
         order_by='timestamp',
         order_direction='desc',
         filter_by=None,
@@ -239,6 +239,8 @@ class AuditLogEntry(Base):
             additional query parameters (such as ``.count()`` for counting)
         :rtype: :class:sqlalchemy.orm.query.Query
         """
+        if security and not request:
+            raise ValueError('You must provide request when security is True!')
         AuditLogEntry = class_
         q = Session.query(AuditLogEntry)
         q = q.order_by('{} {}'.format(order_by, order_direction))
@@ -247,7 +249,7 @@ class AuditLogEntry(Base):
         if search:
             q = q.filter(AuditLogEntry.comment.like(u'%{}%'.format(search)))
         if security:
-            q = q.filter_by(user=get_current_request().user)
+            q = q.filter_by(user=request.user)
         if offset:
             q = q.slice(offset[0], offset[1])
         elif limit:

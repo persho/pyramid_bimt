@@ -5,6 +5,7 @@ from colanderalchemy import SQLAlchemySchemaNode
 from deform import Button
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
+from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
@@ -166,7 +167,7 @@ class LoginAs(FormView):
                 u'User with that email does not exist.',
                 'error'
             )
-        elif user.admin and not self.request.user.admin:
+        elif user.admin and not self.request.has_permission(ALL_PERMISSIONS):
             self.request.session.flash(
                 u'You do not have permission to login as admin user.',
                 'error'

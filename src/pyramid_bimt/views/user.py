@@ -3,6 +3,7 @@
 
 from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
+from pyramid.security import ALL_PERMISSIONS
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
@@ -28,7 +29,7 @@ def deferred_groups_validator(node, kw):
 
     def validator(node, cstruct):
         id_ = str(Group.by_name('admins').id)
-        if (not request.user.admin) and (id_ in cstruct):
+        if not request.has_permission(ALL_PERMISSIONS) and (id_ in cstruct):
             raise colander.Invalid(
                 node, u'Only admins can add users to "admins" group.')
     return validator
@@ -163,7 +164,7 @@ class UserAdd(FormView):
         # we don't like the way ColanderAlchemy renders SA Relationships so
         # we manually inject a suitable SchemaNode for groups
         choices = [(group.id, group.name) for group in Group.get_all()]
-        if not request.user.admin:
+        if not request.has_permission(ALL_PERMISSIONS):
             admins = Group.by_name('admins')
             choices.remove((admins.id, admins.name))
         self.schema.add(

@@ -234,9 +234,9 @@ class TestGroupsValidator(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         # add_routes_user(self.config)
-        initTestingDB(groups=True, auditlog_types=True)
+        initTestingDB(groups=True, auditlog_types=True, users=True)
 
-        self.request = testing.DummyRequest(user=mock.Mock())
+        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
 
     def tearDown(self):
         Session.remove()
@@ -244,7 +244,10 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_admin_and_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.request.user.admin = True
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=True
+        )
         cstruct = [str(Group.by_name('admins').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -252,7 +255,10 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_admins_and_non_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.request.user.admin = False
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=True
+        )
         cstruct = [str(Group.by_name('staff').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -260,7 +266,10 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_non_admin_and_non_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.request.user.admin = False
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
         cstruct = [str(Group.by_name('staff').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -268,7 +277,10 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_non_admin_and_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.request.user.admin = False
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
         cstruct = [str(Group.by_name('admins').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -356,10 +368,10 @@ class TestUserAdd(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         add_routes_user(self.config)
-        initTestingDB(groups=True, auditlog_types=True)
+        initTestingDB(groups=True, auditlog_types=True, users=True)
 
         self.request = testing.DummyRequest(
-            user=mock.Mock(email='admin@bar.com'),
+            user=User.by_email('admin@bar.com'),
             registry=mock.Mock()
         )
         self.request.registry.notify = mock.Mock()
@@ -370,7 +382,10 @@ class TestUserAdd(unittest.TestCase):
         testing.tearDown()
 
     def test_groups_choices_admin(self):
-        self.request.user.admin = True
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=True
+        )
         self.view = UserAdd(self.request)
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values
@@ -378,7 +393,10 @@ class TestUserAdd(unittest.TestCase):
         self.assertTrue('admins' in choices)
 
     def test_groups_choices_non_admin(self):
-        self.request.user.admin = False
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
         self.view = UserAdd(self.request)
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values
@@ -398,10 +416,10 @@ class TestUserAdd(unittest.TestCase):
     def test_submit_success(self, UserCreated):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/user/1/')
+        self.assertEqual(result.location, '/user/4/')
         self.assertTrue(self.request.registry.notify.called)
 
-        user = User.by_id(1)
+        user = User.by_id(4)
         self.assertEqual(user.email, 'foo@bar.com')
         self.assertTrue(verify('secret', user.password))
         self.assertEqual(user.fullname, u'Foö Bar')

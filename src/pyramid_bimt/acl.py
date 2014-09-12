@@ -13,6 +13,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+STAFF = 'staff'
+USER = 'user'
+MANAGE_USERS = 'manage_users'
+MANAGE_GROUPS = 'manage_groups'
+
 
 def groupfinder(user_email, request):
     user = User.by_email(user_email)
@@ -24,8 +29,8 @@ def groupfinder(user_email, request):
 
 class RootFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', 'user'),
-        (Allow, 'g:staff', 'staff'),
+        (Allow, 'g:enabled', USER),
+        (Allow, 'g:staff', STAFF),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
@@ -36,7 +41,7 @@ class RootFactory(object):
 class UserFactory(object):
     __acl__ = [
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', 'manage_users'),
+        (Allow, 'g:staff', MANAGE_USERS),
     ]
 
     def __init__(self, request):
@@ -55,7 +60,7 @@ class UserFactory(object):
 class GroupFactory(object):
     __acl__ = [
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', 'manage_groups'),
+        (Allow, 'g:staff', MANAGE_GROUPS),
     ]
 
     def __init__(self, request):
@@ -73,7 +78,7 @@ class GroupFactory(object):
 
 class AuditLogFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', 'user'),
+        (Allow, 'g:enabled', USER),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
