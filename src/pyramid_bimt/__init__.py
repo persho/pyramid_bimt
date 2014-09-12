@@ -159,6 +159,9 @@ def kill_connections(username=None, password=None, apiurl=None):
 
 def configure(config, settings={}):
 
+    # Include chameleon template renderer
+    config.include('pyramid_chameleon')
+
     # Include pyramid layout
     config.include('pyramid_layout')
 

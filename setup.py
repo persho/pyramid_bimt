@@ -54,6 +54,7 @@ setup(
         'pycrypto',
         'pyramid',
         'pyramid_basemodel',
+        'pyramid_chameleon',
         'pyramid_beaker',
         'pyramid_celery',
         'pyramid_deform',
