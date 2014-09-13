@@ -41,10 +41,17 @@ production.
     $ git add -p && git commit  # commit changes
     $ git push origin <BRANCH_NAME>  # push branch to GitHub
 
+.. Note:: Do not submit a Pull Request before you are happy with the
+  implementation. It creates noise on our dashboard screen's
+  "Open Pull Requests" widget and there is a risk that your code will get
+  merged and deployed prematurely. Until you are ready, keep your
+  implementation in a feature branch on GitHub, and use the `Compare` feature
+  to discuss code changes.
+
 To submit a `Pull Request` go to
 https://github.com/niteoweb/<PROJECT>/tree/<BRANCH_NAME>. There you should see
 a ``Pull Request`` button. Click on it, write some text what you did and
-anything else you would like to tell the one who will merge your branch, and
+anything else you would like to tell the one who will review your branch, and
 finally click ``Send pull request``.
 
 Now wait that someone comes by and reviews/merges your branch (don't do it
@@ -61,8 +68,9 @@ At this point, go back to your ticket on Plan.io and update it like so:
 The Reporter can now go to the production server, check if everything works
 as it should and either:
 
- * close the ticket
- * transition it back to state ``New`` and add more requests for changes
+ * close the ticket OR
+ * transition it back to state ``In Progress`` and add more requests for
+   changes.
 
 
 Additional conventions
@@ -155,7 +163,7 @@ this is that the URLs are protocol agnostic and work always in both `http` and
 `https` environments. Additionally, using only the paths will save bytes from
 the generated HTML documents.
 
-Some exceptions exists to the above when
+Some exceptions exist to the above when
 :meth:`route_url <pyramid.request.Request.route_url>` should be used instead,
 namely:
 

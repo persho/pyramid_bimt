@@ -11,7 +11,7 @@ to Heroku, on every push to master on GitHub.
 Releasing ``pyramid_bimt``
 --------------------------
 
-Releases of ``pytamid_bimt`` are hosted on our private PyPI at
+Releases of ``pyramid_bimt`` are hosted on our private PyPI at
 https://pypi.niteoweb.com. New releases are made automatically by
 :term:`Travis` whenever a new tag is pushed to GitHub. To make a new release,
 run ``make release``. This command will do the following:

@@ -5,7 +5,9 @@ Changelog
 0.16.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- [MIGRATION REQUIRED] Apps need to add the ``make versions`` command to their
+  Makefile.
+  [zupo]
 
 
 0.16.1 (2014-09-08)
@@ -38,6 +40,7 @@ Changelog
   * Change app routes to contain trailing slash
   * Change the not found view config to
   ``@notfound_view_config(append_slash=True)``
+  * Append ``/`` to the IPN URL inside JVZoo control panel
   [ferewuz]
 
 - AuditLogEntry get_all method now works correctly. Limit was always overriding
