@@ -16,6 +16,17 @@ Definitions of basic terms
         provides huge benefits to each of the parties involved in terms of
         exposure, response, profits, and sales.
 
+    JVZoo
+        JVZoo is an affiliate partner program or a mini marketplace, where
+        internet marketers can search for products to promote or to sell. All
+        BIMT products start their public sales life on JVZoo, so we can easily
+        get exposure to many potential affiliates. Upon a purchase we receive
+        a POST from JVZoo's servers, called :term:`JVZIPN`.
+
+    JVZIPN
+        A POST request from JVZoo's servers, notifying us of a purchase and
+        giving user's details so we can create a user account in the BIMT app.
+
     WSO
         Short for `Warrior Special Offer` a special offer for members of the
         Warrior Forum, the biggest IM forum. WSO is a great way for the initial

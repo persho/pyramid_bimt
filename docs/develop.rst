@@ -71,13 +71,13 @@ then use :term:`mr.developer` to checkout a working copy of ``pyramid_bimt``:
     Note that the package name is ``pyramid_bimt`` but the egg name is
     ``pyramid-bimt``!
 
-If you now start the server, or run tests, Pyramid will pick up changes that
-you made inside the ``src/pytamid-bimt`` folder.
+If you now start the server, or run tests, Pyramid will pick up any changes
+that you make inside the ``src/pyramid-bimt`` folder.
 
 .. code-block:: bash
 
-    # Start the development instance of Pyramid, with the local copy of bimt
-    # code that is in src/pyramid-bimt
+    # Start the development instance of Pyramid, with the local copy of
+    # pyramid_bimt code that is in src/pyramid-bimt
     $ bin/pserve etc/development.ini --reload
     $ make tests
 
@@ -106,23 +106,13 @@ production. To make sure that we are pinning to exact the same versions in
 
 .. code-block:: bash
 
-    # re-build your environment with only the basic set of eggs, without any
-    # development tools
-    $ echo -e "[buildout]\nextends = buildout.d/base.cfg" > buildout.cfg
-    $ bin/buildout
+    $ make versions
 
-    # re-run buildout with overwrite-requirements-file flag enabled
-    $ bin/buildout buildout:overwrite-requirements-file=true
-
-    # inspect changes and commit them
-    $ git add -p etc/auto_requirements.txt
-
-    # revert back to development buildout
-    $ echo -e "[buildout]\nextends = buildout.d/development.cfg" > buildout.cfg
-    $ bin/buildout
+This command will make appropriate changes in ``requirements.txt`` file and
+add them to your git staging area, ready for you to commit them.
 
 The ``pyramid_bimt`` package pins versions of its dependencies and publishes
-this in a ``versions-<VERSION>.cfg`` file on our internal PyPI server, next
+them in a ``versions-<VERSION>.cfg`` file on our internal PyPI server, next
 to the tarball of the package. Apps should use this `versions` file in their
 own ``version.cfg`` and just append app specific pins.
 
@@ -310,3 +300,19 @@ and add travis-artifacts step to your ``after_failure`` step.
 Now on every build that fails Travis will upload robot logs to your S3
 bucket, each build into different folder. You can access your robot logs
 through `Amazon console <https://niteoweb.signin.aws.amazon.com/console>`_.
+
+
+Mocking an Instant-Payment-Nofication from JVZoo
+------------------------------------------------
+
+Whenever a new user makes a purchase we receive a :term:`JVZIPN` POST request
+from :term:`JVZoo`'s servers to our servers. We parse the POST and create a
+new user account. To mock this POST request from JVZoo, use the following
+command:
+
+.. code-block:: bash
+
+    $ curl -d "ccustname=JohnSmith&ccuststate=&ccustcc=&ccustemail=jvzoo@bar.com&cproditem=1&cprodtitle=TestProduct&cprodtype=STANDARD&ctransaction=SALE&ctransaffiliate=aff@bar.com&ctransamount=1234&ctranspaymentmethod=&ctransvendor=&ctransreceipt=1&cupsellreceipt=&caffitid=&cvendthru=&cverify=D1EA7E5A&ctranstime=1350388651" http://localhost:8080/jvzoo/
+
+The command above assumes you have set your ``bimt.jvzoo_secret_key`` set to
+``secret`` in your local app (this is the default value).
