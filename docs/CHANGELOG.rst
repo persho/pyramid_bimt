@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.17 (unreleased)
--------------------
+0.17 (2014-09-15)
+-----------------
 
 - [MIGRATION REQUIRED] Apps should now use permissions from
   ``pyramid_bimt.const.BimtPermissions`` for views and explicit permission
