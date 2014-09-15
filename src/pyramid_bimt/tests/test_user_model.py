@@ -52,12 +52,13 @@ class TestUserModel(unittest.TestCase):
             'column billing_email is not unique', cm.exception.message)
 
     def test_acl_admin(self):
+        from pyramid.security import ALL_PERMISSIONS
         user = _make_user(email='foo@bar.com')
         user.groups = [_make_group(name='admins')]
         self.assertEqual(
             user.__acl__,
             [
-                (Allow, 'g:admins', 'manage_users'),
+                (Allow, 'g:admins', ALL_PERMISSIONS),
                 DENY_ALL,
             ])
 

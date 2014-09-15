@@ -37,11 +37,12 @@ class TestGroupModel(unittest.TestCase):
         self.assertIn('column name is not unique', cm.exception.message)
 
     def test_acl_admin(self):
+        from pyramid.security import ALL_PERMISSIONS
         group = _make_group(name='admins')
         self.assertEqual(
             group.__acl__,
             [
-                (Allow, 'g:admins', 'manage_groups'),
+                (Allow, 'g:admins', ALL_PERMISSIONS),
                 DENY_ALL,
             ])
 

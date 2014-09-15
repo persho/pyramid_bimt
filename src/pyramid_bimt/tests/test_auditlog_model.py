@@ -245,7 +245,7 @@ class TestEntryGetAll(unittest.TestCase):
         self.assertEqual(entries[0].comment, 'bar')
 
     def test_security_no_request(self):
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(KeyError) as cm:
             AuditLogEntry.get_all(security=True)
         self.assertEqual(
             cm.exception.message,

@@ -3,6 +3,7 @@
 
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
@@ -12,11 +13,6 @@ from pyramid_bimt.models import User
 import logging
 
 logger = logging.getLogger(__name__)
-
-STAFF = 'staff'
-USER = 'user'
-MANAGE_USERS = 'manage_users'
-MANAGE_GROUPS = 'manage_groups'
 
 
 def groupfinder(user_email, request):
@@ -29,8 +25,8 @@ def groupfinder(user_email, request):
 
 class RootFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', USER),
-        (Allow, 'g:staff', STAFF),
+        (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
@@ -40,8 +36,8 @@ class RootFactory(object):
 
 class UserFactory(object):
     __acl__ = [
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', MANAGE_USERS),
     ]
 
     def __init__(self, request):
@@ -59,8 +55,8 @@ class UserFactory(object):
 
 class GroupFactory(object):
     __acl__ = [
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', MANAGE_GROUPS),
     ]
 
     def __init__(self, request):
@@ -78,7 +74,8 @@ class GroupFactory(object):
 
 class AuditLogFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', USER),
+        (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 

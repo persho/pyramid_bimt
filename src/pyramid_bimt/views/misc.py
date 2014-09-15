@@ -4,6 +4,7 @@
 from datetime import datetime
 from pyramid.httpexceptions import exception_response
 from pyramid.view import view_config
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.static import app_assets
 
 import os
@@ -11,7 +12,7 @@ import os
 
 @view_config(
     route_name='raise_http_error',
-    permission='admin',
+    permission=BimtPermissions.manage,
 )
 def raise_http_error(request):
     raise exception_response(int(request.matchdict['error_code']))
@@ -19,7 +20,7 @@ def raise_http_error(request):
 
 @view_config(
     route_name='raise_js_error',
-    permission='admin',
+    permission=BimtPermissions.manage,
     layout='default',
     renderer='pyramid_bimt:templates/form.pt',
 )
@@ -37,7 +38,7 @@ def raise_js_error(request):
 
 @view_config(
     route_name='config',
-    permission='admin',
+    permission=BimtPermissions.manage,
     layout='default',
     renderer='pyramid_bimt:templates/config.pt',
 )

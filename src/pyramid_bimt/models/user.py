@@ -4,6 +4,7 @@
 from .group import Group
 from .group import user_group_table
 from datetime import date
+from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
@@ -63,7 +64,7 @@ class User(Base, BaseMixin):
         # only admins can manage admins
         if self.admin:
             return [
-                (Allow, 'g:admins', 'manage_users'),
+                (Allow, 'g:admins', ALL_PERMISSIONS),
                 DENY_ALL,
             ]
         return []  # use UserFactory's acl

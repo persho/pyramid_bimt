@@ -7,6 +7,7 @@ from pyramid.renderers import render
 from pyramid.threadlocal import get_current_registry
 from pyramid.view import view_config
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
@@ -29,7 +30,7 @@ class MailingView(object):
 
     @view_config(
         route_name='mailing_list',
-        permission='admin',
+        permission=BimtPermissions.manage,
         layout='default',
         renderer='pyramid_bimt:templates/mailings.pt',
     )
@@ -47,7 +48,7 @@ class MailingView(object):
 @view_config(
     route_name='mailing_add',
     layout='default',
-    permission='admin',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class MailingAdd(FormView):
@@ -118,7 +119,7 @@ class MailingAdd(FormView):
 @view_config(
     route_name='mailing_edit',
     layout='default',
-    permission='admin',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class MailingEdit(MailingAdd):

@@ -234,9 +234,9 @@ class TestGroupsValidator(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         # add_routes_user(self.config)
-        initTestingDB(groups=True, auditlog_types=True, users=True)
+        initTestingDB(groups=True, auditlog_types=True)
 
-        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
+        self.request = testing.DummyRequest(user=mock.Mock())
 
     def tearDown(self):
         Session.remove()
@@ -244,10 +244,7 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_admin_and_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=True
-        )
+        self.request.user.admin = True
         cstruct = [str(Group.by_name('admins').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -255,10 +252,7 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_admins_and_non_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=True
-        )
+        self.request.user.admin = False
         cstruct = [str(Group.by_name('staff').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -266,10 +260,7 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_non_admin_and_non_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=False
-        )
+        self.request.user.admin = False
         cstruct = [str(Group.by_name('staff').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -277,10 +268,7 @@ class TestGroupsValidator(unittest.TestCase):
 
     def test_non_admin_and_admins(self):
         from pyramid_bimt.views.user import deferred_groups_validator
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=False
-        )
+        self.request.user.admin = False
         cstruct = [str(Group.by_name('admins').id), ]
 
         validator = deferred_groups_validator(None, {'request': self.request})
@@ -382,10 +370,6 @@ class TestUserAdd(unittest.TestCase):
         testing.tearDown()
 
     def test_groups_choices_admin(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=True
-        )
         self.view = UserAdd(self.request)
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values
@@ -393,10 +377,7 @@ class TestUserAdd(unittest.TestCase):
         self.assertTrue('admins' in choices)
 
     def test_groups_choices_non_admin(self):
-        self.config.testing_securitypolicy(
-            userid='one@bar.com',
-            permissive=False
-        )
+        self.request.user = User.by_email('one@bar.com')
         self.view = UserAdd(self.request)
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values

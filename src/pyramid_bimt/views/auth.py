@@ -5,11 +5,11 @@ from colanderalchemy import SQLAlchemySchemaNode
 from deform import Button
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
-from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedInAs
@@ -148,7 +148,7 @@ class LoginAsSchema(colander.MappingSchema):
 
 @view_config(
     route_name='login_as',
-    permission='staff',
+    permission=BimtPermissions.manage,
     layout='default',
     renderer='pyramid_bimt:templates/form.pt',
 )
@@ -167,7 +167,7 @@ class LoginAs(FormView):
                 u'User with that email does not exist.',
                 'error'
             )
-        elif user.admin and not self.request.has_permission(ALL_PERMISSIONS):
+        elif user.admin and not self.request.user.admin:
             self.request.session.flash(
                 u'You do not have permission to login as admin user.',
                 'error'

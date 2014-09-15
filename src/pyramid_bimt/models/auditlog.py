@@ -5,6 +5,7 @@ from datetime import datetime
 from pyramid.security import Allow
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models.user import User
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -136,7 +137,7 @@ class AuditLogEntry(Base):
     @property
     def __acl__(self):
         return [  # pragma: no cover
-            (Allow, self.user.email, 'owner'),
+            (Allow, self.user.email, BimtPermissions.manage),
         ]
 
     id = Column(
@@ -240,7 +241,7 @@ class AuditLogEntry(Base):
         :rtype: :class:sqlalchemy.orm.query.Query
         """
         if security and not request:
-            raise ValueError('You must provide request when security is True!')
+            raise KeyError('You must provide request when security is True!')
         AuditLogEntry = class_
         q = Session.query(AuditLogEntry)
         q = q.order_by('{} {}'.format(order_by, order_direction))

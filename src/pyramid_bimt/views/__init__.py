@@ -5,8 +5,8 @@ from collections import OrderedDict
 from deform.form import Button
 from pyramid.events import subscriber
 from pyramid.httpexceptions import HTTPFound
-from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import remember
+from pyramid_bimt.acl import BimtPermissions
 from pyramid_bimt.events import IUserCreated
 from pyramid_bimt.models import User
 from pyramid_bimt.security import generate
@@ -103,7 +103,7 @@ class DatatablesDataView(object):
             int(self.request.GET.get('iSortCol_0', '0'))]
         order_direction = self.request.GET.get('sSortDir_0', 'asc')
 
-        if self.request.has_permission(ALL_PERMISSIONS):
+        if self.request.has_permission(BimtPermissions.manage):
             security = False
             request = None
         else:
