@@ -7,6 +7,7 @@ from datetime import datetime
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
@@ -17,7 +18,7 @@ from pyramid_deform import FormView
 
 @view_config(
     route_name='audit_log',
-    permission='user',
+    permission=BimtPermissions.view,
     layout='default',
     renderer='pyramid_bimt:templates/audit_log.pt',
     xhr=False,
@@ -28,16 +29,19 @@ def audit_log(request):
     app_assets.need()
     table_assets.need()
 
-    new = AuditLogEntry.get_all(filter_by={'read': False}).count()
+    new = AuditLogEntry.get_all(
+        request=request,
+        filter_by={'read': False}
+    ).count()
     if new:  # pragma: no branch
         request.session.flash('{} new notifications.'.format(new))
 
-    return {}
+    return {'BimtPermissions': BimtPermissions}
 
 
 @view_config(
     route_name='audit_log',
-    permission='user',
+    permission=BimtPermissions.view,
     renderer='json',
     xhr=True,
 )
@@ -70,7 +74,7 @@ class AuditLogAJAX(DatatablesDataView):
             entry.user.email,
         )
 
-        if self.request.user.admin:
+        if self.request.has_permission(BimtPermissions.manage):
             self.columns['action'] = """
             <a class="btn btn-xs btn-danger" href="{}">
               <span class="glyphicon glyphicon-remove-sign"></span> Delete
@@ -83,7 +87,7 @@ class AuditLogAJAX(DatatablesDataView):
 
 @view_config(
     route_name='audit_log_delete',
-    permission='admin',
+    permission=BimtPermissions.sudo,
 )
 def audit_log_delete(request):
     entry = request.context
@@ -95,7 +99,7 @@ def audit_log_delete(request):
 @view_config(
     route_name='audit_log_add',
     layout='default',
-    permission='admin',
+    permission=BimtPermissions.sudo,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class AuditLogAddEntryForm(FormView):

@@ -9,6 +9,7 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
 from pyramid.view import view_config
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.events import UserLoggedIn
 from pyramid_bimt.events import UserLoggedInAs
@@ -147,7 +148,7 @@ class LoginAsSchema(colander.MappingSchema):
 
 @view_config(
     route_name='login_as',
-    permission='staff',
+    permission=BimtPermissions.manage,
     layout='default',
     renderer='pyramid_bimt:templates/form.pt',
 )

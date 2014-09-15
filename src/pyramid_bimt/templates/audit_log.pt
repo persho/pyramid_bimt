@@ -10,7 +10,7 @@
           <th>Event Type</th>
           <th>User</th>
           <th>Comment</th>
-          <th data-sort-disabled="true" tal:condition="request.user.admin">
+          <th data-sort-disabled="true" tal:condition="request.has_permission(BimtPermissions.manage)">
             <a class="btn btn-xs btn-success" href="${request.route_path('audit_log_add')}">
               <span class="glyphicon glyphicon-plus-sign"></span> Add
             </a>

@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import PortletPositions
@@ -17,7 +18,7 @@ import colander
 import deform
 
 
-@view_defaults(permission='admin')
+@view_defaults(permission=BimtPermissions.manage)
 class PortletView(object):
     def __init__(self, context, request):
         self.request = request
@@ -44,7 +45,7 @@ class PortletView(object):
 @view_config(
     route_name='portlet_add',
     layout='default',
-    permission='admin',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class PortletAdd(FormView):
@@ -103,7 +104,7 @@ class PortletAdd(FormView):
 @view_config(
     route_name='portlet_edit',
     layout='default',
-    permission='admin',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class PortletEdit(PortletAdd):

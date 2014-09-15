@@ -94,6 +94,7 @@ class TestPortletAdd(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         add_routes_portlet(self.config)
+        self.config.include('pyramid_chameleon')
         initTestingDB(groups=True)
 
         from pyramid_bimt.views.portlet import PortletAdd
@@ -142,6 +143,7 @@ class TestPortletEdit(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         add_routes_portlet(self.config)
+        self.config.include('pyramid_chameleon')
         initTestingDB(groups=True, portlets=True)
 
         from pyramid_bimt.views.portlet import PortletEdit

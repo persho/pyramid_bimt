@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.models import User
@@ -18,7 +19,7 @@ import copy
 import deform
 
 
-@view_defaults(permission='manage_groups')
+@view_defaults(permission=BimtPermissions.manage)
 class GroupView(object):
     def __init__(self, context, request):
         self.request = request
@@ -42,7 +43,7 @@ class GroupView(object):
 @view_config(
     route_name='group_add',
     layout='default',
-    permission='manage_groups',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class GroupAdd(FormView):
@@ -109,7 +110,7 @@ class GroupAdd(FormView):
 @view_config(
     route_name='group_edit',
     layout='default',
-    permission='manage_groups',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class GroupEdit(GroupAdd):

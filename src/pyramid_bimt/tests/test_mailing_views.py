@@ -171,6 +171,7 @@ class TestMailingEdit(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_chameleon')
         initTestingDB(groups=True, mailings=True)
         add_routes_mailing(self.config)
 
@@ -317,6 +318,7 @@ class TestMailUnsubscribe(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_chameleon')
         initTestingDB(groups=True, mailings=True, users=True)
         add_routes_mailing(self.config)
 

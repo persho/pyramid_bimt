@@ -243,6 +243,7 @@ class TestSanityCheckEmail(unittest.TestCase):
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_chameleon')
         self.request = testing.DummyRequest()
 
     def tearDown(self):

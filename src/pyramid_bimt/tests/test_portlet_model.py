@@ -24,6 +24,7 @@ class TestPortletModel(unittest.TestCase):
     def setUp(self):
         initTestingDB()
         self.config = testing.setUp()
+        self.config.include('pyramid_chameleon')
 
     def tearDown(self):
         Session.remove()

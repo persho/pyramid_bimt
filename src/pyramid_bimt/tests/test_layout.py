@@ -15,6 +15,7 @@ class TestPortletsFetchers(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
+        self.config.include('pyramid_chameleon')
         self.context = mock.Mock(specs=())
 
     def tearDown(self):

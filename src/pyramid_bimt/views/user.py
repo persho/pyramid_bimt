@@ -6,6 +6,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Session
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.events import UserEnabled
@@ -54,7 +55,7 @@ def deferred_user_email_validator(node, kw):
     return validator
 
 
-@view_defaults(permission='manage_users')
+@view_defaults(permission=BimtPermissions.manage)
 class UserView(object):
     def __init__(self, context, request):
         self.request = request
@@ -131,7 +132,7 @@ class UserView(object):
 @view_config(
     route_name='user_add',
     layout='default',
-    permission='manage_users',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class UserAdd(FormView):
@@ -218,7 +219,7 @@ class UserAdd(FormView):
 @view_config(
     route_name='user_edit',
     layout='default',
-    permission='manage_users',
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class UserEdit(UserAdd):

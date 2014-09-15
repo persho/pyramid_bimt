@@ -6,6 +6,7 @@ from deform.form import Button
 from pyramid.events import subscriber
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember
+from pyramid_bimt.acl import BimtPermissions
 from pyramid_bimt.events import IUserCreated
 from pyramid_bimt.models import User
 from pyramid_bimt.security import generate
@@ -102,7 +103,13 @@ class DatatablesDataView(object):
             int(self.request.GET.get('iSortCol_0', '0'))]
         order_direction = self.request.GET.get('sSortDir_0', 'asc')
 
-        security = False if self.request.user.admin else True
+        if self.request.has_permission(BimtPermissions.manage):
+            security = False
+            request = None
+        else:
+            security = True
+            request = self.request
+
         if filter_by_name and filter_by_value:
             filter_by = {filter_by_name: filter_by_value}
         else:
@@ -110,6 +117,7 @@ class DatatablesDataView(object):
 
         data = []
         for item in self.model.get_all(
+                request=request,
                 filter_by=filter_by,
                 search=search,
                 order_by=order_by,
@@ -138,9 +146,13 @@ class DatatablesDataView(object):
             # An unaltered copy of sEcho sent from the client side.
             'sEcho': int(self.request.GET.get('sEcho', '0')),
             # Total records before any filtering/searching
-            'iTotalRecords': self.model.get_all(security=security).count(),
+            'iTotalRecords': self.model.get_all(
+                request=request,
+                security=security
+            ).count(),
             # Total records after filtering/records before pagination
             'iTotalDisplayRecords': self.model.get_all(
+                request=request,
                 filter_by=filter_by,
                 search=search,
                 security=security

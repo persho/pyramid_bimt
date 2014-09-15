@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Group models."""
 
+from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
@@ -76,7 +77,7 @@ class Group(Base, BaseMixin):
         # only admins can manage admins
         if self.name == 'admins':
             return [
-                (Allow, 'g:admins', 'manage_groups'),
+                (Allow, 'g:admins', ALL_PERMISSIONS),
                 DENY_ALL,
             ]
         return []  # traverse to GroupFactory's acl

@@ -101,6 +101,7 @@ class TestSendMailingsScript(unittest.TestCase):
         self.request = testing.DummyRequest()
         self.config = testing.setUp(request=self.request, settings=settings)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_chameleon')
         self.mailer = get_mailer(self.request)
         initTestingDB(users=True, groups=True)
 
@@ -230,6 +231,7 @@ class TestMailingEvents(unittest.TestCase):
         self.config = testing.setUp(request=self.request, settings=settings)
         self.config.scan('pyramid_bimt.models.mailing')
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_chameleon')
         self.mailer = get_mailer(self.request)
         initTestingDB(users=True, groups=True, mailings=True, auditlog_types=True)  # noqa
         add_routes_auth(self.config)

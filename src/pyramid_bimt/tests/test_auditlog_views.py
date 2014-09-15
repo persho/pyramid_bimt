@@ -107,7 +107,6 @@ class TestAuditLogView(unittest.TestCase):
         return view
 
     def test_populate_columns_admin(self):
-        self.request.user.admin = True
         view = self._make_view()
         self.assertEqual(view.columns['comment'], u'unread entry')
         self.assertEqual(
@@ -124,7 +123,10 @@ class TestAuditLogView(unittest.TestCase):
         )
 
     def test_populate_columns_user(self):
-        self.request.user.admin = False
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
         view = self._make_view()
         self.assertEqual(view.columns['comment'], u'unread entry')
         self.assertEqual(

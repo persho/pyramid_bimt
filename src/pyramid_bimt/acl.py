@@ -3,6 +3,7 @@
 
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import Mailing
@@ -24,8 +25,8 @@ def groupfinder(user_email, request):
 
 class RootFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', 'user'),
-        (Allow, 'g:staff', 'staff'),
+        (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 
@@ -35,8 +36,8 @@ class RootFactory(object):
 
 class UserFactory(object):
     __acl__ = [
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', 'manage_users'),
     ]
 
     def __init__(self, request):
@@ -54,8 +55,8 @@ class UserFactory(object):
 
 class GroupFactory(object):
     __acl__ = [
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:staff', 'manage_groups'),
     ]
 
     def __init__(self, request):
@@ -73,7 +74,8 @@ class GroupFactory(object):
 
 class AuditLogFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', 'user'),
+        (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
 

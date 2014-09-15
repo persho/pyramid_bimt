@@ -9,6 +9,7 @@ from pyramid.settings import asbool
 from pyramid_basemodel import Session
 from pyramid_beaker import session_factory_from_settings
 from pyramid_bimt.acl import AuditLogFactory
+from pyramid_bimt.acl import BimtPermissions
 from pyramid_bimt.acl import GroupFactory
 from pyramid_bimt.acl import MailingFactory
 from pyramid_bimt.acl import PortletFactory
@@ -159,6 +160,9 @@ def kill_connections(username=None, password=None, apiurl=None):
 
 def configure(config, settings={}):
 
+    # Include chameleon template renderer
+    config.include('pyramid_chameleon')
+
     # Include pyramid layout
     config.include('pyramid_layout')
 
@@ -173,8 +177,8 @@ def configure(config, settings={}):
     session_factory = session_factory_from_settings(settings)
     config.set_session_factory(session_factory)
 
-    # Set 'admin' as default permission
-    config.set_default_permission('admin')
+    # Set sudo as default permission
+    config.set_default_permission(BimtPermissions.sudo)
 
     # configure routes
     add_routes_auth(config)
