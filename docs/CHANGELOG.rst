@@ -5,7 +5,8 @@ Changelog
 0.17.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Ajaxify users list to speed it up.
+  [ferewuz]
 
 
 0.17 (2014-09-15)

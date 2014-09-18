@@ -2,6 +2,7 @@
 """Views for loggin in, logging out, etc."""
 
 from colanderalchemy import SQLAlchemySchemaNode
+from collections import OrderedDict
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 from pyramid.view import view_defaults
@@ -16,6 +17,7 @@ from pyramid_bimt.models import UserProperty
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import table_assets
+from pyramid_bimt.views import DatatablesDataView
 from pyramid_bimt.views import FormView
 
 import colander
@@ -67,13 +69,12 @@ class UserView(object):
         route_name='user_list',
         layout='default',
         renderer='pyramid_bimt:templates/users.pt',
+        xhr=False,
     )
     def list(self):
         self.request.layout_manager.layout.hide_sidebar = True
         self.request.layout_manager.layout.title = u'Users'
-        return {
-            'users': User.get_all(),
-        }
+        return {'count': User.get_all().count()}
 
     @view_config(
         route_name='user_view',
@@ -127,6 +128,68 @@ class UserView(object):
                 u'You are already unsubscribed from newsletter.')
 
         return HTTPFound(location='/')
+
+
+@view_config(
+    route_name='user_list',
+    permission=BimtPermissions.manage,
+    renderer='json',
+    xhr=True,
+)
+class UserListAJAX(DatatablesDataView):
+    """Ajax view used to populate AuditLog datatables with JSON data."""
+    model = User
+
+    columns = OrderedDict()
+    columns['id'] = None
+    columns['fullname'] = None
+    columns['email'] = None
+    columns['groups'] = None
+    columns['created'] = None
+    columns['modified'] = None
+    columns['enable/disable'] = None
+    columns['edit'] = None
+
+    def populate_columns(self, user):
+
+        for column in ['id', 'fullname', 'email']:
+            if user.enabled:
+                self.columns[column] = u'<a href="{}">{}</a>'.format(
+                    self.request.route_path('user_view', user_id=user.id),
+                    getattr(user, column),
+                )
+            else:
+                self.columns[column] = (
+                    u'<a style="text-decoration: '
+                    'line-through" href="{}">{}</a>').format(
+                    self.request.route_path('user_view', user_id=user.id),
+                    getattr(user, column),
+                )
+
+        groups = [u'<a href="{}">{}</a>'.format(
+            self.request.route_path('group_edit', group_id=group.id),
+            group.name,
+            )
+            for group in user.groups]
+
+        self.columns['groups'] = '<span>, </span>'.join(groups)
+        self.columns['created'] = user.created.strftime('%Y/%m/%d %H:%M:%S')
+        self.columns['modified'] = user.modified.strftime('%Y/%m/%d %H:%M:%S')
+
+        if not user.enabled:
+            self.columns['enable/disable'] = """
+            <a class="btn btn-xs btn-success" href="{}">
+            <span class="glyphicon glyphicon-play"></span> Enable</a>""".format(  # noqa
+                self.request.route_path('user_enable', user_id=user.id))
+        else:
+            self.columns['enable/disable'] = """
+            <a class="btn btn-xs btn-danger" href="{}">
+            <span class="glyphicon glyphicon-pause"></span> Disable</a>""".format(  # noqa
+                self.request.route_path('user_disable', user_id=user.id))
+
+        self.columns['edit'] = """<a class="btn btn-xs btn-primary" href="{}">
+            <span class="glyphicon glyphicon-edit"></span> Edit""".format(
+            self.request.route_path('user_edit', user_id=user.id))
 
 
 @view_config(

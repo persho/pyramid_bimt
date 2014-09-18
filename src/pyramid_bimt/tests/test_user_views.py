@@ -19,6 +19,7 @@ from pyramid_bimt.views.user import UserAdd
 import colander
 import copy
 import mock
+import transaction
 import unittest
 
 
@@ -110,7 +111,6 @@ class TestUserList(unittest.TestCase):
     @mock.patch('pyramid_bimt.views.user.app_assets')
     @mock.patch('pyramid_bimt.views.user.table_assets')
     def test_view_setup(self, table_assets, app_assets, User):
-        User.get_all.return_value = []
         self.view.__init__(self.context, self.request)
         self.view.list()
 
@@ -120,13 +120,80 @@ class TestUserList(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.views.user.User')
     def test_result(self, User):
-        user = _make_user()
-        User.get_all.return_value = [user, ]
+        User.get_all.return_value.count.return_value = 5
         result = self.view.list()
 
-        self.assertEqual(result, {
-            'users': [user, ],
-        })
+        self.assertEqual(result, {'count': 5})
+
+
+class TestUserListAJAX(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        from pyramid_bimt.views.user import UserListAJAX
+        from pyramid_bimt import add_routes_user
+        from pyramid_bimt import add_routes_group
+
+        add_routes_user(self.config)
+        add_routes_group(self.config)
+        initTestingDB(groups=True, users=True)
+        self.request = testing.DummyRequest()
+        self.view = UserListAJAX(self.request)
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_columns(self):
+        self.assertEqual(
+            self.view.columns.keys(),
+            ['id', 'fullname', 'email', 'groups', 'created', 'modified', 'enable/disable', 'edit'])  # noqa
+
+    def test_populate_columns_enabled(self):
+        self.view.populate_columns(User.by_id(2))
+
+        self.assertEqual(
+            self.view.columns['id'],
+            u'<a href="/user/2/">2</a>'
+        )
+        self.assertEqual(
+            self.view.columns['fullname'],
+            u'<a href="/user/2/">Stäff Member</a>'
+        )
+        self.assertEqual(
+            self.view.columns['email'],
+            u'<a href="/user/2/">staff@bar.com</a>'
+        )
+        self.assertEqual(
+            self.view.columns['groups'],
+            u'<a href="/group/2/edit/">staff</a><span>, </span><a href="/group/3/edit/">enabled</a>'  # noqa
+        )
+        self.assertIn('Disable', self.view.columns['enable/disable'])
+
+    def test_populate_columns_disabled(self):
+        with transaction.manager:
+            User.by_id(2).disable()
+        self.view.populate_columns(User.by_id(2))
+
+        self.assertEqual(
+            self.view.columns['id'],
+            u'<a style="text-decoration: line-through" href="/user/2/">2</a>'
+        )
+        self.assertEqual(
+            self.view.columns['fullname'],
+            (u'<a style="text-decoration: line-through" href="/user/2/">'
+                u'Stäff Member</a>')
+        )
+        self.assertEqual(
+            self.view.columns['email'],
+            (u'<a style="text-decoration: line-through" href="/user/2/">'
+                u'staff@bar.com</a>')
+        )
+        self.assertEqual(
+            self.view.columns['groups'],
+            u'<a href="/group/2/edit/">staff</a>'
+        )
+        self.assertIn('Enable', self.view.columns['enable/disable'])
 
 
 class TestUserView(unittest.TestCase):

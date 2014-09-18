@@ -9,6 +9,7 @@ from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid_basemodel import Session
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import ForeignKey
@@ -282,7 +283,17 @@ class User(Base, BaseMixin):
         return User.query.filter_by(billing_email=billing_email).first()
 
     @classmethod
-    def get_all(class_, order_by='email', filter_by=None, limit=1000):
+    def get_all(
+        class_,
+        order_by='email',
+        order_direction='asc',
+        filter_by=None,
+        offset=None,
+        search=None,
+        limit=None,
+        request=None,
+        security=None,
+    ):
         """Return all users.
 
         filter_by: dict -> {'name': 'foo'}
@@ -290,11 +301,21 @@ class User(Base, BaseMixin):
         By default, order by User.email.
         """
         User = class_
-        q = User.query
-        q = q.order_by(getattr(User, order_by))
+        q = Session.query(User)
+        # Set correct order_by for timestamps
+        if order_by == 'modified':
+            order_by = 'm'
+        elif order_by == 'created':
+            order_by = 'c'
+        q = q.order_by('{} {}'.format(order_by, order_direction))
         if filter_by:
             q = q.filter_by(**filter_by)
-        q = q.limit(limit)
+        if search:
+            q = q.filter(User.email.like(u'%{}%'.format(search)))
+        if offset:
+            q = q.slice(offset[0], offset[1])
+        elif limit:
+            q = q.limit(limit)
         return q
 
     @classmethod
