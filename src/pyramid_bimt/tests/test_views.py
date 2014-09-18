@@ -51,7 +51,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp = resp.form.submit('login')
         self.assertIn('302 Found', resp.text)
         resp = resp.follow()
-        self.assertIn('Login successful.', resp.text)
+        self.assertIn('A sample BIMT page', resp.text)
 
     def test_login_wrong_password(self):
         resp = self.testapp.get('/login/', status=200)
