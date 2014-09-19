@@ -36,6 +36,7 @@ Scenario: Staff member edits a user
 Scenario: Staff member disables and re-enables user
     Given I am logged in as a staff member
      When I go to  http://localhost:8080/users/
+      And I wait until table is loaded
       And I click disable user  one@bar.com
      Then user is striked-through and disabled  one@bar.com
       And Page should contain  User "one@bar.com" disabled.

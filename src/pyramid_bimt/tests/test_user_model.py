@@ -126,7 +126,7 @@ class TestUserGetAll(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
-    def test_no_servers(self):
+    def test_no_users(self):
         users = User.get_all().all()
         self.assertEqual(len(users), 0)
 
@@ -157,6 +157,26 @@ class TestUserGetAll(unittest.TestCase):
         self.assertEqual(users[1].fullname, 'B')
         self.assertEqual(users[2].fullname, 'C')
 
+    def test_ordered_by_created(self):
+        _make_user(email='foo@bar.com')
+        _make_user(email='bar@bar.com')
+        _make_user(email='baz@bar.com')
+        users = User.get_all(order_by='created').all()
+        self.assertEqual(len(users), 3)
+        self.assertEqual(users[0].email, 'foo@bar.com')
+        self.assertEqual(users[1].email, 'bar@bar.com')
+        self.assertEqual(users[2].email, 'baz@bar.com')
+
+    def test_ordered_by_modified(self):
+        _make_user(email='foo@bar.com')
+        _make_user(email='bar@bar.com')
+        _make_user(email='baz@bar.com')
+        users = User.get_all(order_by='modified', order_direction='desc').all()
+        self.assertEqual(len(users), 3)
+        self.assertEqual(users[0].email, 'baz@bar.com')
+        self.assertEqual(users[1].email, 'bar@bar.com')
+        self.assertEqual(users[2].email, 'foo@bar.com')
+
     def test_filter_by(self):
         _make_user(email='foo@bar.com', affiliate=u'John')
         _make_user(email='bar@bar.com', affiliate=u'Jane')
@@ -170,6 +190,39 @@ class TestUserGetAll(unittest.TestCase):
         users = User.get_all(limit=1).all()
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].email, 'bar@bar.com')
+
+    def test_offset(self):
+        _make_user(email='foo@bar.com')
+        _make_user(email='bar@bar.com')
+        _make_user(email='baz@bar.com')
+        users = User.get_all(offset=(1, 2)).all()
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].email, 'baz@bar.com')
+
+    def test_search_email(self):
+        _make_user(email='foo@bar.com')
+        _make_user(email='bar@bar.com')
+        _make_user(email='baz@bar.com')
+        users = User.get_all(search='baz').all()
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].email, 'baz@bar.com')
+
+    def test_search_fullname(self):
+        _make_user(email='foo@bar.com', fullname=u'aaaaa')
+        _make_user(email='bar@bar.com', fullname=u'ccccc')
+        _make_user(email='baz@bar.com', fullname=u'bbbbb')
+        users = User.get_all(search='ccccc').all()
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+
+    def test_search_email_and_fullname(self):
+        _make_user(email='foo@bar.com', fullname=u'aaaaa')
+        _make_user(email='bar@bar.com', fullname=u'ccccc')
+        _make_user(email='ccccc@bar.com', fullname=u'bbbbb')
+        users = User.get_all(search='ccccc').all()
+        self.assertEqual(len(users), 2)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+        self.assertEqual(users[1].email, 'ccccc@bar.com')
 
 
 class TestAdmin(unittest.TestCase):
