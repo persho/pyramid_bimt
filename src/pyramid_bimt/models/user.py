@@ -17,6 +17,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
+from sqlalchemy import or_
 from sqlalchemy.orm import relationship
 
 import colander
@@ -311,7 +312,10 @@ class User(Base, BaseMixin):
         if filter_by:
             q = q.filter_by(**filter_by)
         if search:
-            q = q.filter(User.email.like(u'%{}%'.format(search)))
+            q = q.filter(or_(
+                User.email.like(u'%{}%'.format(search)),
+                User.fullname.like(u'%{}%'.format(search)),
+            ))
         if offset:
             q = q.slice(offset[0], offset[1])
         elif limit:

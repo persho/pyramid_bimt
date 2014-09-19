@@ -199,13 +199,30 @@ class TestUserGetAll(unittest.TestCase):
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].email, 'baz@bar.com')
 
-    def test_search(self):
+    def test_search_email(self):
         _make_user(email='foo@bar.com')
         _make_user(email='bar@bar.com')
         _make_user(email='baz@bar.com')
         users = User.get_all(search='baz').all()
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].email, 'baz@bar.com')
+
+    def test_search_fullname(self):
+        _make_user(email='foo@bar.com', fullname=u'aaaaa')
+        _make_user(email='bar@bar.com', fullname=u'ccccc')
+        _make_user(email='baz@bar.com', fullname=u'bbbbb')
+        users = User.get_all(search='ccccc').all()
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+
+    def test_search_email_and_fullname(self):
+        _make_user(email='foo@bar.com', fullname=u'aaaaa')
+        _make_user(email='bar@bar.com', fullname=u'ccccc')
+        _make_user(email='ccccc@bar.com', fullname=u'bbbbb')
+        users = User.get_all(search='ccccc').all()
+        self.assertEqual(len(users), 2)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+        self.assertEqual(users[1].email, 'ccccc@bar.com')
 
 
 class TestAdmin(unittest.TestCase):
