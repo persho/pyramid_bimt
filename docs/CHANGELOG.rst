@@ -5,6 +5,9 @@ Changelog
 0.17.1 (unreleased)
 -------------------
 
+- Remove login successful notification.
+  [ferewuz]
+
 - Ajaxify users list to speed it up.
   [ferewuz]
 

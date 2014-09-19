@@ -132,7 +132,6 @@ I log in as a user
     Input Text  name=email  one@bar.com
     Input Text  name=password  secret
     Click Button  Login
-    Page Should Contain  Login successful.
     I am logged in
 
 I log in as a staff member
@@ -140,7 +139,6 @@ I log in as a staff member
     Input Text  name=email  staff@bar.com
     Input Text  name=password  secret
     Click Button  Login
-    Page Should Contain  Login successful.
     I am logged in
 
 I log in as admin
@@ -148,7 +146,6 @@ I log in as admin
     Input Text  name=email  admin@bar.com
     Input Text  name=password  secret
     Click Button  Login
-    Page Should Contain  Login successful.
     I am logged in
 
 I log out

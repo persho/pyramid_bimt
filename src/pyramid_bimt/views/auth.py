@@ -71,7 +71,6 @@ class LoginForm(FormView):
             self.request.registry.notify(
                 UserLoggedIn(self.request, user, comment=self.user_agent_info())  # noqa
             )
-            self.request.session.flash(u'Login successful.')
 
             if not user.enabled:
                 self.request.session.flash(
