@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.17.1 (unreleased)
+0.17.1 (2014-09-19)
 -------------------
 
 - Remove login successful notification.
