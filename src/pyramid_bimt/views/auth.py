@@ -50,7 +50,7 @@ class LoginForm(FormView):
 
         return u'Logged in with IP {} on device {} with operating system: {}' \
             u' and browser {}'.format(
-                self.request.client_addr,
+                self.request.client_addr.split(',')[0],
                 device,
                 os,
                 browser,
