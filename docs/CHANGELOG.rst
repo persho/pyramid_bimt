@@ -5,7 +5,9 @@ Changelog
 0.17.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- When behind a proxy, the ``request.cliend_addr`` will list multiple IPs. Only
+  the first one is relevant for us.
+  [zupo]
 
 
 0.17.1 (2014-09-19)
