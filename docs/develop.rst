@@ -302,17 +302,26 @@ bucket, each build into different folder. You can access your robot logs
 through `Amazon console <https://niteoweb.signin.aws.amazon.com/console>`_.
 
 
-Mocking an Instant-Payment-Nofication from JVZoo
-------------------------------------------------
+Mocking an Instant-Payment-Nofication from JVZoo and ClickBank
+--------------------------------------------------------------
 
-Whenever a new user makes a purchase we receive a :term:`JVZIPN` POST request
-from :term:`JVZoo`'s servers to our servers. We parse the POST and create a
-new user account. To mock this POST request from JVZoo, use the following
-command:
+Whenever a new user makes a purchase we receive an :term:`IPN` POST request
+from payment providers servers to our servers. We parse the POST and create a
+new user account.
+
+To mock this POST request from JVZoo, use the following command:
 
 .. code-block:: bash
 
     $ curl -d "ccustname=JohnSmith&ccuststate=&ccustcc=&ccustemail=jvzoo@bar.com&cproditem=1&cprodtitle=TestProduct&cprodtype=STANDARD&ctransaction=SALE&ctransaffiliate=aff@bar.com&ctransamount=1234&ctranspaymentmethod=&ctransvendor=&ctransreceipt=1&cupsellreceipt=&caffitid=&cvendthru=&cverify=D1EA7E5A&ctranstime=1350388651" http://localhost:8080/jvzoo/
 
-The command above assumes you have set your ``bimt.jvzoo_secret_key`` set to
-``secret`` in your local app (this is the default value).
+To mock this POST request from JVZoo, use the following command:
+
+.. code-block:: bash
+
+    $ curl -d "TODO" http://localhost:8080/clickbank/
+
+
+The commands above assumes you have set your ``bimt.jvzoo_secret_key`` and
+``bimt.clickbank_secret_key``, respectively, set to ``secret`` in your local
+app (this is the default value).

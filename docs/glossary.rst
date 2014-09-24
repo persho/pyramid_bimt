@@ -21,11 +21,15 @@ Definitions of basic terms
         internet marketers can search for products to promote or to sell. All
         BIMT products start their public sales life on JVZoo, so we can easily
         get exposure to many potential affiliates. Upon a purchase we receive
-        a POST from JVZoo's servers, called :term:`JVZIPN`.
+        a POST from JVZoo's servers, called :term:`IPN`.
 
-    JVZIPN
-        A POST request from JVZoo's servers, notifying us of a purchase and
-        giving user's details so we can create a user account in the BIMT app.
+    ClickBank
+        Same as :term:`JVZoo`, only bigger and older.
+
+    IPN
+        A POST request from JVZoo's or ClickBank's servers, notifying us of a
+        purchase and giving user's details so we can create a user account in
+        the BIMT app.
 
     WSO
         Short for `Warrior Special Offer` a special offer for members of the
