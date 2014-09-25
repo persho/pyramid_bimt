@@ -215,6 +215,20 @@ class TestUserGetAll(unittest.TestCase):
         self.assertEqual(len(users), 1)
         self.assertEqual(users[0].email, 'bar@bar.com')
 
+    def test_search_fullname_case_insensitive(self):
+        _make_user(email='foo@bar.com', fullname=u'AAAAA')
+        _make_user(email='bar@bar.com', fullname=u'aaaaa')
+        _make_user(email='baz@bar.com', fullname=u'BBBBB')
+        _make_user(email='foobar@bar.com', fullname=u'bbbbb')
+        users = User.get_all(search='aaaaa').all()
+        self.assertEqual(len(users), 2)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+        self.assertEqual(users[1].email, 'foo@bar.com')
+        users = User.get_all(search='AAAAA').all()
+        self.assertEqual(len(users), 2)
+        self.assertEqual(users[0].email, 'bar@bar.com')
+        self.assertEqual(users[1].email, 'foo@bar.com')
+
     def test_search_email_and_fullname(self):
         _make_user(email='foo@bar.com', fullname=u'aaaaa')
         _make_user(email='bar@bar.com', fullname=u'ccccc')
