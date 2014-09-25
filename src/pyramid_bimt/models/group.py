@@ -92,8 +92,8 @@ class Group(Base, BaseMixin):
         unique=True,
         nullable=True,
         info={'colanderalchemy': dict(
-            title='JVZoo Product ID',
-            description='If this group is tied to a JVZoo product, enter its '
+            title='IPN Product ID',
+            description='If this group is tied to a IPN product, enter its '
             'ID here.'
         )},
     )
@@ -123,10 +123,10 @@ class Group(Base, BaseMixin):
         String,
         nullable=True,
         info={'colanderalchemy': dict(
-            title='JVZoo IPN request redirect URL',
+            title='IPN request redirect URL',
             description='When the app gets an Instant payment notification '
-            'from JVZoo, if this field is not empty, it redirects the request '
-            'to the specified URL'
+            'from JVZoo or Clickbank, if this field is not empty, it '
+            're-posts the IPN POST request to the specified URL.'
         )},
     )
 

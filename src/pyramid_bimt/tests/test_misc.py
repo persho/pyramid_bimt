@@ -31,6 +31,7 @@ class TestCheckSettings(unittest.TestCase):
         self.settings_full_production = self.settings_full.copy()
         self.settings_full_production.update({
             'bimt.jvzoo_secret_key': '',
+            'bimt.clickbank_secret_key': '',
             'bimt.piwik_site_id': '',
             'bimt.amqp_username': '',
             'bimt.amqp_password': '',

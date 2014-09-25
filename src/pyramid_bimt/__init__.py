@@ -43,6 +43,7 @@ REQUIRED_SETTINGS = [
 
 REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.jvzoo_secret_key',
+    'bimt.clickbank_secret_key',
     'bimt.piwik_site_id',
     'bimt.amqp_username',
     'bimt.amqp_password',
@@ -130,6 +131,7 @@ def add_routes_mailing(config):
 
 def add_routes_other(config):
     config.add_route('jvzoo', '/jvzoo/')
+    config.add_route('clickbank', '/clickbank/')
     config.add_route('raise_js_error', '/raise-error/js/')
     config.add_route('raise_http_error', '/raise-error/{error_code}/')
     config.add_route('config', '/config/')

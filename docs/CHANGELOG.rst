@@ -5,6 +5,11 @@ Changelog
 0.17.2 (unreleased)
 -------------------
 
+- Refactor ``jvzoo.py`` into ``ipn.py`` so we can add support for additional
+  marketplaces and not be limited to just JVZoo. However, currently only JVZoo
+  is supported (with some placeholders already in place for ClickBank).
+  [zupo]
+
 - When behind a proxy, the ``request.cliend_addr`` will list multiple IPs. Only
   the first one is relevant for us.
   [zupo]
