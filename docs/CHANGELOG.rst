@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.17.2 (unreleased)
+0.17.2 (2014-09-26)
 -------------------
 
 - Refactor ``jvzoo.py`` into ``ipn.py`` so we can add support for additional
