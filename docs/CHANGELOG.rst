@@ -5,7 +5,8 @@ Changelog
 0.17.3 (unreleased)
 -------------------
 
-- Change User get_all method to be case insensitive for fullname search.
+- Change User get_all method to be case insensitive for fullname and email
+  search.
   [ferewuz]
 
 - Use jquery.datatables 1.10 to get state saving and other new features.
