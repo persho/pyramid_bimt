@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Integration with JVZoo & Clickbank Instant Payment Notification service."""
 
+from Crypto.Cipher import AES
 from datetime import date
 from datetime import timedelta
 from flufl.enum import Enum
@@ -16,12 +17,30 @@ from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 
 import hashlib
+import json
 import logging
 import requests
 
 logger = logging.getLogger(__name__)
 
 COMMENT = u'{} by {}, transaction id: {}, type: {}, note: {}'
+
+MAPPING_JVZOO = {
+    'ccustname': 'fullname',
+    'ccustemail': 'email',
+    'cproditem': 'product_id',
+    'ctransaction': 'trans_type',
+    'ctransreceipt': 'trans_id',
+    'ctransaffiliate': 'affiliate',
+}
+MAPPING_CLICKBANK = {
+    'customer.billing.fullName': 'fullname',
+    'customer.billing.email': 'email',
+    'lineItems.0.itemNo': 'product_id',
+    'transactionType': 'trans_type',
+    'receipt': 'trans_id',
+    'affiliate': 'affiliate',
+}
 
 
 class UserActions(Enum):
@@ -53,6 +72,12 @@ class IPNView(object):
     def jvzoo(self):
         """Set provider to 'jvzoo' and call IPN handler."""
         self.provider = 'jvzoo'
+
+        # check that we have some content to work with
+        if not self.request.POST:
+            raise ValueError('No POST request.')
+
+        self._parse_request_jvzoo()
         return self.ipn()
 
     @view_config(
@@ -60,24 +85,20 @@ class IPNView(object):
         permission=NO_PERMISSION_REQUIRED,
         renderer='string',
     )
-    def clickbank(self):  # pragma: no cover
+    def clickbank(self):
         """Set provider to 'clickbank' and call IPN handler."""
         self.provider = 'clickbank'
+        # check that we have some content to work with
+        try:
+            self.request.json_body
+        except Exception:
+            raise ValueError('No JSON request.')
+
+        self._parse_request_clickbank()
         return self.ipn()
 
     def ipn(self):
         """The main IPN handler, called by the IPN service."""
-
-        # check for POST request
-        if not self.request.POST:
-            msg = 'No POST request.'
-            logger.exception(msg)
-            return msg
-
-        logger.info(self.request.POST.items())
-        self._verify_POST()
-        self._map_POST()
-
         # try to find an existing user with given email
         user = User.by_email(self.params.email)
         if not user:
@@ -90,7 +111,7 @@ class IPNView(object):
                 email=self.params.email,
                 password=encrypt(password),
                 fullname=u'{}'.format(self.params.fullname),
-                affiliate=u'{}'.format(self.params.affiliate),
+                affiliate=u'{}'.format(self.params.get('affiliate', '')),
             )
             Session.add(user)
 
@@ -135,7 +156,7 @@ class IPNView(object):
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
         """
-        if self.params.trans_type in ['SALE', 'TEST_SALE']:
+        if self.params.trans_type in ['SALE', 'TEST_SALE', 'TEST']:
             self.ipn_sale_transaction(user, group)
 
         elif self.params.trans_type in ['BILL', 'TEST_BILL']:
@@ -230,24 +251,9 @@ class IPNView(object):
         self.request.registry.notify(
             UserDisabled(self.request, user, comment))
 
-    def _verify_POST(self):
-        """Verifies if received POST is a valid IPN POST request.
-
-        :return: True if verified, raise ValueError if verification failed.
-        :rtype: bool
-        """
-        if self.provider == 'jvzoo':
-            return self._verify_POST_jvzoo()
-        elif self.provider == 'clickbank':
-            return self._verify_POST_clickbank()
-        else:
-            raise ValueError('Unknown provider: {}'.format(self.provider))
-
-    def _verify_POST_jvzoo(self):
-        """Verifies if received POST is a valid JVZoo POST request.
-
-        :return: True if verified, raise ValueError if verification failed.
-        :rtype: bool
+    def _parse_request_jvzoo(self):
+        """Verify if received POST is a valid JVZoo POST request and save
+        values to self.params.
         """
         # concatenate POST parameters into a string
         strparams = u''
@@ -260,41 +266,14 @@ class IPNView(object):
 
         # calculate SHA digest and compare to ``cverify`` value
         sha = hashlib.sha1(strparams.encode('utf-8')).hexdigest().upper()
-        if self.request.POST['cverify'] == sha[:8]:
-            return True
-        else:
+        if not self.request.POST['cverify'] == sha[:8]:
             raise ValueError('Checksum verification failed')
 
-    def _verify_POST_clickbank(self):  # pragma: no cover
-        """Verifies if received POST is a valid Clickbank POST request.
-
-        :return: True if verified, raise ValueError if verification failed.
-        :rtype: bool
-        """
-        raise ValueError('ClickBank POST verification not yet implemented.')
-
-    def _map_POST(self):
-        """Remaps values from POST to fit common naming conventions."""
-        MAPPING_JVZOO = {
-            'ccustname': 'fullname',
-            'ccustemail': 'email',
-            'cproditem': 'product_id',
-            'ctransaction': 'trans_type',
-            'ctransreceipt': 'trans_id',
-            'ctransaffiliate': 'affiliate',
-        }
-        MAPPING_CLICKBANK = {}
-        if self.provider == 'jvzoo':
-            MAPPING = MAPPING_JVZOO
-        elif self.provider == 'clickbank':  # pragma: no cover
-            MAPPING = MAPPING_CLICKBANK
-        else:
-            raise ValueError('Unknown provider: {}'.format(self.provider))
-
+        # re-map values from POST to fit common naming conventions
         self.params = AttrDict()
-        for key, value in self.request.POST.iteritems():
-            if key in MAPPING:
-                self.params[MAPPING[key]] = value
+        for key, value in self.request.POST.items():
+            if key in MAPPING_JVZOO:
+                self.params[MAPPING_JVZOO[key]] = value
 
         # convert to common form
         for key, value in self.params.items():
@@ -302,3 +281,52 @@ class IPNView(object):
                 self.params[key] = value.decode('utf-8')
             if key in ['email', 'affiliate']:
                 self.params[key] = value.lower()
+
+    def _parse_request_clickbank(self):
+        """Decrypt JSON received from a Clickbank JSON request and save
+        values to self.params.
+        """
+        # decrypt values
+        iv = self.request.json_body['iv']
+        encrypted_str = self.request.json_body['notification']
+        sha1 = hashlib.sha1()
+        sha1.update(
+            self.request.registry.settings['bimt.clickbank_secret_key'])
+        cipher = AES.new(
+            sha1.hexdigest()[:32], AES.MODE_CBC, iv.decode('base64'))
+        decrypted_str = cipher.decrypt(
+            encrypted_str.decode('base64')).strip().strip('\x06')
+
+        try:
+            self.request.decrypted = __flatten__(json.loads(decrypted_str))
+        except ValueError:
+            raise ValueError('Decryption failed.')
+
+        # re-map values from POST to fit common naming conventions
+        self.params = AttrDict()
+        for key, value in self.request.decrypted.iteritems():
+            if key in MAPPING_CLICKBANK:
+                self.params[MAPPING_CLICKBANK[key]] = value
+
+        # convert to common form
+        for key, value in self.params.items():
+            if key in ['fullname', ]:
+                self.params[key] = value.decode('utf-8')
+            if key in ['email', ]:
+                self.params[key] = value.lower()
+
+
+def __flatten__(d):
+    def items():
+        for key, value in d.items():
+            if isinstance(value, dict):
+                for subkey, subvalue in __flatten__(value).items():
+                    yield key + '.' + subkey, subvalue
+            if isinstance(value, list):
+                for index, item in enumerate(value):
+                    for subkey, subvalue in __flatten__(item).items():
+                        yield key + '.{}.'.format(index) + subkey, subvalue
+            else:
+                yield key, value
+
+    return dict(items())
