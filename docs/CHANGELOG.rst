@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.17.4 (unreleased)
+0.17.4 (2014-09-30)
 -------------------
 
 - BIMT should already include dependencies, so apps don't have to.
