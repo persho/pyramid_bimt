@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.18 (unreleased)
--------------------
+0.18 (2014-09-30)
+-----------------
 
 - [MIGRATION REQUIRED] Support for ClickBank Instant-Payment-Notifications. The
   ``group.product_id`` column needs to be converted from `Integer` to `String`.
