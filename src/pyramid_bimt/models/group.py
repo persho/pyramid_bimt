@@ -88,7 +88,7 @@ class Group(Base, BaseMixin):
     )
 
     product_id = Column(
-        Integer,
+        String,
         unique=True,
         nullable=True,
         info={'colanderalchemy': dict(

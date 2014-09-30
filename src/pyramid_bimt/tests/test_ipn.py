@@ -14,6 +14,7 @@ from pyramid_bimt.views.ipn import AttrDict
 from pyramid_bimt.views.ipn import IPNView
 from pyramid_mailer import get_mailer
 
+import json
 import mock
 import unittest
 import webtest
@@ -35,18 +36,23 @@ class TestJVZoo(unittest.TestCase):
     def setUp(self):
         settings = {
             'bimt.jvzoo_secret_key': 'secret',
-            'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
+
+    def test_no_POST(self):
+        request = testing.DummyRequest()
+        view = IPNView(request)
+        with self.assertRaises(ValueError) as cm:
+            view.jvzoo()
+        self.assertEqual(cm.exception.message, 'No POST request.')
 
     def test_missing_cverify(self):
         post = {
             'foo': 'bar',
         }
         view = IPNView(testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
         with self.assertRaises(KeyError) as cm:
-            view.ipn()
+            view.jvzoo()
         self.assertEqual(
             repr(cm.exception),
             'KeyError(\'cverify\',)',
@@ -57,23 +63,40 @@ class TestJVZoo(unittest.TestCase):
             'cverify': 'foo',
         }
         view = IPNView(testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
         with self.assertRaises(ValueError) as cm:
-            view.ipn()
+            view.jvzoo()
         self.assertEqual(
             str(cm.exception),
             'Checksum verification failed',
         )
 
-    def test_verify_POST(self):
-        """Test POST verification process."""
-        post = dict(
-            ccustname=u'fullname',
-            cverify=u'38CFCDED',
-        )
-        view = IPNView(testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
-        self.assertTrue(view._verify_POST())
+
+class TestClickbank(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'bimt.clickbank_secret_key': 'secret',
+            'bimt.app_title': 'BIMT',
+        }
+        self.config = testing.setUp(settings=settings)
+
+    def test_no_JSON(self):
+        request = testing.DummyRequest()
+        view = IPNView(request)
+        with self.assertRaises(ValueError) as cm:
+            view.clickbank()
+        self.assertEqual(cm.exception.message, 'No JSON request.')
+
+    def test_invalid_decryption(self):
+        request = testing.DummyRequest()
+        request.json_body = {
+            'iv': '27CD0D0CA9379D32'.encode('base64'),
+            'notification': 'bar4567890123456'.encode('base64'),
+        }
+        view = IPNView(request)
+        with self.assertRaises(ValueError) as cm:
+            view.clickbank()
+        self.assertEqual(cm.exception.message, 'Decryption failed.')
 
 
 class TestIPNHandler(unittest.TestCase):
@@ -84,18 +107,11 @@ class TestIPNHandler(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    def test_missing_POST(self):
-        request = testing.DummyRequest()
-        resp = IPNView(request).ipn()
-        self.assertEqual(resp, 'No POST request.')
-
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._map_POST')
+    @mock.patch('pyramid_bimt.views.ipn.IPNView._parse_request_jvzoo')
     @mock.patch('pyramid_bimt.views.ipn.User')
     @mock.patch('pyramid_bimt.views.ipn.Group')
-    def test_invalid_product_id(self, Group, User, map_POST, verify_POST):
-        verify_POST.return_value = True
-        map_POST.return_value = None
+    def test_invalid_product_id(self, Group, User, parse_request):
+        parse_request.return_value = None
         User.by_email = mock.Mock()
         Group.by_product_id.return_value = None
         request = testing.DummyRequest(post={'foo': 'bar'})
@@ -116,22 +132,19 @@ class TestIPNHandler(unittest.TestCase):
     @mock.patch('pyramid_bimt.views.ipn.requests.post')
     @mock.patch('pyramid_bimt.views.ipn.UserDisabled')
     @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_transaction')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._map_POST')
+    @mock.patch('pyramid_bimt.views.ipn.IPNView._parse_request_jvzoo')
     @mock.patch('pyramid_bimt.views.ipn.User')
     @mock.patch('pyramid_bimt.views.ipn.Group')
     def test_forward_ipn_url(
         self,
         Group,
         User,
-        map_POST,
-        verify_POST,
+        parse_request,
         ipn_transaction,
         UserDisabled,
         request_post,
     ):
-        verify_POST.return_value = True
-        map_POST.return_value = None
+        parse_request.return_value = None
         ipn_transaction.return_value = None
         group_mock = mock.Mock()
         group_mock.name = 'test'
@@ -220,76 +233,9 @@ class TestIpnTransaction(unittest.TestCase):
         )
 
 
-class TestVerifyPOST(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        self.view = IPNView(request=testing.DummyRequest())
-
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST_jvzoo')
-    def test_jvzoo(self, verify_POST_jvzoo):
-        self.view.provider = 'jvzoo'
-        self.view._verify_POST()
-        verify_POST_jvzoo.assert_called_with()
-
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST_clickbank')
-    def test_clickbank(self, verify_POST_clickbank):
-        self.view.provider = 'clickbank'
-        self.view._verify_POST()
-        verify_POST_clickbank.assert_called_with()
-
-    def test_invalid(self):
-        self.view.provider = 'foo'
-        with self.assertRaises(ValueError) as cm:
-            self.view._verify_POST()
-        self.assertEqual(
-            str(cm.exception),
-            'Unknown provider: foo',
-        )
-
-
-class TestMapPOST(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def test_jvzoo(self):
-        post = {
-            'ccustname': 'fullname',
-            'ccustemail': 'email',
-            'cproditem': 'product_id',
-            'ctransaction': 'trans_type',
-            'ctransreceipt': 'trans_id',
-            'ctransaffiliate': 'affiliate',
-        }
-        view = IPNView(request=testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
-        view._map_POST()
-        self.assertEqual(
-            view.params,
-            {
-                'product_id': 'product_id',
-                'affiliate': 'affiliate',
-                'trans_type': 'trans_type',
-                'fullname': u'fullname',
-                'email': 'email',
-                'trans_id': 'trans_id',
-            },
-        )
-
-    def test_invalid(self):
-        view = IPNView(request=testing.DummyRequest())
-        view.provider = 'foo'
-        with self.assertRaises(ValueError) as cm:
-            view._map_POST()
-        self.assertEqual(
-            str(cm.exception),
-            'Unknown provider: foo',
-        )
-
-
 class TestIPNViewIntegration(unittest.TestCase):
     def setUp(self):
         settings = {
-            'bimt.jvzoo_secret_key': 'secret',
             'bimt.app_title': 'BIMT',
         }
         self.config = testing.setUp(settings=settings)
@@ -324,9 +270,8 @@ class TestIPNViewIntegration(unittest.TestCase):
         return user
 
     @mock.patch('pyramid_bimt.views.ipn.date')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
     def test_existing_trial_user_new_subscription_payment(
-        self, verify_POST, mocked_date, user=None
+        self, mocked_date, user=None
     ):
         if not user:
             user = self._make_user(
@@ -335,17 +280,16 @@ class TestIPNViewIntegration(unittest.TestCase):
             )
 
         mocked_date.today.return_value = date(2013, 12, 30)
-        verify_POST.return_value = True
-        post = {
-            'ccustemail': 'foo@bar.com',
-            'ctransaction': 'BILL',
-            'ctransreceipt': 123,
-            'cproditem': 1,
-
-        }
-
-        view = IPNView(testing.DummyRequest(post=post))
+        view = IPNView(testing.DummyRequest())
         view.provider = 'jvzoo'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'fullname': u'Föo Bar',
+            'trans_type': 'BILL',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+
         resp = view.ipn()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, True)
@@ -371,8 +315,7 @@ class TestIPNViewIntegration(unittest.TestCase):
         self.test_existing_trial_user_new_subscription_payment(user=user)
 
     @mock.patch('pyramid_bimt.views.ipn.date')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    def test_existing_user_cancel_subscription(self, verify_POST, mocked_date):
+    def test_existing_user_cancel_subscription(self, mocked_date):
         user = self._make_user(
             email='foo@bar.com',
             groups=[
@@ -380,17 +323,16 @@ class TestIPNViewIntegration(unittest.TestCase):
                 Group.by_name('trial'),
                 Group.by_name('monthly'),
             ])
-        post = {
-            'ccustemail': 'FOO@bar.com',
-            'ctransaction': 'RFND',
-            'ctransreceipt': 123,
-            'cproditem': 1,
-        }
         mocked_date.today.return_value = date(2013, 12, 30)
-        verify_POST.return_value = True
 
-        view = IPNView(testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'clickbank'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'trans_type': 'RFND',
+            'trans_id': 123,
+            'product_id': 1,
+        })
         resp = view.ipn()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, False)
@@ -401,27 +343,24 @@ class TestIPNViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserDisabled')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Disabled by jvzoo, transaction id: 123, type: RFND, note: '
+            u'Disabled by clickbank, transaction id: 123, type: RFND, note: '
             u'removed from groups: enabled, trial, monthly',
         )
 
     @mock.patch('pyramid_bimt.views.ipn.date')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    def test_existing_user_billing_email_and_rejoin(
-        self, verify_POST, mocked_date
-    ):
+    def test_existing_user_billing_email_and_rejoin(self, mocked_date):
         user = self._make_user(billing_email='bar@bar.com', enabled=False)
-        post = {
-            'ccustemail': 'BAR@bar.com',
-            'ctransaction': 'SALE',
-            'ctransreceipt': 123,
-            'cproditem': 1,
-        }
         mocked_date.today.return_value = date(2013, 12, 30)
-        verify_POST.return_value = True
 
-        view = IPNView(testing.DummyRequest(post=post))
+        view = IPNView(testing.DummyRequest())
         view.provider = 'jvzoo'
+        view.params = AttrDict({
+            'email': 'bar@bar.com',
+            'trans_type': 'SALE',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+
         resp = view.ipn()
         self.assertEqual(resp, 'Done.')
         self.assertEqual(user.enabled, True)
@@ -439,29 +378,27 @@ class TestIPNViewIntegration(unittest.TestCase):
         )
 
     @mock.patch('pyramid_bimt.views.ipn.date')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    @mock.patch('pyramid_bimt.views.ipn.generate')
-    def test_new_user_no_trial(self, generate, verify_POST, mocked_date):
+    def test_new_user_no_trial(self, mocked_date):
         Group.by_name('monthly').trial_validity = None
-        post = {
-            'ccustemail': 'BAR@bar.com',
-            'ctransaction': 'SALE',
-            'ccustname': 'Foo Bär',
-            'ctransreceipt': 123,
-            'cproditem': 1,
-            'ctransaffiliate': 'aff@bar.com',
-        }
         mocked_date.today.return_value = date(2013, 12, 30)
-        verify_POST.return_value = True
-        generate.return_value = 'secret'
-        view = IPNView(testing.DummyRequest(post=post))
-        view.provider = 'jvzoo'
+
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'clickbank'
+        view.params = AttrDict({
+            'email': 'bar@bar.com',
+            'fullname': u'Föo Bar',
+            'trans_type': 'SALE',
+            'trans_id': 123,
+            'product_id': 1,
+            'affiliate': 'aff@bar.com',
+        })
         resp = view.ipn()
         self.assertEqual(resp, 'Done.')
 
         user = User.by_email('bar@bar.com')
         self.assertEqual(user.enabled, True)
         self.assertEqual(user.trial, False)
+        self.assertEqual(user.affiliate, 'aff@bar.com')
         self.assertEqual(user.valid_to, date(2014, 1, 30))
         self.assertEqual(user.last_payment, date(2013, 12, 30))
 
@@ -471,23 +408,18 @@ class TestIPNViewIntegration(unittest.TestCase):
             user.audit_log_entries[0].event_type.name, u'UserCreated')
         self.assertEqual(
             user.audit_log_entries[0].comment,
-            u'Created by jvzoo, transaction id: 123, type: SALE, note: ',
+            u'Created by clickbank, transaction id: 123, type: SALE, note: ',
         )
 
         self.assertEqual(
             user.audit_log_entries[1].event_type.name, u'UserEnabled')
         self.assertEqual(
             user.audit_log_entries[1].comment,
-            u'Enabled by jvzoo, transaction id: 123, type: SALE, note: '
+            u'Enabled by clickbank, transaction id: 123, type: SALE, note: '
             u'regular until 2014-01-30',
         )
 
-    @mock.patch('pyramid_bimt.views.ipn.date')
-    @mock.patch('pyramid_bimt.views.ipn.IPNView._verify_POST')
-    @mock.patch('pyramid_bimt.views.ipn.generate')
-    def test_welcome_email_api_key_set(
-        self, generate, verify_POST, mocked_date
-    ):
+    def test_welcome_email_api_key_set(self):
         from pyramid_bimt.events import IUserCreated
 
         def generate_api_key(event):
@@ -553,6 +485,93 @@ class TestJVZooViewFunctional(unittest.TestCase):
         self.assertEqual(
             user.audit_log_entries[1].comment,
             u'Enabled by jvzoo, transaction id: 123, type: SALE, note: trial until {}'.format(  # noqa
+                date.today() + timedelta(days=7)),
+        )
+        self.assertEqual(len(self.mailer.outbox), 1)
+        self.assertEqual(self.mailer.outbox[0].subject, u'Welcome to BIMT!')
+        self.assertIn(u'Hello John Smith', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'here are your login details for the membership area', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'u: john.smith@email.com', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'p: ', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'Best wishes', self.mailer.outbox[0].html)  # noqa
+        self.assertIn(u'<a href="http://blog.bigimtoolbox.com/">visit our blog</a>', self.mailer.outbox[0].html)  # noqa
+
+
+class TestClickBankViewFunctional(unittest.TestCase):
+
+    def setUp(self):
+        settings = {
+            'bimt.app_title': 'BIMT',
+            'bimt.clickbank_secret_key': 'secret',
+        }
+        self.config = testing.setUp(settings=settings)
+        self.config.include('pyramid_mailer.testing')
+        initTestingDB(auditlog_types=True, groups=True, mailings=True)
+        _make_ipn_group()
+        configure(self.config)
+        app = self.config.make_wsgi_app()
+        self.testapp = webtest.TestApp(app)
+        self.mailer = get_mailer(testing.DummyRequest())
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_create_new_user(self):
+        payload = {
+            'receipt': '123',
+            'transactionType': 'SALE',
+            'affiliate': 'aff',
+            'lineItems': [
+                {'itemNo': '1', 'productTitle': 'A passed in title'},
+            ],
+            'customer': {
+                'billing': {
+                    'fullName': 'John Smith',
+                    'email': 'John.Smith@email.com',
+                },
+            }
+        }
+        payload = json.dumps(payload)
+        payload = payload + '\x06' * 4  # so length is a multiple of 16
+
+        from Crypto.Cipher import AES
+        import hashlib
+        sha1 = hashlib.sha1()
+        sha1.update('secret')
+        iv = '27CD0D0CA9379D32'
+        cipher = AES.new(sha1.hexdigest()[:32], AES.MODE_CBC, iv)
+        encrypted_payload = cipher.encrypt(payload)
+
+        post = {
+            'iv': iv.encode('base64'),
+            'notification': encrypted_payload.encode('base64'),
+        }
+        resp = self.testapp.post_json('/clickbank/', post)
+        self.assertEqual('Done.', resp.text)
+
+        user = User.by_email('john.smith@email.com')
+        self.assertEqual(user.fullname, 'John Smith')
+        self.assertEqual(user.affiliate, 'aff')
+        self.assertEqual(user.trial, True)
+        self.assertEqual(user.valid_to, date.today() + timedelta(days=7))
+        self.assertEqual(user.last_payment, date.today())
+        self.assertTrue(user.enabled)
+
+        self.assertEqual(len(user.audit_log_entries), 2)
+
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserCreated')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Created by clickbank, transaction id: 123, type: SALE, note: ',
+        )
+
+        self.assertEqual(
+            user.audit_log_entries[1].event_type.name, u'UserEnabled')
+        self.assertEqual(
+            user.audit_log_entries[1].comment,
+            u'Enabled by clickbank, transaction id: 123, type: SALE, note: trial until {}'.format(  # noqa
                 date.today() + timedelta(days=7)),
         )
         self.assertEqual(len(self.mailer.outbox), 1)

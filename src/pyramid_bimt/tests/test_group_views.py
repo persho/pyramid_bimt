@@ -123,7 +123,7 @@ class TestGroupAdd(unittest.TestCase):
 
         group = Group.by_id(6)
         self.assertEqual(group.name, 'foo')
-        self.assertEqual(group.product_id, 13)
+        self.assertEqual(group.product_id, '13')
         self.assertEqual(group.validity, 30)
         self.assertEqual(group.trial_validity, 7)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
