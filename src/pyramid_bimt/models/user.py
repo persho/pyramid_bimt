@@ -313,8 +313,8 @@ class User(Base, BaseMixin):
             q = q.filter_by(**filter_by)
         if search:
             q = q.filter(or_(
-                User.email.like(u'%{}%'.format(search)),
-                User.fullname.like(u'%{}%'.format(search)),
+                User.email.ilike(u'%{}%'.format(search)),
+                User.fullname.ilike(u'%{}%'.format(search)),
             ))
         if offset:
             q = q.slice(offset[0], offset[1])
