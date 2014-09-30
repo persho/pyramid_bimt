@@ -85,6 +85,7 @@
             var settings = {
                 "aaSorting"   : [[iSortCol_0, sSortDir_0]],
                 "aoColumns"   : aoColumns,
+                "stateSave"   : true,
             };
             if ($table.data('ajax') === true) {
                 /* jshint ignore:start */

@@ -5,7 +5,8 @@ Changelog
 0.17.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use jquery.datatables 1.10 to get state saving and other new features.
+  [ferewuz]
 
 
 0.17.2 (2014-09-26)
