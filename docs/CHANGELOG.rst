@@ -5,7 +5,8 @@ Changelog
 0.17.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- BIMT should already include dependencies, so apps don't have to.
+  [zupo]
 
 
 0.17.3 (2014-09-30)

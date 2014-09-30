@@ -236,7 +236,9 @@ def includeme(config):
     check_required_settings(config)
 
     # Setup the DB session and such
+    config.include('pyramid_tm')
     config.include('pyramid_basemodel')
+    config.include('pyramid_fanstatic')
 
     # Add support for encrypted session cookies
     config.include('pyramid_beaker')
