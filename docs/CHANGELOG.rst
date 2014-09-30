@@ -5,6 +5,9 @@ Changelog
 0.17.3 (unreleased)
 -------------------
 
+- Alembic needs ``pyramid_mako``.
+  [zupo]
+
 - Change User get_all method to be case insensitive for fullname and email
   search.
   [ferewuz]
