@@ -162,8 +162,9 @@ def kill_connections(username=None, password=None, apiurl=None):
 
 def configure(config, settings={}):
 
-    # Include chameleon template renderer
+    # Include template renderers
     config.include('pyramid_chameleon')
+    config.include('pyramid_mako')
 
     # Include pyramid layout
     config.include('pyramid_layout')

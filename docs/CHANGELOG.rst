@@ -5,6 +5,13 @@ Changelog
 0.17.3 (unreleased)
 -------------------
 
+- The `js.jquery-datatables` package was re-released, we can now use a public
+  release instead of an internal one.
+  [zupo]
+
+- Alembic needs ``pyramid_mako``.
+  [zupo]
+
 - Change User get_all method to be case insensitive for fullname and email
   search.
   [ferewuz]
