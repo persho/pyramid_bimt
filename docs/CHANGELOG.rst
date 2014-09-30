@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.17.3 (unreleased)
+0.17.3 (2014-09-30)
 -------------------
 
 - The `js.jquery-datatables` package was re-released, we can now use a public
