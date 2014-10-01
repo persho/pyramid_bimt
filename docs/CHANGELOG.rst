@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.19 (unreleased)
------------------
+0.18.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Fixes for undocumented ClickBank's padding.
+  [zupo]
 
 
 0.18 (2014-09-30)

@@ -96,7 +96,10 @@ class TestClickbank(unittest.TestCase):
         view = IPNView(request)
         with self.assertRaises(ValueError) as cm:
             view.clickbank()
-        self.assertEqual(cm.exception.message, 'Decryption failed.')
+        self.assertEqual(
+            cm.exception.message,
+            'Decryption failed: No JSON object could be decoded',
+        )
 
 
 class TestIPNHandler(unittest.TestCase):
@@ -533,7 +536,7 @@ class TestClickBankViewFunctional(unittest.TestCase):
             }
         }
         payload = json.dumps(payload)
-        payload = payload + '\x06' * 4  # so length is a multiple of 16
+        payload = payload + '\x06\x06\x07\x07'  # so length is a multiple of 16
 
         from Crypto.Cipher import AES
         import hashlib

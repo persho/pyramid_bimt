@@ -295,12 +295,13 @@ class IPNView(object):
         cipher = AES.new(
             sha1.hexdigest()[:32], AES.MODE_CBC, iv.decode('base64'))
         decrypted_str = cipher.decrypt(
-            encrypted_str.decode('base64')).strip().strip('\x06')
+            encrypted_str.decode('base64')).strip(' \x06\x07')
 
         try:
             self.request.decrypted = __flatten__(json.loads(decrypted_str))
-        except ValueError:
-            raise ValueError('Decryption failed.')
+        except ValueError as e:
+            logger.exception(e)
+            raise ValueError('Decryption failed: {}'.format(e))
 
         # re-map values from POST to fit common naming conventions
         self.params = AttrDict()
