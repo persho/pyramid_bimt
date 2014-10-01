@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.18.1 (unreleased)
+0.18.1 (2014-10-01)
 -------------------
 
 - Fixes for undocumented ClickBank's padding.
