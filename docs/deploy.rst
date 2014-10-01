@@ -237,7 +237,10 @@ Integrations. Enable IRC and configure it like so:
 Also set the following:
 
 - Account -> Name: <APP TITLE>
+- Account -> Email: <PROJECT'S PLAN.IO "DROPBOX" EMAIL>
 - Appearance -> Timezone: Ljubljana
+
+This will result in error reports being created as new issues in Plan.io.
 
 .. note::
 
