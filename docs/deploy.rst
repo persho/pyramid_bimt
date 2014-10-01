@@ -226,6 +226,7 @@ GetSentry via a Raven logger handler (this one depends on the
 
 Now, log into Sentry (via Heroku Single-Sign-On) and go to Settings -> Manage
 Integrations. Enable IRC and configure it like so:
+
 - Server: irc.freenode.net
 - Port: 7000
 - Room: #niteoweb
@@ -234,8 +235,15 @@ Integrations. Enable IRC and configure it like so:
 - SSL: checked
 
 Also set the following:
+
 - Account -> Name: <APP TITLE>
 - Appearance -> Timezone: Ljubljana
+
+.. note::
+
+    To manually trigger an error to see if Sentry integration works, open the
+    following URLs in your browser: ``/raise-error/js/`` or
+    ``/raise-error/555/``.
 
 
 Network & DB metrics aggregation in Librato Metrics
