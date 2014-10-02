@@ -5,7 +5,8 @@ Changelog
 0.18.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Pinned repoze.sendmail to 4.1, because of a known bug in 4.2.
+  [ferewuz]
 
 
 0.18.1 (2014-10-01)
