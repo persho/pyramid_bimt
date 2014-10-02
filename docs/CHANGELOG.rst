@@ -5,6 +5,9 @@ Changelog
 0.18.2 (unreleased)
 -------------------
 
+- Remove default limits for get_all methods on all models.
+  [ferewuz]
+
 - Pinned repoze.sendmail to 4.1, because of a known bug in 4.2.
   [ferewuz]
 

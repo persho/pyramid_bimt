@@ -255,6 +255,4 @@ class AuditLogEntry(Base):
             q = q.slice(offset[0], offset[1])
         elif limit:
             q = q.limit(limit)
-        else:
-            q = q.limit(100)
         return q
