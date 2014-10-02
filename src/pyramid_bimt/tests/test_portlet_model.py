@@ -152,6 +152,13 @@ class TestPortletGetAll(unittest.TestCase):
         portlets = Portlet.get_all()
         self.assertEqual(len(portlets), 3)
 
+    def test_portlets_limit(self):
+        _make_portlet(name='foo')
+        _make_portlet(name='bar')
+        _make_portlet(name='baz')
+        portlets = Portlet.get_all(limit=2)
+        self.assertEqual(len(portlets), 2)
+
     def test_ordered_by_position_by_default(self):
         _make_portlet(name='foo', position='above_content')
         _make_portlet(name='bar', position='above_footer')

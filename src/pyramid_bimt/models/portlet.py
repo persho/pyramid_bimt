@@ -138,7 +138,7 @@ class Portlet(Base, BaseMixin):
         return [p for p in portlets if any_group(user.groups, p.groups)]
 
     @classmethod
-    def get_all(class_, order_by='position', filter_by=None, limit=100):
+    def get_all(class_, order_by='position', filter_by=None, limit=None):
         """Return all Portlets.
 
         filter_by: dict -> {'name': 'foo'}
@@ -150,5 +150,6 @@ class Portlet(Base, BaseMixin):
         q = q.order_by(getattr(Portlet, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)
-        q = q.limit(limit)
+        if limit:
+            q = q.limit(limit)
         return q.all()
