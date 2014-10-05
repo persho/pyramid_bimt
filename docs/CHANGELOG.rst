@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.18.2 (unreleased)
+0.18.2 (2014-10-05)
 -------------------
 
 - Remove default limits for get_all methods on all models.
