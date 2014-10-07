@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.18.4 (unreleased)
--------------------
+0.18.3.1 (unreleased)
+---------------------
 
-- Nothing changed yet.
+- More fixes for ClickBank IPN padding, refs #707.
+  [zupo]
 
 
 0.18.3 (2014-10-07)
