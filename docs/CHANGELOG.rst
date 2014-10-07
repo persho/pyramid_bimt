@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.18.3 (unreleased)
+0.18.3 (2014-10-07)
 -------------------
 
 - Better filtering of zero-padded bytes from ClickBank, refs #707.
