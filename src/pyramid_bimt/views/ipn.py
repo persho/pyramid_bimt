@@ -20,6 +20,7 @@ import hashlib
 import json
 import logging
 import requests
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -294,8 +295,10 @@ class IPNView(object):
             self.request.registry.settings['bimt.clickbank_secret_key'])
         cipher = AES.new(
             sha1.hexdigest()[:32], AES.MODE_CBC, iv.decode('base64'))
-        decrypted_str = cipher.decrypt(
-            encrypted_str.decode('base64')).strip(' \x06\x07')
+
+        decrypted_str = cipher.decrypt(encrypted_str.decode('base64'))
+        decrypted_str = filter(lambda x: x in string.printable, decrypted_str)  # noqa
+        decrypted_str = decrypted_str.strip(' \t\r\n\0')
 
         try:
             self.request.decrypted = __flatten__(json.loads(decrypted_str))

@@ -5,7 +5,8 @@ Changelog
 0.18.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Better filtering of zero-padded bytes from ClickBank, refs #707.
+  [zupo]
 
 
 0.18.2 (2014-10-05)
