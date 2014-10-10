@@ -13,11 +13,14 @@ from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.views.ipn import AttrDict
 from pyramid_bimt.views.ipn import IPNView
 from pyramid_mailer import get_mailer
+from zope.testing.loggingsupport import InstalledHandler
 
 import json
 import mock
 import unittest
 import webtest
+
+handler = InstalledHandler('pyramid_bimt.views.ipn')
 
 
 def _make_ipn_group():
@@ -175,6 +178,10 @@ class TestIpnTransaction(unittest.TestCase):
         self.view = IPNView(request=testing.DummyRequest())
         self.view.params = AttrDict()
 
+    def tearDown(self):
+        handler.clear()
+        testing.tearDown()
+
     @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_sale_transaction')
     def test_SALE(self, sale_transaction):
         self.view.params.trans_type = 'SALE'
@@ -212,16 +219,32 @@ class TestIpnTransaction(unittest.TestCase):
         disable_transaction.assert_called_with(self.user, self.group)
 
     @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_disable_transaction')
-    def test_INSF(self, disable_transaction):
-        self.view.params.trans_type = 'INSF'
-        self.view.ipn_transaction(self.user, self.group)
-        disable_transaction.assert_called_with(self.user, self.group)
-
-    @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_disable_transaction')
     def test_TEST_RFND(self, disable_transaction):
         self.view.params.trans_type = 'TEST_RFND'
         self.view.ipn_transaction(self.user, self.group)
         disable_transaction.assert_called_with(self.user, self.group)
+
+    @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_disable_transaction')
+    def test_INSF(self, disable_transaction):
+        self.view.params.trans_type = 'INSF'
+        self.view.ipn_transaction(self.user, self.group)
+        self.assertEqual(len(handler.records), 1)
+        self.assertEqual(
+            handler.records[0].message,
+            'Don\'t do anything, user will be disabled when it\'s '
+            'subscription runs out.',
+        )
+
+    @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_disable_transaction')
+    def test_CANCEL_REBILL(self, disable_transaction):
+        self.view.params.trans_type = 'CANCEL-REBILL'
+        self.view.ipn_transaction(self.user, self.group)
+        self.assertEqual(len(handler.records), 1)
+        self.assertEqual(
+            handler.records[0].message,
+            'Don\'t do anything, user will be disabled when it\'s '
+            'subscription runs out.',
+        )
 
     def test_invalid(self):
         self.view.params.trans_type = 'foo'
