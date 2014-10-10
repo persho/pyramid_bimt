@@ -574,6 +574,7 @@ class TestClickBankViewFunctional(unittest.TestCase):
         self.assertEqual('Done.', resp.text)
 
         user = User.by_email('john.smith@email.com')
+        self.assertEqual(user.billing_email, 'john.smith@email.com')
         self.assertEqual(user.fullname, 'John Smith')
         self.assertEqual(user.affiliate, 'aff')
         self.assertEqual(user.trial, True)

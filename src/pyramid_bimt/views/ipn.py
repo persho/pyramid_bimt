@@ -110,6 +110,7 @@ class IPNView(object):
             password = generate()
             user = User(
                 email=self.params.email,
+                billing_email=self.params.email,
                 password=encrypt(password),
                 fullname=u'{}'.format(self.params.fullname),
                 affiliate=u'{}'.format(self.params.get('affiliate', '')),
