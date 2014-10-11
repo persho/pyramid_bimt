@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.18.3.2 (unreleased)
----------------------
+0.18.4 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Handle the CANCEL-TEST-REBILL transaction type, refs #824.
+  [zupo]
 
 
 0.18.3.1 (2014-10-07)

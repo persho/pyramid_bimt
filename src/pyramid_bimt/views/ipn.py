@@ -163,9 +163,14 @@ class IPNView(object):
         elif self.params.trans_type in ['BILL', 'TEST_BILL']:
             self.ipn_bill_transaction(user, group)
 
-        elif self.params.trans_type in ['RFND', 'CGBK', 'INSF', 'TEST_RFND']:
+        elif self.params.trans_type in ['RFND', 'CGBK', 'TEST_RFND']:
             self.ipn_disable_transaction(user, group)
 
+        elif self.params.trans_type in [
+            'CANCEL-REBILL', 'INSF', 'CANCEL-TEST-REBILL',
+        ]:
+            logger.info('Don\'t do anything, user will be disabled when it\'s '
+                        'subscription runs out.')
         else:
             raise ValueError(
                 u'Unknown Transaction Type: {}'.format(self.params.trans_type))
