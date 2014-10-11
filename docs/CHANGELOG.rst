@@ -5,6 +5,10 @@ Changelog
 0.18.4 (unreleased)
 -------------------
 
+- Upon creating a user, immediately set the ``billing_email`` in case the user
+  decides to change the login email, refs #830.
+  [zupo]
+
 - Handle the CANCEL-TEST-REBILL transaction type, refs #824.
   [zupo]
 
