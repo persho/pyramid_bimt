@@ -135,6 +135,20 @@ class TestAuditLogView(unittest.TestCase):
             view.columns['user_id'], '<a href="/user/3/">one@bar.com</a>')
         self.assertEqual(view.columns['action'], None)
 
+    def test_populate_columns_entry_without_user(self):
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
+        Session.delete(User.by_id(3))
+        Session.flush()
+        view = self._make_view()
+        self.assertEqual(view.columns['comment'], u'unread entry')
+        self.assertEqual(
+            view.columns['event_type_id'], 'User Changed Password')
+        self.assertEqual(view.columns['user_id'], None)
+        self.assertEqual(view.columns['action'], None)
+
     def test_admin_mark_only_own_entries_as_unread(self):
         self.request.user = User.by_email('admin@bar.com')
 
