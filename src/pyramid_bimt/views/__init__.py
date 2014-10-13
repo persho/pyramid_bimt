@@ -15,6 +15,7 @@ from pyramid_bimt.static import form_assets
 from pyramid_deform import FormView as BaseFormView
 
 import colander
+import copy
 import deform
 import re
 
@@ -83,6 +84,7 @@ class DatatablesDataView(object):
 
     def __init__(self, request):
         self.request = request
+        self.columns = copy.copy(self.columns)
 
     def populate_columns(self, item):
         """Fill self.columns with display values for given item/row.

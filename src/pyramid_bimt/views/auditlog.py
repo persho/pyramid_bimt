@@ -69,10 +69,11 @@ class AuditLogAJAX(DatatablesDataView):
             <time class="timeago" datetime="{}Z">{} UTC</time>
             """.format(timestamp, timestamp)
 
-        self.columns['user_id'] = '<a href="{}">{}</a>'.format(
-            self.request.route_path('user_view', user_id=entry.user.id),
-            entry.user.email,
-        )
+        if entry.user:
+            self.columns['user_id'] = '<a href="{}">{}</a>'.format(
+                self.request.route_path('user_view', user_id=entry.user.id),
+                entry.user.email,
+            )
 
         if self.request.has_permission(BimtPermissions.manage):
             self.columns['action'] = """

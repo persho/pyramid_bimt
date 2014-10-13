@@ -5,6 +5,14 @@ Changelog
 0.18.4 (unreleased)
 -------------------
 
+- Fix AJAX datatable view problem as different instances of a view were using
+  the same object for columns.
+  [ferewuz]
+
+- Fix bug when AuditLogEntry had the User connected to it deleted and still
+  tried to get the user info.
+  [ferewuz]
+
 - Upon creating a user, immediately set the ``billing_email`` in case the user
   decides to change the login email, refs #830.
   [zupo]
