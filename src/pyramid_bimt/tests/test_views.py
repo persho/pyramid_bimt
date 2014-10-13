@@ -372,6 +372,29 @@ class TestDatatablesAJAXView(unittest.TestCase):
         )
 
 
+class TestDatatablesAJAXViewImplementation(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.request = testing.DummyRequest(user=mock.Mock())
+
+        from pyramid_bimt.views import DatatablesDataView
+
+        class DatatablesFooBar(DatatablesDataView):
+            columns = OrderedDict()
+            columns['foo'] = None
+            columns['bar'] = None
+
+        self.view1 = DatatablesFooBar(self.request)
+        self.view2 = DatatablesFooBar(self.request)
+
+    def test_cleaned_up_initial_data(self):
+        self.view1.columns['foo'] = 'bla'
+        self.assertNotEqual(
+            self.view1.columns['foo'],
+            self.view2.columns['foo']
+        )
+
+
 class TestDatatablesAJAXViewIntegration(unittest.TestCase):
     def setUp(self):
         from pyramid_bimt.views import DatatablesDataView
