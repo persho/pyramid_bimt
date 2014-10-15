@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.18.4 (unreleased)
+0.18.4 (2014-10-15)
 -------------------
 
 - Set ``settings['bimt. mode']`` mode-of-operation so apps can have code that
