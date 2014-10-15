@@ -5,7 +5,8 @@ Changelog
 0.18.4.2 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Upgrade six to newest version.
+  [ferewuz]
 
 
 0.18.4.1 (2014-10-15)
