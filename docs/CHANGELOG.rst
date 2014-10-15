@@ -5,6 +5,10 @@ Changelog
 0.18.4 (unreleased)
 -------------------
 
+- Set ``settings['bimt. mode']`` mode-of-operation so apps can have code that
+  runs only in development or production.
+  [zupo]
+
 - Fix AJAX datatable view problem as different instances of a view were using
   the same object for columns.
   [ferewuz]

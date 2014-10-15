@@ -2,6 +2,7 @@
 """Misc and tools tests."""
 
 from pyramid import testing
+from pyramid_bimt.const import Modes
 
 import mock
 import unittest
@@ -11,6 +12,7 @@ class TestCheckSettings(unittest.TestCase):
 
     def setUp(self):
         self.settings_full = {
+            'bimt.mode': Modes.development.name,
             'session.key': 'bimt',
             'session.secret': 'secret',
             'session.encrypt_key': 'secret',
@@ -81,7 +83,8 @@ class TestCheckSettings(unittest.TestCase):
     def test_check_required_settings_production(self, patched_sys):
         from pyramid_bimt import check_required_settings
 
-        patched_sys.argv = ['pserve', 'production.ini']
+        self.config_full_production.registry.settings['bimt.mode'] = \
+            Modes.production.name
 
         try:
             check_required_settings(self.config_full_production)
@@ -99,7 +102,8 @@ class TestCheckSettings(unittest.TestCase):
     def test_missing_required_settings_production(self, patched_sys):
         from pyramid_bimt import check_required_settings
 
-        patched_sys.argv = ['pserve', 'production.ini']
+        self.config_full.registry.settings['bimt.mode'] = \
+            Modes.production.name
 
         with self.assertRaises(KeyError) as cm:
             check_required_settings(self.config_full)
