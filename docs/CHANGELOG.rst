@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.18.4.2 (unreleased)
+0.18.4.2 (2014-10-15)
 ---------------------
 
 - Upgrade six to newest version.
