@@ -240,7 +240,8 @@ def includeme(config):
     elif 'production.ini' in ' '.join(sys.argv).lower():
         config.registry.settings['bimt.mode'] = Modes.production.name
     else:
-        raise ValueError('Unknown mode of operation: {}'.format(
+        config.registry.settings['bimt.mode'] = Modes.unknown.name
+        logger.warning('Unknown mode of operation: {}'.format(
             ' '.join(sys.argv).lower()))
 
     check_required_settings(config)

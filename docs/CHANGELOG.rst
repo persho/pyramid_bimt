@@ -5,7 +5,8 @@ Changelog
 0.18.5 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Don't fail on unknown mode, it breaks robot tests on Travis.
+  [zupo]
 
 
 0.18.4 (2014-10-15)

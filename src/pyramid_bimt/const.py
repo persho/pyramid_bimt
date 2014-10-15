@@ -5,6 +5,7 @@ from flufl.enum import Enum
 
 
 class Modes(Enum):
+    unknown = 'unknown'
     development = 'development'
     testing = 'testing'
     production = 'production'
