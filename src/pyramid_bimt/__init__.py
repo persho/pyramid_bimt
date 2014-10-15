@@ -16,6 +16,7 @@ from pyramid_bimt.acl import PortletFactory
 from pyramid_bimt.acl import RootFactory
 from pyramid_bimt.acl import UserFactory
 from pyramid_bimt.acl import groupfinder
+from pyramid_bimt.const import Modes
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
@@ -204,8 +205,7 @@ def configure(config, settings={}):
     # Run a venusian scan to pick up the declarative configuration.
     config.scan('pyramid_bimt', ignore=ignores)
 
-    if 'production.ini' in ' '.join(sys.argv).lower() and \
-            settings.get('bimt.kill_cloudamqp_connections', True):  # pragma: no cover  # noqa
+    if settings.get('bimt.kill_cloudamqp_connections'):  # pragma: no cover
         kill_connections(
             username=settings.get('bimt.amqp_username', ''),
             password=settings.get('bimt.amqp_password', ''),
@@ -221,9 +221,8 @@ def check_required_settings(config):
                 'The "{}" setting is required, please set '
                 'it in your .ini file.'.format(setting))
 
-    # check if we are running with production.ini
-    if 'production.ini' in ' '.join(sys.argv).lower():
-        # make sure production required settings are set
+    # make sure production required settings are set
+    if config.registry.settings['bimt.mode'] == 'production':
         for setting in REQUIRED_SETTINGS_PRODUCTION:
             if setting not in config.registry.settings:
                 raise KeyError(
@@ -233,6 +232,17 @@ def check_required_settings(config):
 
 def includeme(config):
     """Allow developers to use ``config.include('pyramid_bimt')``."""
+
+    if 'development.ini' in ' '.join(sys.argv).lower():
+        config.registry.settings['bimt.mode'] = Modes.development.name
+    elif 'testing.ini' in ' '.join(sys.argv).lower():
+        config.registry.settings['bimt.mode'] = Modes.testing.name
+    elif 'production.ini' in ' '.join(sys.argv).lower():
+        config.registry.settings['bimt.mode'] = Modes.production.name
+    else:
+        raise ValueError('Unknown mode of operation: {}'.format(
+            ' '.join(sys.argv).lower()))
+
     check_required_settings(config)
 
     # Setup the DB session and such
