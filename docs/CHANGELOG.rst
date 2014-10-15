@@ -2,10 +2,16 @@ Changelog
 =========
 
 
+0.18.5 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 0.18.4 (2014-10-15)
 -------------------
 
-- Set ``settings['bimt. mode']`` mode-of-operation so apps can have code that
+- Set ``settings['bimt.mode']`` mode-of-operation so apps can have code that
   runs only in development or production.
   [zupo]
 
