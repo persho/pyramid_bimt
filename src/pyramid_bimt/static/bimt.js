@@ -58,49 +58,52 @@
         enableDefaultPlugins();
 
         if ($('.datatable').length > 0 && $('.datatable').dataTable) {
-            // Read columns configuration from DOM
-            var $table = $('.datatable'),
-                sort_direction = $table.data('sortDescending') ? 'desc' : 'asc',
-                aoColumns = [];
-            $(".table thead th").each(function () {
-                var $this = $(this);
-                if ($this.data('sortDisabled') === true) {
-                    aoColumns.push({ "bSortable": false });
-                } else {
-                    aoColumns.push(null);
+            $('.datatable').each(function() {
+
+                // Read columns configuration from DOM
+                var $table = $( this ),
+                    sort_direction = $table.data('sortDescending') ?
+                        'desc' : 'asc',
+                    aoColumns = [];
+                $table.find("thead th").each(function () {
+                    var $this = $(this);
+                    if ($this.data('sortDisabled') === true) {
+                        aoColumns.push({ "bSortable": false });
+                    } else {
+                        aoColumns.push(null);
+                    }
+                });
+
+                // Read sorting parameters from querystring
+                var iSortCol_0 = getParameterByName('iSortCol_0'),
+                    sSortDir_0 = getParameterByName('sSortDir_0');
+                if (iSortCol_0 === null) {
+                    iSortCol_0 = 0;
                 }
-            });
+                if (sSortDir_0 === null) {
+                    sSortDir_0 = sort_direction;
+                }
 
-            // Read sorting parameters from querystring
-            var iSortCol_0 = getParameterByName('iSortCol_0'),
-                sSortDir_0 = getParameterByName('sSortDir_0');
-            if (iSortCol_0 === null) {
-                iSortCol_0 = 0;
-            }
-            if (sSortDir_0 === null) {
-                sSortDir_0 = sort_direction;
-            }
+                // Prepare datatables settings
+                var settings = {
+                    "aaSorting"   : [[iSortCol_0, sSortDir_0]],
+                    "aoColumns"   : aoColumns,
+                    "stateSave"   : true,
+                };
+                if ($table.data('ajax') === true) {
+                    /* jshint ignore:start */
+                    settings["bProcessing"] = true;
+                    settings["bServerSide"] = true;
+                    settings["sAjaxSource"] = document.URL;
+                    /* jshint ignore:end */
+                }
 
-            // Prepare datatables settings
-            var settings = {
-                "aaSorting"   : [[iSortCol_0, sSortDir_0]],
-                "aoColumns"   : aoColumns,
-                "stateSave"   : true,
-            };
-            if ($table.data('ajax') === true) {
-                /* jshint ignore:start */
-                settings["bProcessing"] = true;
-                settings["bServerSide"] = true;
-                settings["sAjaxSource"] = document.URL;
-                /* jshint ignore:end */
-            }
+                // Initialize datatable
+                $table.dataTable(settings);
 
-            // Initialize datatables
-            $table.dataTable(settings);
+                // Add the placeholder for Search and Length and turn them into
+                // in-line form controls
 
-            // Add the placeholder for Search and Length and turn them into
-            // in-line form controls
-            $('.datatable').each(function () {
                 var $datatable = $(this),
                     $dt_wrapper = $datatable.closest('.dataTables_wrapper'),
                     $search_input = $dt_wrapper.find('div[id$=_filter] input'),
@@ -108,6 +111,7 @@
                 $search_input.attr('placeholder', 'Search');
                 $search_input.addClass('form-control input-sm');
                 $length_sel.addClass('form-control input-sm');
+
             });
         }
 

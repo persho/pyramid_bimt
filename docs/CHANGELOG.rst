@@ -2,10 +2,12 @@ Changelog
 =========
 
 
-0.18.4.4 (unreleased)
+0.18.5 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Fix datatables initialization to support more than one datatable on the
+  same page.
+  [ferewuz]
 
 
 0.18.4.3 (2014-10-15)
