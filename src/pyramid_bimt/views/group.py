@@ -40,6 +40,28 @@ class GroupView(object):
         }
 
 
+@colander.deferred
+def deferred_group_name_validator(node, kw):
+
+    def validator(node, cstruct):
+        if Group.by_name(cstruct):
+            raise colander.Invalid(
+                node, u'Group with name "{}" already exists.'.format(cstruct))
+    return validator
+
+
+@colander.deferred
+def deferred_group_product_validator(node, kw):
+
+    def validator(node, cstruct):
+        if Group.by_product_id(cstruct):
+            raise colander.Invalid(
+                node,
+                u'Group with product id "{}" already exists.'.format(cstruct)
+            )
+    return validator
+
+
 @view_config(
     route_name='group_add',
     layout='default',
@@ -64,7 +86,11 @@ class GroupAdd(FormView):
         self.schema = SQLAlchemySchemaNode(
             Group,
             includes=self.fields,
-            overrides={'properties': {'includes': ['key', 'value']}},
+            overrides={
+                'properties': {'includes': ['key', 'value']},
+                'name': {'validator': deferred_group_name_validator},
+                'product_id': {'validator': deferred_group_product_validator}
+            }
         )
 
         # we don't like the way ColanderAlchemy renders SA Relationships so

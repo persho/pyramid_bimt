@@ -5,7 +5,9 @@ Changelog
 0.18.5.1 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- When adding groups if group with same name or product id already exist and
+  return a validation error.
+  [ferewuz]
 
 
 0.18.5 (2014-10-16)

@@ -219,3 +219,75 @@ class TestGroupEdit(unittest.TestCase):
         self.assertIsNone(group.get_property('foo', None))
         self.assertEqual(
             self.request.session.pop_flash(), [u'Group "foo" modified.'])
+
+
+class TestGroupNameValidator(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB(groups=True)
+
+        self.request = testing.DummyRequest()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_valid_groupname(self):
+        from pyramid_bimt.views.group import deferred_group_name_validator
+
+        cstruct = 'new_group'
+
+        validator = deferred_group_name_validator(None, {})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_duplicate_groupname(self):
+        from pyramid_bimt.views.group import deferred_group_name_validator
+        from colander import Invalid
+
+        cstruct = 'admins'
+
+        validator = deferred_group_name_validator(None, {})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Group with name "admins" already exists.'
+        )
+
+
+class TestGroupProductValidator(unittest.TestCase):
+
+    def setUp(self):
+        self.config = testing.setUp()
+        initTestingDB(groups=True)
+        Group.by_id(1).product_id = 'old_id'
+        Session.flush()
+
+        self.request = testing.DummyRequest()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_valid_product_id(self):
+        from pyramid_bimt.views.group import deferred_group_product_validator
+
+        cstruct = 'new_id'
+
+        validator = deferred_group_product_validator(None, {})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_duplicate_product_id(self):
+        from pyramid_bimt.views.group import deferred_group_product_validator
+        from colander import Invalid
+
+        cstruct = 'old_id'
+
+        validator = deferred_group_product_validator(None, {})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Group with product id "old_id" already exists.'
+        )
