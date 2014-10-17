@@ -2,8 +2,11 @@ Changelog
 =========
 
 
-0.18.5.1 (unreleased)
+0.19 (unreleased)
 ---------------------
+- [MIGRATION REQUIRED] Support for exclude groups on portlets similar to
+  mailings, so admins can disable portlets for a selected group.
+  [ferewuz]
 
 - When adding groups if group with same name or product id already exist and
   return a validation error.

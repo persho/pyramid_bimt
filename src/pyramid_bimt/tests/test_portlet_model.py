@@ -130,6 +130,23 @@ class TestPortletByUserAndPosition(unittest.TestCase):
         portlets = Portlet.by_user_and_position(User.by_id(1), 'above_content')
         self.assertEqual(len(portlets), 0)
 
+    def test_user_in_group_and_exclude_group(self):
+        group1 = _make_group()
+        group2 = _make_group(name='bar')
+        _make_user(groups=[group1, group2, ])
+        _make_portlet(name='foo', groups=[group1, ],
+                      exclude_groups=[group2, ], position='above_content')
+        portlets = Portlet.by_user_and_position(User.by_id(1), 'above_content')
+        self.assertEqual(len(portlets), 0)
+
+    def test_same_group_include_exclude(self):
+        group = _make_group()
+        _make_user(groups=[group, ])
+        _make_portlet(name='foo', groups=[group, ],
+                      exclude_groups=[group, ], position='above_content')
+        portlets = Portlet.by_user_and_position(User.by_id(1), 'above_content')
+        self.assertEqual(len(portlets), 0)
+
 
 class TestPortletGetAll(unittest.TestCase):
 

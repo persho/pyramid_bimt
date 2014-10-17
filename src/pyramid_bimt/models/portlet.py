@@ -38,6 +38,22 @@ portlet_group_table = Table(
     UniqueConstraint('portlet_id', 'group_id', name='portlet_id_group_id'),
 )
 
+exclude_portlet_group_table = Table(
+    'exclude_portlet_group',
+    Base.metadata,
+    Column(
+        'portlet_id',
+        Integer,
+        ForeignKey('portlets.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    Column(
+        'group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+    ),
+    UniqueConstraint('portlet_id', 'group_id', name='exclude_portlet_id_group_id'),  # noqa
+)
+
 
 class PortletPositions(Enum):
     """Supported positions for portlets"""
@@ -74,6 +90,11 @@ class Portlet(Base, BaseMixin):
         'Group',
         secondary=portlet_group_table,
         backref='portlets',
+    )
+
+    exclude_groups = relationship(
+        'Group',
+        secondary=exclude_portlet_group_table,
     )
 
     position = Column(
@@ -135,7 +156,13 @@ class Portlet(Base, BaseMixin):
                 if group1 in groups2:
                     return True
             return False
-        return [p for p in portlets if any_group(user.groups, p.groups)]
+
+        shown_portlets = []
+        for p in portlets:
+            if any_group(user.groups, p.groups):
+                if not any_group(user.groups, p.exclude_groups):
+                    shown_portlets.append(p)
+        return shown_portlets
 
     @classmethod
     def get_all(class_, order_by='position', filter_by=None, limit=None):
