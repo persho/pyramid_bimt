@@ -2,6 +2,12 @@ Changelog
 =========
 
 
+0.19.1 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
 0.19 (2014-10-20)
 -----------------
 - [MIGRATION REQUIRED] Support for exclude groups on portlets similar to
