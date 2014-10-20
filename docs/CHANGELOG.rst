@@ -5,7 +5,8 @@ Changelog
 0.19.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Added missing options for exclude_groups to portlet add and edit view.
+  [ferewuz]
 
 
 0.19 (2014-10-20)

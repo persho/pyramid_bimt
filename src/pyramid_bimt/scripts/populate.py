@@ -205,10 +205,12 @@ def add_demo_portlet():
     """Create a dummy portlet."""
     with transaction.manager:
         admins = Group.by_name('admins')
+        enabled = Group.by_name('enabled')
 
         portlet = Portlet(
             name='dummy',
             groups=[admins, ],
+            exclude_groups=[enabled, ],
             position=PortletPositions.below_sidebar.name,
             weight=-127,
             html=u'You are admin.',

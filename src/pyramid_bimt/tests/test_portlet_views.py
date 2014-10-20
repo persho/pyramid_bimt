@@ -28,16 +28,20 @@ def _make_portlet(
     id=1,
     name='foo',
     groups=None,
+    exclude_groups=None,
     position=PortletPositions.below_sidebar,
     weight=0,
     html=u'Foo Portlet'
 ):
     if not groups:  # pragma: no branch
         groups = [_make_group()]
+    if exclude_groups is None:
+        exclude_groups = []
     return Portlet(
         id=id,
         name=name,
         groups=groups,
+        exclude_groups=exclude_groups,
         position=position,
         weight=weight,
         html=html,
@@ -86,6 +90,7 @@ class TestPortletAdd(unittest.TestCase):
     APPSTRUCT = {
         'name': 'foo',
         'groups': [1, ],
+        'exclude_groups': [2, ],
         'position': 'below_sidebar',
         'weight': 10,
         'html': u'Foo',
@@ -122,6 +127,7 @@ class TestPortletAdd(unittest.TestCase):
         portlet = Portlet.by_id(1)
         self.assertEqual(portlet.name, 'foo')
         self.assertEqual(portlet.groups, [Group.by_id(1)])
+        self.assertEqual(portlet.exclude_groups, [Group.by_id(2)])
         self.assertEqual(portlet.position, PortletPositions.below_sidebar.name)
         self.assertEqual(portlet.weight, 10)
         self.assertEqual(portlet.html, u'Foo')
@@ -134,7 +140,8 @@ class TestPortletEdit(unittest.TestCase):
 
     APPSTRUCT = {
         'name': 'bar',
-        'groups': [1, 2],
+        'groups': [2, 3],
+        'exclude_groups': [4, ],
         'position': 'above_content',
         'weight': -10,
         'html': u'Bar',
@@ -163,6 +170,7 @@ class TestPortletEdit(unittest.TestCase):
         self.assertEqual(self.view.appstruct(), {
             'name': 'dummy',
             'groups': ['1', ],
+            'exclude_groups': ['3', ],
             'position': PortletPositions.below_sidebar.name,
             'weight': -127,
             'html': u'You are admin.',
@@ -177,7 +185,8 @@ class TestPortletEdit(unittest.TestCase):
 
         portlet = Portlet.by_id(1)
         self.assertEqual(portlet.name, 'bar')
-        self.assertEqual(portlet.groups, [Group.by_id(1), Group.by_id(2)])
+        self.assertEqual(portlet.groups, [Group.by_id(2), Group.by_id(3)])
+        self.assertEqual(portlet.exclude_groups, [Group.by_id(4), ])
         self.assertEqual(portlet.position, PortletPositions.above_content.name)
         self.assertEqual(portlet.weight, -10)
         self.assertEqual(portlet.html, u'Bar')

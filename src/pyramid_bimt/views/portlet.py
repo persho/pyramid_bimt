@@ -75,11 +75,21 @@ class PortletAdd(FormView):
                 widget=deform.widget.CheckboxChoiceWidget(values=choices),
             ),
         )
+        self.schema.add_before(
+            'position',
+            node=colander.SchemaNode(
+                colander.Set(),
+                name='exclude_groups',
+                missing=[],
+                widget=deform.widget.CheckboxChoiceWidget(values=choices),
+            ),
+        )
 
     def submit_success(self, appstruct):
         portlet = Portlet(
             name=appstruct.get('name'),
             groups=[Group.by_id(group_id) for group_id in appstruct.get('groups')],  # noqa
+            exclude_groups=[Group.by_id(group_id) for group_id in appstruct.get('exclude_groups')],  # noqa
             position=appstruct.get('position'),
             weight=appstruct.get('weight'),
             html=appstruct.get('html'),
@@ -94,7 +104,7 @@ class PortletAdd(FormView):
 
     def appstruct(self):
         appstruct = dict()
-        for field in self.fields + ['groups']:
+        for field in self.fields + ['groups', 'exclude_groups']:
             if self.request.params.get(field) is not None:
                 appstruct[field] = self.request.params[field]
 
@@ -117,6 +127,7 @@ class PortletEdit(PortletAdd):
 
         portlet.name = appstruct['name']
         portlet.groups = [Group.by_id(group_id) for group_id in appstruct['groups']]  # noqa
+        portlet.exclude_groups = [Group.by_id(group_id) for group_id in appstruct['exclude_groups']]  # noqa
         portlet.position = appstruct['position']
         portlet.weight = appstruct['weight']
         portlet.html = appstruct['html']
@@ -139,5 +150,6 @@ class PortletEdit(PortletAdd):
 
         if context.groups:
             appstruct['groups'] = [str(g.id) for g in context.groups]
-
+        if context.exclude_groups:
+            appstruct['exclude_groups'] = [str(g.id) for g in context.exclude_groups]  # noqa
         return appstruct
