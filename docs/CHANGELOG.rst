@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.19 (unreleased)
----------------------
+0.19 (2014-10-20)
+-----------------
 - [MIGRATION REQUIRED] Support for exclude groups on portlets similar to
   mailings, so admins can disable portlets for a selected group.
   [ferewuz]
