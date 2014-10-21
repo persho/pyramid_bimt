@@ -142,6 +142,7 @@ def add_users():
         # Create the normal user account
         one = User(
             email=u'one@bar.com',
+            billing_email=u'billing@bar.com',
             password=SECRET_ENC,
             fullname=u'Öne Bar',
             properties=[UserProperty(key=u'bimt', value=u'on'), ],

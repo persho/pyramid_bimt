@@ -37,24 +37,37 @@ def deferred_groups_validator(node, kw):
     return validator
 
 
-@colander.deferred
-def deferred_user_email_validator(node, kw):
+def validate_email_field(node, kw, field_name):
+
+    email_fields = ['email', 'billing_email']
 
     def validator(node, cstruct):
         colander.Email()(node, cstruct)
-        if User.by_email(cstruct):
-            raise colander.Invalid(
-                node, u'User with email {} already exists.'.format(cstruct))
+        for email_field in email_fields:
+            query = User.query.filter_by(**{email_field: cstruct})
+            if query.count() and query.one() != kw['request'].context:
+                raise colander.Invalid(
+                    node, u'Email {} is already in use.'.format(cstruct))
 
     # skip validation if context already has email set and this email is resent
     if (  # pragma: no branch
         kw.get('request') and
         isinstance(kw['request'].context, User) and
-        kw['request'].context.email == kw['request'].POST.get('email')
+        getattr(kw['request'].context, field_name) == kw['request'].POST.get(field_name)  # noqa
     ):
         return colander.Email()
 
     return validator
+
+
+@colander.deferred
+def deferred_user_email_validator(node, kw):
+    return validate_email_field(node, kw, 'email')
+
+
+@colander.deferred
+def deferred_user_billing_email_validator(node, kw):
+    return validate_email_field(node, kw, 'billing_email')
 
 
 @view_defaults(permission=BimtPermissions.manage)
@@ -220,7 +233,9 @@ class UserAdd(FormView):
             includes=self.fields,
             overrides={
                 'properties': {'includes': ['key', 'value']},
-                'email': {'validator': deferred_user_email_validator}
+                'email': {'validator': deferred_user_email_validator},
+                'billing_email': {
+                    'validator': deferred_user_billing_email_validator}
             }
         )
 

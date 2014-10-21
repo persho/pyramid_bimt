@@ -5,7 +5,8 @@ Changelog
 0.19.1.1 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Added validator for billing email to prevent duplicates.
+  [ferewuz]
 
 
 0.19.1 (2014-10-20)

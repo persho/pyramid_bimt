@@ -66,7 +66,7 @@ def _make_user(
     email='foo@bar.com',
     fullname=u'Foö Bar',
     affiliate=u'Aff',
-    billing_email='billing@bar.com',
+    billing_email='payments@bar.com',
     valid_to=date(2014, 2, 1),
     last_payment=date(2014, 1, 1),
     groups=None,
@@ -348,13 +348,13 @@ class TestGroupsValidator(unittest.TestCase):
         )
 
 
-class TestUserEmailValidator(unittest.TestCase):
+class TestUserEmailValidators(unittest.TestCase):
 
     def setUp(self):
         self.config = testing.setUp()
         initTestingDB(groups=True, users=True)
 
-        self.request = testing.DummyRequest(user=User.by_email('one@bar.com'))
+        self.request = testing.DummyRequest()
 
     def tearDown(self):
         Session.remove()
@@ -365,7 +365,17 @@ class TestUserEmailValidator(unittest.TestCase):
 
         cstruct = 'test@bar.com'
 
-        validator = deferred_user_email_validator(None, {})
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
+        self.assertFalse(validator(None, cstruct))
+
+    def test_valid_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+
+        cstruct = 'test@bar.com'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
         self.assertFalse(validator(None, cstruct))
 
     def test_invalid_email(self):
@@ -374,26 +384,85 @@ class TestUserEmailValidator(unittest.TestCase):
 
         cstruct = 'fooooooo'
 
-        validator = deferred_user_email_validator(None, {})
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
         with self.assertRaises(Invalid) as cm:
             validator(None, cstruct)
         self.assertEqual(cm.exception.msg, u'Invalid email address')
 
-    def test_duplicate_email(self):
+    def test_invalid_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+        from colander import Invalid
+
+        cstruct = 'fooooooo'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(cm.exception.msg, u'Invalid email address')
+
+    def test_email_already_in_use_by_email(self):
         from pyramid_bimt.views.user import deferred_user_email_validator
         from colander import Invalid
 
-        cstruct = 'one@bar.com'
+        cstruct = 'admin@bar.com'
 
-        validator = deferred_user_email_validator(None, {})
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
         with self.assertRaises(Invalid) as cm:
             validator(None, cstruct)
         self.assertEqual(
             cm.exception.msg,
-            u'User with email one@bar.com already exists.'
+            u'Email admin@bar.com is already in use.'
         )
 
-    def test_context_email(self):
+    def test_billing_email_already_in_use_by_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+        from colander import Invalid
+
+        cstruct = 'admin@bar.com'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Email admin@bar.com is already in use.'
+        )
+
+    def test_email_already_in_use_by_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+        from colander import Invalid
+
+        cstruct = 'billing@bar.com'
+
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Email billing@bar.com is already in use.'
+        )
+
+    def test_billing_email_already_in_use_by_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+        from colander import Invalid
+
+        cstruct = 'billing@bar.com'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
+        with self.assertRaises(Invalid) as cm:
+            validator(None, cstruct)
+        self.assertEqual(
+            cm.exception.msg,
+            u'Email billing@bar.com is already in use.'
+        )
+
+    def test_context_email_allowed_for_email(self):
         from pyramid_bimt.views.user import deferred_user_email_validator
 
         schema = SQLAlchemySchemaNode(User)
@@ -405,6 +474,42 @@ class TestUserEmailValidator(unittest.TestCase):
 
         self.assertFalse(validator(schema.get('email'), 'one@bar.com'))
 
+    def test_context_billing_email_allowed_for_email(self):
+        from pyramid_bimt.views.user import deferred_user_email_validator
+
+        schema = SQLAlchemySchemaNode(User)
+        self.request.context = User.by_email('one@bar.com')
+        self.request.POST['email'] = 'billing@bar.com'
+
+        validator = deferred_user_email_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('email'), 'billing@bar.com'))
+
+    def test_context_email_allowed_for_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+
+        schema = SQLAlchemySchemaNode(User)
+        self.request.context = User.by_email('one@bar.com')
+        self.request.POST['email'] = 'one@bar.com'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('email'), 'one@bar.com'))
+
+    def test_context_billing_email_allowed_for_billing_email(self):
+        from pyramid_bimt.views.user import deferred_user_billing_email_validator  # noqa
+
+        schema = SQLAlchemySchemaNode(User)
+        self.request.context = User.by_email('one@bar.com')
+        self.request.POST['email'] = 'billing@bar.com'
+
+        validator = deferred_user_billing_email_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('email'), 'billing@bar.com'))
+
 
 class TestUserAdd(unittest.TestCase):
 
@@ -413,7 +518,7 @@ class TestUserAdd(unittest.TestCase):
         'password': 'secret',
         'fullname': u'Foö Bar',
         'affiliate': u'Aff',
-        'billing_email': 'billing@bar.com',
+        'billing_email': 'payments@bar.com',
         'valid_to': date(2014, 2, 1),
         'last_payment': date(2014, 1, 1),
         'groups': [1, ],
@@ -472,7 +577,7 @@ class TestUserAdd(unittest.TestCase):
         self.assertTrue(verify('secret', user.password))
         self.assertEqual(user.fullname, u'Foö Bar')
         self.assertEqual(user.affiliate, u'Aff')
-        self.assertEqual(user.billing_email, 'billing@bar.com')
+        self.assertEqual(user.billing_email, 'payments@bar.com')
         self.assertEqual(user.valid_to, date(2014, 2, 1))
         self.assertEqual(user.last_payment, date(2014, 1, 1))
         self.assertEqual(user.groups, [Group.by_id(1), ])
@@ -514,7 +619,7 @@ class TestUserEdit(unittest.TestCase):
             'email': 'foo@bar.com',
             'fullname': u'Foö Bar',
             'affiliate': u'Aff',
-            'billing_email': 'billing@bar.com',
+            'billing_email': 'payments@bar.com',
             'valid_to': date(2014, 2, 1),
             'last_payment': date(2014, 1, 1),
             'groups': ['1', ],
@@ -526,7 +631,7 @@ class TestUserEdit(unittest.TestCase):
         'password': 'new_secret',
         'fullname': u'Foö Bar',
         'affiliate': u'Aff',
-        'billing_email': 'billing@bar.com',
+        'billing_email': 'payments@bar.com',
         'valid_to': date(2014, 2, 1),
         'last_payment': date(2014, 1, 1),
         'groups': [1, ],
@@ -551,7 +656,7 @@ class TestUserEdit(unittest.TestCase):
         self.assertTrue(verify('new_secret', user.password))
         self.assertEqual(user.fullname, u'Foö Bar')
         self.assertEqual(user.affiliate, u'Aff')
-        self.assertEqual(user.billing_email, 'billing@bar.com')
+        self.assertEqual(user.billing_email, 'payments@bar.com')
         self.assertEqual(user.valid_to, date(2014, 2, 1))
         self.assertEqual(user.last_payment, date(2014, 1, 1))
         self.assertEqual(user.groups, [Group.by_id(1), ])
