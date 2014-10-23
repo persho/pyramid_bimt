@@ -101,10 +101,9 @@ class User(Base, BaseMixin):
 
     #: email of the affiliate that referred this user
     affiliate = Column(
-        Unicode,
+        Unicode(120),
         info={'colanderalchemy': dict(
             title='Affiliate',
-            validator=colander.Email(),
         )}
     )
 

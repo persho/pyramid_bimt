@@ -5,6 +5,9 @@ Changelog
 0.19.1.1 (unreleased)
 ---------------------
 
+- Allow afilliate ID to be any string as jvzoo uses IDs instead of emails.
+  [ferewuz]
+
 - Added validator for billing email to prevent duplicates.
   [ferewuz]
 
