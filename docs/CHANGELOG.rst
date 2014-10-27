@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.19.1.1 (unreleased)
+0.19.1.1 (2014-10-27)
 ---------------------
 
 - Allow afilliate ID to be any string as jvzoo uses IDs instead of emails.
