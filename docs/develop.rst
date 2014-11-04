@@ -45,6 +45,28 @@ Now you can run a variety of commands:
     $ make coverage  # generate HTML report of test coverage
     $ make clean  # clean up if something is broken and start from scratch
 
+
+Running a local copy of production DB
+-------------------------------------
+
+Sometimes you want to run production data on a local database -- be it for
+debugging, testing or development purposes. This is how you do it:
+
+#. First, install `PostgreSQL`. On Ubuntu, that would be ``apt-get install
+   postgres``, on OS X (using Homebrew) ``brew install postgress``.
+#. Start `PostgreSQL`. Ubuntu: ``service postgres start``, OS X: ``postgres -D
+   /usr/local/var/postgres``.
+#. Good! Now download a recent backup from
+   ``https://postgres.heroku.com/databases``.
+#. Then import the backup into your local database with: ``pg_restore
+   <PATH>/<TO>/<DUMP>.dump``.
+#. Finally, tell Pyramid to use your local PostgreSQL by adding the following
+   line to ``etc/development.ini``: ``sqlalchemy.url =
+   postgres://localhost:5432/<DB_NAME>``.
+#. You can now start Pyramid with ``bin/pserve etc/development.ini`` and it
+   will run against a local copy of production data.
+
+
 Developing the ``pyramid_bimt`` package
 ---------------------------------------
 
