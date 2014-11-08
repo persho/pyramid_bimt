@@ -47,11 +47,20 @@ def deferred_group_name_validator(node, kw):
         if Group.by_name(cstruct):
             raise colander.Invalid(
                 node, u'Group with name "{}" already exists.'.format(cstruct))
+
+    # skip validation if context already has name set and this name is resent
+    if (  # pragma: no branch
+        kw.get('request') and kw.get('request').POST and
+        isinstance(kw['request'].context, Group) and
+        kw['request'].context.name == kw['request'].POST['name']
+    ):
+        return colander.Length(min=1)
+
     return validator
 
 
 @colander.deferred
-def deferred_group_product_validator(node, kw):
+def deferred_group_product_id_validator(node, kw):
 
     def validator(node, cstruct):
         if Group.by_product_id(cstruct):
@@ -59,6 +68,15 @@ def deferred_group_product_validator(node, kw):
                 node,
                 u'Group with product id "{}" already exists.'.format(cstruct)
             )
+
+    # skip validation if context already has product_id set and it is resent
+    if (  # pragma: no branch
+        kw.get('request') and kw.get('request').POST and
+        isinstance(kw['request'].context, Group) and
+        kw['request'].context.product_id == kw['request'].POST['product_id']
+    ):
+        return colander.Length(min=1)
+
     return validator
 
 
@@ -89,7 +107,7 @@ class GroupAdd(FormView):
             overrides={
                 'properties': {'includes': ['key', 'value']},
                 'name': {'validator': deferred_group_name_validator},
-                'product_id': {'validator': deferred_group_product_validator}
+                'product_id': {'validator': deferred_group_product_id_validator}  # noqa
             }
         )
 

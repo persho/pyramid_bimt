@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for Group views."""
 
+from colanderalchemy import SQLAlchemySchemaNode
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
 from pyramid_basemodel import Session
@@ -255,6 +256,18 @@ class TestGroupNameValidator(unittest.TestCase):
             u'Group with name "admins" already exists.'
         )
 
+    def test_context_name_allowed_for_name(self):
+        from pyramid_bimt.views.group import deferred_group_name_validator
+
+        schema = SQLAlchemySchemaNode(Group)
+        self.request.context = Group.by_name('enabled')
+        self.request.POST['name'] = 'enabled'
+
+        validator = deferred_group_name_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('name'), 'enabled'))
+
 
 class TestGroupProductValidator(unittest.TestCase):
 
@@ -271,23 +284,36 @@ class TestGroupProductValidator(unittest.TestCase):
         testing.tearDown()
 
     def test_valid_product_id(self):
-        from pyramid_bimt.views.group import deferred_group_product_validator
+        from pyramid_bimt.views.group import deferred_group_product_id_validator  # noqa
 
         cstruct = 'new_id'
 
-        validator = deferred_group_product_validator(None, {})
+        validator = deferred_group_product_id_validator(None, {})
         self.assertFalse(validator(None, cstruct))
 
     def test_duplicate_product_id(self):
-        from pyramid_bimt.views.group import deferred_group_product_validator
+        from pyramid_bimt.views.group import deferred_group_product_id_validator  # noqa
         from colander import Invalid
 
         cstruct = 'old_id'
 
-        validator = deferred_group_product_validator(None, {})
+        validator = deferred_group_product_id_validator(None, {})
         with self.assertRaises(Invalid) as cm:
             validator(None, cstruct)
         self.assertEqual(
             cm.exception.msg,
             u'Group with product id "old_id" already exists.'
         )
+
+    def test_context_product_id_allowed_for_product_id(self):
+        from pyramid_bimt.views.group import deferred_group_product_id_validator  # noqa
+
+        schema = SQLAlchemySchemaNode(Group)
+        self.request.context = Group.by_name('enabled')
+        self.request.context.product_id = '123'
+        self.request.POST['product_id'] = '123'
+
+        validator = deferred_group_product_id_validator(
+            None, {'request': self.request})
+
+        self.assertFalse(validator(schema.get('product_id'), '123'))

@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.19.1.2 (unreleased)
----------------------
+0.19.2 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Fix 'name' and 'product_id' validators so existing groups can be edited.
+  [zupo]
 
 
 0.19.1.1 (2014-10-27)

@@ -23,14 +23,21 @@ Scenario: Staff member adds a new group
      Then location should be  http://localhost:8080/group/6/edit/
       And page should contain  Group "monthly" added.
 
-Scenario: Staff member edits a group
+Scenario: Staff member renames a group
     Given I am logged in as a staff member
      When I go to  http://localhost:8080/group/3/edit/
       And I input text  name=name  yearly
-      And I input text  name=validity  365
       And I click button  Save
      Then location should be  http://localhost:8080/group/3/edit/
       And page should contain  Group "yearly" modified.
+
+Scenario: Staff member edits a group
+    Given I am logged in as a staff member
+     When I go to  http://localhost:8080/group/3/edit/
+      And I input text  name=validity  365
+      And I click button  Save
+     Then location should be  http://localhost:8080/group/3/edit/
+      And page should contain  Group "enabled" modified.
 
 Scenario: User cannot add groups
    Given I am logged in as a user
