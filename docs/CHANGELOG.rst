@@ -2,6 +2,15 @@ Changelog
 =========
 
 
+0.20 (unreleased)
+-----------------
+
+- Allow apps to provide their own sanity check by registering ZCA Utilities
+  that implement the ISanityCheck interface.
+  [MIGRATION NEEDED] All apps need to update their Heroku Scheduler commands
+  to run `sanitycheck_email` instead of `sanity_check_email`.
+  [zupo]
+
 0.19.2 (unreleased)
 -------------------
 

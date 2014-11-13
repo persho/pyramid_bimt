@@ -3,7 +3,7 @@
 
 from pyramid.paster import bootstrap
 from pyramid.renderers import render
-from pyramid_bimt.sanity_check import sanity_check
+from pyramid_bimt.sanitycheck import run_all_checks
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_email(settings, request):
-    warnings = sanity_check()
+    warnings = run_all_checks(request.registry)
     if warnings:
         subject = '{} sanity check found {} warnings'.format(
             settings['bimt.app_title'], len(warnings))
@@ -27,7 +27,7 @@ def send_email(settings, request):
         recipients=['maintenance@niteoweb.com', ],
         subject=subject,
         html=render(
-            'pyramid_bimt:templates/sanity_check_email.pt',
+            'pyramid_bimt:templates/sanitycheck_email.pt',
             {'warnings': warnings},
         ),
     ))
@@ -36,7 +36,7 @@ def send_email(settings, request):
 def main(argv=sys.argv):
     parser = argparse.ArgumentParser(
         usage='bin/py -m '
-        'pyramid_bimt.scripts.sanity_check_email etc/production.ini',
+        'pyramid_bimt.scripts.sanitycheck_email etc/production.ini',
     )
     parser.add_argument(
         'config', type=str, metavar='<config>',

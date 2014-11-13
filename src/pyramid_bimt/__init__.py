@@ -8,6 +8,7 @@ from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.settings import asbool
 from pyramid_basemodel import Session
 from pyramid_beaker import session_factory_from_settings
+from pyramid_bimt import sanitycheck
 from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.acl import BimtPermissions
 from pyramid_bimt.acl import GroupFactory
@@ -136,8 +137,19 @@ def add_routes_other(config):
     config.add_route('raise_js_error', '/raise-error/js/')
     config.add_route('raise_http_error', '/raise-error/{error_code}/')
     config.add_route('config', '/config/')
-    config.add_route('sanity_check', '/sanity-check/')
+    config.add_route('sanitycheck', '/sanity-check/')
     config.add_route('login_as', '/login-as/')
+
+
+def register_utilities(config):
+    """Register ZCA Utilities to the Pyramid's ZCA registry."""
+    # register Sanity Checks
+    config.registry.registerUtility(
+        sanitycheck.CheckAdminUser, sanitycheck.ISanityCheck)
+    config.registry.registerUtility(
+        sanitycheck.CheckDefaultGroups, sanitycheck.ISanityCheck)
+    config.registry.registerUtility(
+        sanitycheck.CheckUsersProperties, sanitycheck.ISanityCheck)
 
 
 def kill_connections(username=None, password=None, apiurl=None):
@@ -192,6 +204,9 @@ def configure(config, settings={}):
     add_routes_portlet(config)
     add_routes_mailing(config)
     add_routes_other(config)
+
+    # register ZCA utilities
+    register_utilities(config)
 
     # enable views that we need in Robot tests
     ignores = ['pyramid_bimt.tests']

@@ -309,7 +309,7 @@ Add the following BIMT scripts (plus any additional app-specific ones):
 .. code-block:: bash
 
     python -m pyramid_bimt.scripts.expire_subscriptions etc/production.ini
-    python -m pyramid_bimt.scripts.sanity_check_email etc/production.ini
+    python -m pyramid_bimt.scripts.sanitycheck_email etc/production.ini
 
 
 On-site PostgreSQL backups

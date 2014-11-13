@@ -2,31 +2,33 @@
 """Testing sanity check view and email script."""
 
 from pyramid import testing
+from pyramid_bimt import register_utilities
 from pyramid_mailer import get_mailer
 
 import mock
 import unittest
 
 
-class TestCheckAdmin(unittest.TestCase):
+class TestCheckAdminUser(unittest.TestCase):
+
     def setUp(self):
         testing.setUp()
 
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.sanity_check.User')
+    @mock.patch('pyramid_bimt.sanitycheck.User')
     def test_no_user_with_id_1(self, User):
         User.by_id.return_value = None
 
-        from pyramid_bimt.sanity_check import check_admin_user
+        from pyramid_bimt.sanitycheck import CheckAdminUser
         self.assertEqual(
-            check_admin_user(),
+            CheckAdminUser()(),
             ['User "admin" should have id of "1".'],
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.User')
-    @mock.patch('pyramid_bimt.sanity_check.Group')
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    @mock.patch('pyramid_bimt.sanitycheck.Group')
     def test_admin_not_disabled(self, Group, User):
         Group.by_name.return_value = 'admins'
 
@@ -35,14 +37,14 @@ class TestCheckAdmin(unittest.TestCase):
         user.groups = ['admins', ]
         User.by_id.return_value = user
 
-        from pyramid_bimt.sanity_check import check_admin_user
+        from pyramid_bimt.sanitycheck import CheckAdminUser
         self.assertEqual(
-            check_admin_user(),
+            CheckAdminUser()(),
             ['User "admin" should be disabled in production.'],
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.User')
-    @mock.patch('pyramid_bimt.sanity_check.Group')
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    @mock.patch('pyramid_bimt.sanitycheck.Group')
     def test_admin_not_in_admins_group(self, Group, User):
         Group.by_name.return_value = 'admins'
 
@@ -51,14 +53,14 @@ class TestCheckAdmin(unittest.TestCase):
         user.groups = ['users', ]
         User.by_id.return_value = user
 
-        from pyramid_bimt.sanity_check import check_admin_user
+        from pyramid_bimt.sanitycheck import CheckAdminUser
         self.assertEqual(
-            check_admin_user(),
+            CheckAdminUser()(),
             ['User "admin" should be in "admins" group.'],
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.User')
-    @mock.patch('pyramid_bimt.sanity_check.Group')
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    @mock.patch('pyramid_bimt.sanitycheck.Group')
     def test_no_warnings(self, Group, User):
         group = mock.Mock()
         Group.by_name.return_value = group
@@ -68,9 +70,9 @@ class TestCheckAdmin(unittest.TestCase):
         user.groups = [group, ]
         User.by_id.return_value = user
 
-        from pyramid_bimt.sanity_check import check_admin_user
+        from pyramid_bimt.sanitycheck import CheckAdminUser
         self.assertEqual(
-            check_admin_user(),
+            CheckAdminUser()(),
             [],
         )
 
@@ -82,13 +84,13 @@ class TestCheckDefaultGroups(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
+    @mock.patch('pyramid_bimt.sanitycheck.Group')
     def test_default_groups_missing(self, Group):
         Group.by_name.return_value = None
 
-        from pyramid_bimt.sanity_check import check_default_groups
+        from pyramid_bimt.sanitycheck import CheckDefaultGroups
         self.assertEqual(
-            check_default_groups(),
+            CheckDefaultGroups()(),
             [
                 'Group "admins" missing.',
                 'Group "enabled" missing.',
@@ -96,114 +98,131 @@ class TestCheckDefaultGroups(unittest.TestCase):
             ],
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
+    @mock.patch('pyramid_bimt.sanitycheck.Group')
     def test_no_warnings(self, Group):
         Group.by_name.return_value = True
 
-        from pyramid_bimt.sanity_check import check_default_groups
+        from pyramid_bimt.sanitycheck import CheckDefaultGroups
         self.assertEqual(
-            check_default_groups(),
+            CheckDefaultGroups()(),
             [],
         )
 
 
-class TestCheckUser(unittest.TestCase):
+class TestCheckUsersProperties(unittest.TestCase):
     def setUp(self):
         testing.setUp()
 
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_fullname_is_None(self, Group):
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_fullname_is_None(self, User):
         user = mock.Mock()
         user.id = 2
         user.email = 'foo@bar.com'
         user.fullname = None
+        User.get_all.return_value = [user, ]
 
-        from pyramid_bimt.sanity_check import check_user
+        from pyramid_bimt.sanitycheck import CheckUsersProperties
         self.assertEqual(
-            check_user(user),
+            CheckUsersProperties()(),
             ['User foo@bar.com (2) has an empty fullname.', ]
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_fullname_is_empty_string(self, Group):
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_fullname_is_empty_string(self, User):
         user = mock.Mock()
         user.id = 2
         user.email = 'foo@bar.com'
         user.fullname = ''
+        User.get_all.return_value = [user, ]
 
-        from pyramid_bimt.sanity_check import check_user
+        from pyramid_bimt.sanitycheck import CheckUsersProperties
         self.assertEqual(
-            check_user(user),
+            CheckUsersProperties()(),
             ['User foo@bar.com (2) has an empty fullname.', ]
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_fullname_is_spaces(self, Group):
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_fullname_is_spaces(self, User):
         user = mock.Mock()
         user.id = 2
         user.email = 'foo@bar.com'
         user.fullname = '  '
+        User.get_all.return_value = [user, ]
 
-        from pyramid_bimt.sanity_check import check_user
+        from pyramid_bimt.sanitycheck import CheckUsersProperties
         self.assertEqual(
-            check_user(user),
+            CheckUsersProperties()(),
             ['User foo@bar.com (2) has an empty fullname.', ]
         )
 
-    @mock.patch('pyramid_bimt.sanity_check.Group')
-    def test_no_warnings(self, Group):
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_no_warnings(self, User):
         user = mock.Mock()
         user.id = 2
         user.email = 'foo@bar.com'
         user.fullname = 'Foo'
+        User.get_all.return_value = [user, ]
 
-        from pyramid_bimt.sanity_check import check_user
+        from pyramid_bimt.sanitycheck import CheckUsersProperties
         self.assertEqual(
-            check_user(user),
+            CheckUsersProperties()(),
             [],
         )
 
 
-class TestSanityCheck(unittest.TestCase):
+class TestRunAllChecks(unittest.TestCase):
     def setUp(self):
         testing.setUp()
+        self.request = testing.DummyRequest()
+        self.config = testing.setUp(request=self.request)
+        register_utilities(self.config)
 
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.sanity_check.check_admin_user')
-    @mock.patch('pyramid_bimt.sanity_check.check_default_groups')
-    @mock.patch('pyramid_bimt.sanity_check.check_user')
-    @mock.patch('pyramid_bimt.sanity_check.User')
-    def test_no_warnings(self, User, check_user, check_default_groups, check_admin_user):  # noqa
-        check_admin_user.return_value = []
-        check_default_groups.return_value = []
-        check_user.return_value = []
-        User.get_all.return_value = []
+    def test_no_warnings(self):
+        check_admin_user = mock.Mock()
+        check_default_groups = mock.Mock()
+        check_users_properties = mock.Mock()
 
-        from pyramid_bimt.sanity_check import sanity_check
-        self.assertEqual(sanity_check(), [])
+        check_admin_user.return_value.return_value = []
+        check_default_groups.return_value.return_value = []
+        check_users_properties.return_value.return_value = []
 
-    @mock.patch('pyramid_bimt.sanity_check.check_admin_user')
-    @mock.patch('pyramid_bimt.sanity_check.check_default_groups')
-    @mock.patch('pyramid_bimt.sanity_check.check_user')
-    @mock.patch('pyramid_bimt.sanity_check.User')
-    def test_some_warnings(self, User, check_user, check_default_groups, check_admin_user):  # noqa
-        check_admin_user.return_value = ['admin warning', ]
-        check_default_groups.return_value = ['groups warning', ]
-        check_user.return_value = ['user warning']
-        User.get_all.return_value = ['user1', 'user2']
+        def utilities(interface):
+            return [
+                check_admin_user, check_default_groups, check_users_properties
+            ]
 
-        from pyramid_bimt.sanity_check import sanity_check
+        self.request.registry.getAllUtilitiesRegisteredFor = utilities
+        from pyramid_bimt.sanitycheck import run_all_checks
+        self.assertEqual(run_all_checks(self.request.registry), [])
+
+    def test_some_warnings(self):
+        check_admin_user = mock.Mock()
+        check_default_groups = mock.Mock()
+        check_users_properties = mock.Mock()
+
+        check_admin_user.return_value.return_value = ['admin warning', ]
+        check_default_groups.return_value.return_value = ['groups warning', ]
+        check_users_properties.return_value.return_value = ['user warning']
+
+        def utilities(interface):
+            return [
+                check_admin_user, check_default_groups, check_users_properties
+            ]
+
+        self.request.registry.getAllUtilitiesRegisteredFor = utilities
+
+        from pyramid_bimt.sanitycheck import run_all_checks
         self.assertEqual(
-            sanity_check(),
+            run_all_checks(self.request.registry),
             [
                 'admin warning',
                 'groups warning',
-                'user warning',
                 'user warning',
             ],
         )
@@ -217,21 +236,21 @@ class TestSanityCheckView(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.sanity_check.sanity_check')
-    @mock.patch('pyramid_bimt.sanity_check.app_assets')
-    def test_assets(self, app_assets, sanity_check):
-        sanity_check.return_value = []
+    @mock.patch('pyramid_bimt.sanitycheck.run_all_checks')
+    @mock.patch('pyramid_bimt.sanitycheck.app_assets')
+    def test_assets(self, app_assets, run_all_checks):
+        run_all_checks.return_value = []
 
-        from pyramid_bimt.sanity_check import sanity_check_view
-        sanity_check_view(self.request)
+        from pyramid_bimt.sanitycheck import sanitycheck_view
+        sanitycheck_view(self.request)
         app_assets.need.assert_called_with()
 
-    @mock.patch('pyramid_bimt.sanity_check.sanity_check')
-    def test_view_result(self, sanity_check):
-        sanity_check.return_value = ['warning1', 'warning2']
+    @mock.patch('pyramid_bimt.sanitycheck.run_all_checks')
+    def test_view_result(self, run_all_checks):
+        run_all_checks.return_value = ['warning1', 'warning2']
 
-        from pyramid_bimt.sanity_check import sanity_check_view
-        result = sanity_check_view(self.request)
+        from pyramid_bimt.sanitycheck import sanitycheck_view
+        result = sanitycheck_view(self.request)
         self.assertEqual(result, {'warnings': ['warning1', 'warning2']})
 
 
@@ -249,11 +268,11 @@ class TestSanityCheckEmail(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('pyramid_bimt.scripts.sanity_check_email.sanity_check')
-    def test_no_warnings(self, sanity_check):
-        sanity_check.return_value = []
+    @mock.patch('pyramid_bimt.scripts.sanitycheck_email.run_all_checks')
+    def test_no_warnings(self, run_all_checks):
+        run_all_checks.return_value = []
 
-        from pyramid_bimt.scripts.sanity_check_email import send_email
+        from pyramid_bimt.scripts.sanitycheck_email import send_email
         send_email(self.config.registry.settings, self.request)
 
         mailer = get_mailer(self.config)
@@ -265,11 +284,11 @@ class TestSanityCheckEmail(unittest.TestCase):
         self.assertIn(
             'Everything in order, nothing to report.', mailer.outbox[0].html)
 
-    @mock.patch('pyramid_bimt.scripts.sanity_check_email.sanity_check')
-    def test_some_warnings(self, sanity_check):
-        sanity_check.return_value = ['warning1', 'warning2']
+    @mock.patch('pyramid_bimt.scripts.sanitycheck_email.run_all_checks')
+    def test_some_warnings(self, run_all_checks):
+        run_all_checks.return_value = ['warning1', 'warning2']
 
-        from pyramid_bimt.scripts.sanity_check_email import send_email
+        from pyramid_bimt.scripts.sanitycheck_email import send_email
         send_email(self.config.registry.settings, self.request)
 
         mailer = get_mailer(self.config)
