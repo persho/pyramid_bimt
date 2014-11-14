@@ -18,6 +18,7 @@ class ISanityCheck(Interface):
         :returns: warnings found in this check
         :rtype: list of strings
         """
+        pass
 
 
 @view_config(
