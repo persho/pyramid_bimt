@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.20 (unreleased)
+0.20 (2014-11-14)
 -----------------
 
 - Allow apps to provide their own sanity checks by registering ZCA Utilities
