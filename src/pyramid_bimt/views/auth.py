@@ -84,8 +84,6 @@ class LoginForm(FormView):
         self.request.session.flash(u'Login failed.', 'error')
 
     def reset_password_success(self, appstruct):
-        came_from = self.request.params.get(
-            'came_from', self.request.application_url)
         email = appstruct['email'].lower()
         user = User.by_email(email)
         if user is not None:
@@ -99,7 +97,7 @@ class LoginForm(FormView):
 
             self.request.session.flash(
                 u'A new password was sent to your email.')
-            return HTTPFound(location=came_from)
+            return HTTPFound(location=self.request.route_path('login'))
         self.request.session.flash(
             u'Password reset failed. Make sure you '
             'have correctly entered your email address.', 'error')

@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.21 (unreleased)
------------------
+0.20.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Correctly redirect to login page after reseting password.
+  [ferewuz]
 
 
 0.20 (2014-11-14)
