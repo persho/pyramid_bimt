@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.21 (unreleased)
+0.21 (2014-11-18)
 -----------------
 
 - Upgrade to latest Font Awesome 4.2, to get the Google icon.
