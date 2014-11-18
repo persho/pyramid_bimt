@@ -2,8 +2,11 @@ Changelog
 =========
 
 
-0.20.1 (unreleased)
--------------------
+0.21 (unreleased)
+-----------------
+
+- Upgrade to latest Font Awesome 4.2, to get the Google icon.
+  [zupo]
 
 - Correctly redirect to login page after reseting password.
   [ferewuz]
@@ -17,6 +20,7 @@ Changelog
   [MIGRATION NEEDED] All apps need to update their Heroku Scheduler commands
   to run `sanitycheck_email` instead of `sanity_check_email`.
   [zupo]
+
 
 0.19.2 (unreleased)
 -------------------
