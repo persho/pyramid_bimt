@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.21.1 (unreleased)
--------------------
+0.22 (unreleased)
+-----------------
 
 - Upgrade Chosen plugin to support adding options to select field.
   [ferewuz]
