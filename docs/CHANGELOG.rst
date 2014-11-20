@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.22 (unreleased)
+0.22 (2014-11-20)
 -----------------
 
 - Upgrade Chosen plugin to support adding options to select field.
