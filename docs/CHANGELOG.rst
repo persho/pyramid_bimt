@@ -5,6 +5,12 @@ Changelog
 0.23 (unreleased)
 -----------------
 
+- [MIGRATION REQUIRED] Changes to Robot tests so they run faster:
+    * do not load root page as part of suite setup -> this redirects and renders
+      the login form, which is not cheap,
+    * use RobotAPI to set appropriate cookies to simulate logging in, instead of
+      actually going to the login form, filling it in and clicking Submit.
+
 - Fix rendering of the Sanity Check view.
   [zupo]
 

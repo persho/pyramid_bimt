@@ -2,6 +2,7 @@
 """Regular checks if our data is sane."""
 
 from pyramid.view import view_config
+from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
@@ -23,7 +24,7 @@ class ISanityCheck(Interface):
 
 @view_config(
     route_name='sanitycheck',
-    permission='admin',
+    permission=BimtPermissions.manage,
     layout='default',
     renderer='pyramid_bimt:templates/sanitycheck.pt',
 )

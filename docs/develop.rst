@@ -240,13 +240,38 @@ against a headless browser implementation called `PhantomJS`.
     # run robot tests
     $ make robot
 
+To run the PhantomJS with a remote debugger, insert the following lines to
+the ``resources.robot`` file, replacing the ``Open browser ...`` line::
+
+  .. code-block::
+
+    @{args}=  Create List
+    Append To List  ${args}  --remote-debugger-port=9000
+    Create Webdriver  PhantomJS  service_args=${args}
+    Go To  ${APP_URL}/ping/
+
+Since Robot-framework hijacks the standard output, you cannot use
+``pdb.set_trace`` to step through your code as it's being executed by Robot.
+However, with the following incantation you can steal the standard output back
+and happily use the `pdb`::
+
+  .. code-block:: python
+
+    import pdb; import sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
 
 To run robot tests against an actual browser for easier development and
 debugging, set the BROWSER environment variable:
 
   .. code-block:: ini
 
-    $ BROWSER=Firefox make robot
+    $ BROWSER=firefox make robot
+
+However, the current version of ``robotframework-selenium2library`` has a bug
+that makes Firefox eat all our cookies and hence the login does not work. Use
+the branch from this Pull Request as a temporary workaround:
+https://github.com/rtomac/robotframework-selenium2library/pull/339
+
+
 
 
 Uploading robot-framework logs on Amazon S3

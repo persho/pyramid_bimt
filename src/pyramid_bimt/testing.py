@@ -4,7 +4,9 @@
 from collections import deque
 from pyramid.exceptions import HTTPNotFound
 from pyramid.httpexceptions import WSGIHTTPException
+from pyramid.response import Response
 from pyramid.security import NO_PERMISSION_REQUIRED
+from pyramid.security import remember
 from pyramid.view import view_config
 from pyramid.view import view_defaults
 from pyramid_basemodel import Base
@@ -62,6 +64,15 @@ class RobotAPI(object):  # pragma: no cover
 
     def __init__(self, request):
         self.request = request
+
+    @view_config(
+        route_name='ping',
+    )
+    def ping(self):
+        """Just a simple view that renders quickly. Used as initial view to
+        point Robot to after browser initialization. Otherwise it opens the
+        root page, which redirects to login form, which takes time to load."""
+        return Response('pong')
 
     @view_config(
         route_name='robot_commands',
@@ -175,6 +186,46 @@ class RobotAPI(object):  # pragma: no cover
         js_exceptions.clear()
         return dict(result='ok')
 
+    def cmd_login_as_admin(self, data):
+        """Login as admin user."""
+        headers = remember(self.request, 'admin@bar.com')
+
+        # [('Set-Cookie', 'auth_tkt="328f1b7a36df6626fe7fc6b333a1881b76e
+        # 90e69df8124ab957534e1fbbfcd20c8e154173a59404dce542bc5503d68ebc
+        # 09f958446af424ec4e2befb82385f67547343d6YWRtaW5AYmFyLmNvbQ%3D%3
+        # D!userid_type:b64unicode"; Path=/'), ('Set-Cookie', 'auth_tkt=
+        # "328f1b7a36df6626fe7fc6b333a1881b76e90e69df8124ab957534e1fbbfc
+        # d20c8e154173a59404dce542bc5503d68ebc09f958446af424ec4e2befb823
+        # 85f67547343d6YWRtaW5AYmFyLmNvbQ%3D%3D!userid_type:b64unicode";
+        # Domain=localhost; Path=/'), ('Set-Cookie', 'auth_tkt="328f1b7a
+        # 36df6626fe7fc6b333a1881b76e90e69df8124ab957534e1fbbfcd20c8e154
+        # 173a59404dce542bc5503d68ebc09f958446af424ec4e2befb82385f675473
+        # 43d6YWRtaW5AYmFyLmNvbQ%3D%3D!userid_type:b64unicode"; Domain=.
+        # localhost; Path=/')]
+
+        auth_cookie = headers[0][1]
+
+        # 'auth_tkt="328f1b7a36df6626fe7fc6b333a1881b76e90e69df8124ab957
+        # 534e1fbbfcd20c8e154173a59404dce542bc5503d68ebc09f958446af424ec
+        # 4e2befb82385f67547343d6YWRtaW5AYmFyLmNvbQ%3D%3D!userid_type:b6
+        # 4unicode"; Path=/'
+
+        auth = auth_cookie.split('auth_tkt="')[1].split('"; Path=/')[0]
+        return dict(result='ok', auth=auth)
+
+    def cmd_login_as_staff(self, data):
+        """Login as a staff member."""
+        headers = remember(self.request, 'staff@bar.com')
+        auth_cookie = headers[0][1]
+        auth = auth_cookie.split('auth_tkt="')[1].split('"; Path=/')[0]
+        return dict(result='ok', auth=auth)
+
+    def cmd_login_as_user(self, data):
+        """Login as a user."""
+        headers = remember(self.request, 'one@bar.com')
+        auth_cookie = headers[0][1]
+        auth = auth_cookie.split('auth_tkt="')[1].split('"; Path=/')[0]
+        return dict(result='ok', auth=auth)
 
 notfound_info = deque()
 js_exceptions = deque()

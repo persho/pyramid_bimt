@@ -2,6 +2,7 @@
 
 Library         HttpLibrary.HTTP
 Library         OperatingSystem
+Library         Collections
 Library         String
 Library         pyramid_bimt.tests.robot.reload_db.ReloadDB
 Documentation   A resource file containing the application specific keywords
@@ -20,9 +21,8 @@ Suite Setup
     Init DB  ${APP_NAME}
     Reset 404 count
     Reset Javascript Exception count
-    Open browser  ${APP_URL}  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
+    Open browser  ${APP_URL}/ping/  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
     Set window size   1024  768
-
 
     ${app_name}=  Get API result  app_name
     @{app_name}=  Split String  ${app_name}  "
@@ -98,12 +98,13 @@ Checkbox is selected
     [Arguments]  ${value}
     Checkbox Should Be Selected  css=input[value="${value}"]
 
+Location should be
+    [Arguments]  ${location}
+    Selenium2Library.Location should be  ${APP_URL}${location}
+
 I go to
     [Arguments]  ${location}
-    Go to  ${location}
-
-I go to Login Form
-    Go to  http://localhost:8080/login/
+    Go to  ${APP_URL}${location}
 
 I click link
     [Arguments]  ${link}
@@ -128,25 +129,22 @@ I am logged out
     Page Should Contain  Login
 
 I log in as a user
-    Go to  http://localhost:8080/login/
-    Input Text  name=email  one@bar.com
-    Input Text  name=password  secret
-    Click Button  Login
-    I am logged in
+    ${body}=  Get API result  login_as_user
+    Json Value Should Equal  ${body}  /result  "ok"
+    ${auth}=  Get Json Value  ${body}  /auth
+    Add Cookie  auth_tkt  ${auth}  /
 
 I log in as a staff member
-    Go to  http://localhost:8080/login/
-    Input Text  name=email  staff@bar.com
-    Input Text  name=password  secret
-    Click Button  Login
-    I am logged in
+    ${body}=  Get API result  login_as_staff
+    Json Value Should Equal  ${body}  /result  "ok"
+    ${auth}=  Get Json Value  ${body}  /auth
+    Add Cookie  auth_tkt  ${auth}  /
 
 I log in as admin
-    Go to  http://localhost:8080/login/
-    Input Text  name=email  admin@bar.com
-    Input Text  name=password  secret
-    Click Button  Login
-    I am logged in
+    ${body}=  Get API result  login_as_admin
+    Json Value Should Equal  ${body}  /result  "ok"
+    ${auth}=  Get Json Value  ${body}  /auth
+    Add Cookie  auth_tkt  ${auth}  /
 
 I log out
     Click Element  id=usermenu

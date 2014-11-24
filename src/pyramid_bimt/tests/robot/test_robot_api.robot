@@ -15,16 +15,16 @@ Suite Teardown  Suite Teardown
     Reset 404 count
     ${body}=  Get API result  list_notfound
     Json Value Should Equal  ${body}  /result  "ok"
-    Selenium2Library.Go To  http://localhost:8080/doesnotexist/
+    Selenium2Library.Go To  ${APP_URL}/doesnotexist/
     ${body}=  Get API result  list_notfound
     Json Value Should Equal  ${body}  /result  "error"
-    Json Value Should Equal  ${body}  /errors/0/url  "http://${APP_ADDR}/doesnotexist/"
+    Json Value Should Equal  ${body}  /errors/0/url  "${APP_URL}/doesnotexist/"
 
 Javascript errors are logged
     I log in as admin
     Reset Javascript Exception count
     ${body}=  Get API result  list_js_exceptions
     Json Value Should Equal  ${body}  /result  "ok"
-    Selenium2Library.Go To  http://localhost:8080/raise-error/js
+    Selenium2Library.Go To  ${APP_URL}/raise-error/js
     ${body}=  Get API result  list_js_exceptions
     Json Value Should Equal  ${body}  /result  "error"

@@ -12,20 +12,23 @@ Suite Teardown  Suite Teardown
 *** Test Cases ***
 
 Scenario: User logs in
-    When I log in as a user
+    When I go to  /login/
+     And I input text  name=email  one@bar.com
+     And I input text  name=password  secret
+     And I click button  Login
     Then I am logged in
 
 Scenario: User logs out
-    When I log in as a user
+   Given I am logged in as a user
+    When I go to  /
      And I log out
     Then I am logged out
 
 Scenario: User resets its password
-    When I go to Login Form
+    When I go to  /login/
      And I input text  name=email  one@bar.com
      And I click button  Reset password
     Then page should contain  A new password was sent to your email.
      And last email should contain  To: one@bar.com
      And last email should contain  Subject: BIMT Password Reset
-     And last email should contain encoded  Login to the members' area: http://localhost:8080/login/
-
+     And last email should contain encoded  Login to the members' area: ${APP_URL}/login/

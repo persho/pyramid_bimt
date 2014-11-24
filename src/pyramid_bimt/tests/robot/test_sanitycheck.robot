@@ -12,12 +12,11 @@ Suite Teardown  Suite Teardown
 *** Test Cases ***
 
 Scenario: Open the Sanity Check view
-    Given I log in as admin
-     When I go to  http://localhost:8080/sanity-check/
-     Then page should contain  Everything in order, nothing to report.
+   Given I am logged in as a staff member
+    When I go to  /sanity-check/
+    Then page should contain  Everything in order, nothing to report.
 
-
-*** Keywords ***
-
-I select checkbox trial
-    Select Checkbox  css=input[value="3"]
+Scenario: User cannot view the Sanity Check view
+   Given I am logged in as a user
+    When I go to  /sanity-check/
+    Then page should contain  Insufficient privileges.
