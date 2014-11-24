@@ -5,7 +5,8 @@ Changelog
 0.23 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix rendering of the Sanity Check view.
+  [zupo]
 
 
 0.22 (2014-11-20)
