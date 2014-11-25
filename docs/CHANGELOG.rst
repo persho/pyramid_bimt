@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.23 (unreleased)
+0.23 (2014-11-25)
 -----------------
 
 - [MIGRATION REQUIRED] Changes to Robot tests so they run faster:
