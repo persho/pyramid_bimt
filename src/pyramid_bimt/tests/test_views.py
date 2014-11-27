@@ -172,6 +172,15 @@ class TestLogoutView(unittest.TestCase):
             request.params.get('came_from', request.application_url)
         )
 
+    def test_logout_view_not_logged_in(self):
+        from pyramid_bimt.views.auth import logout
+        request = testing.DummyRequest(layout_manager=mock.Mock())
+        request.user = None
+        self.assertEqual(
+            logout(None, request).location,
+            request.params.get('came_from', request.application_url)
+        )
+
 
 class TestForbiddenRedirect(unittest.TestCase):
     def setUp(self):

@@ -116,9 +116,10 @@ def logout(context, request):
     :result: Redirect to came_from.
     :rtype: pyramid.httpexceptions.HTTPFound
     """
-    request.registry.notify(UserLoggedOut(request, request.user))
+    if request.user:
+        request.registry.notify(UserLoggedOut(request, request.user))
+        request.session.flash(u'You have been logged out.')
     headers = forget(request)
-    request.session.flash(u'You have been logged out.')
     location = request.params.get('came_from', request.application_url)
     return HTTPFound(location=location, headers=headers)
 

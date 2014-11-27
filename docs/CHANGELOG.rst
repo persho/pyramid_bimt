@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.24 (unreleased)
------------------
+0.23.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Fix logout view when it is called while not being logged in.
+  [ferewuz]
 
 
 0.23 (2014-11-25)
