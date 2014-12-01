@@ -546,6 +546,7 @@ class TestUserAdd(unittest.TestCase):
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values
         ]
+        self.assertFalse('enabled' in choices)
         self.assertTrue('admins' in choices)
 
     def test_groups_choices_non_admin(self):
@@ -554,6 +555,7 @@ class TestUserAdd(unittest.TestCase):
         choices = [
             group for id_, group in self.view.schema['groups'].widget.values
         ]
+        self.assertFalse('enabled' in choices)
         self.assertFalse('admins' in choices)
 
     def test_appstruct_empty_request(self):
@@ -659,12 +661,28 @@ class TestUserEdit(unittest.TestCase):
         self.assertEqual(user.billing_email, 'payments@bar.com')
         self.assertEqual(user.valid_to, date(2014, 2, 1))
         self.assertEqual(user.last_payment, date(2014, 1, 1))
-        self.assertEqual(user.groups, [Group.by_id(1), ])
+        self.assertEqual(user.groups, [Group.by_id(1), Group.by_id(3)])  # enabled user stays enabled  # noqa
         self.assertEqual(user.get_property('foo'), 'bar')
         self.assertEqual(user.get_property('baz'), 'bam')
         with self.assertRaises(KeyError):
             user.get_property('bimt')  # removed property
 
+        self.assertEqual(
+            self.request.session.pop_flash(),
+            [u'User "foo@bar.com" modified.'],
+        )
+
+    def test_save_success_disabled_stays_disabled(self):
+        self.request.context = User.by_id(2)
+        self.request.context.disable()
+
+        result = self.view.save_success(self.APPSTRUCT)
+        self.assertIsInstance(result, HTTPFound)
+        self.assertEqual(result.location, '/user/2/')
+
+        user = User.by_id(2)
+
+        self.assertEqual(user.groups, [Group.by_id(1)])
         self.assertEqual(
             self.request.session.pop_flash(),
             [u'User "foo@bar.com" modified.'],

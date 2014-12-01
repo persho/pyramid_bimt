@@ -242,6 +242,8 @@ class UserAdd(FormView):
         # we don't like the way ColanderAlchemy renders SA Relationships so
         # we manually inject a suitable SchemaNode for groups
         choices = [(group.id, group.name) for group in Group.get_all()]
+        enabled = Group.by_name('enabled')
+        choices.remove((enabled.id, enabled.name))
         if not request.user.admin:
             admins = Group.by_name('admins')
             choices.remove((admins.id, admins.name))
@@ -318,9 +320,11 @@ class UserEdit(UserAdd):
         if appstruct.get('password'):
             user.password = encrypt(appstruct['password'])
 
-        user.groups = [
-            Group.by_id(group_id) for group_id in appstruct['groups']
-        ]
+        groups = [Group.by_id(group_id) for group_id in appstruct['groups']]
+        enabled = Group.by_name('enabled')
+        if enabled in user.groups:
+            groups.append(enabled)
+        user.groups = groups
 
         # remove properties that are not present in appstruct
         for prop in copy.copy(user.properties):

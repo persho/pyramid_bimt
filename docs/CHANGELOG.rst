@@ -5,6 +5,10 @@ Changelog
 0.23.1 (unreleased)
 -------------------
 
+- Only allow user enabling/disabling with views. Also add links for enabling
+  and disabling to user view.
+  [ferewuz]
+
 - Add sanity checks for enabled/disabled users without proper audit entries.
   [ferewuz]
 

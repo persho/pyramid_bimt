@@ -10,6 +10,10 @@
             <span class="glyphicon glyphicon-edit"></span>
             Edit
         </a>
+        <a tal:condition="user.enabled" class="btn btn-xs btn-danger" style="float:right; margin-right:5px" href="${request.route_path('user_disable', user_id=user.id)}">
+            <span class="glyphicon glyphicon-pause"></span> Disable</a>
+        <a tal:condition="not:user.enabled" class="btn btn-xs btn-success" style="float:right; margin-right:5px" href="${request.route_path('user_enable', user_id=user.id)}">
+            <span class="glyphicon glyphicon-play"></span> Enable</a>
     </h1>
     <table class="table">
       <tr><th>Full Name</th><td>${user.fullname}</td><th>
