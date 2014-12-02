@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.23.1 (unreleased)
+0.23.1 (2014-12-02)
 -------------------
 
 - Only allow user enabling/disabling with views. Also add links for enabling
