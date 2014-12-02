@@ -3,6 +3,8 @@
 
 from pyramid.view import view_config
 from pyramid_bimt.const import BimtPermissions
+from pyramid_bimt.models import AuditLogEntry
+from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
@@ -90,5 +92,63 @@ class CheckUsersProperties:
                 warnings.append(
                     'User {} ({}) has an empty fullname.'.format(
                         user.email, user.id))
+
+        return warnings
+
+
+class CheckUsersEnabledDisabled:
+    implements(ISanityCheck)
+
+    def __call__(self):
+        warnings = []
+        enabled_event_id = AuditLogEventType.by_name('UserEnabled').id
+        disabled_event_id = AuditLogEventType.by_name('UserDisabled').id
+        for user in User.get_all():
+            last_enabled_entry = AuditLogEntry.get_all(
+                security=False,
+                filter_by={
+                    'event_type_id': enabled_event_id,
+                    'user_id': user.id
+                },
+                order_by='timestamp'
+            ).first()
+            last_disabled_entry = AuditLogEntry.get_all(
+                security=False,
+                filter_by={
+                    'event_type_id': disabled_event_id,
+                    'user_id': user.id
+                },
+                order_by='timestamp'
+            ).first()
+
+            if user.enabled:
+                if not last_enabled_entry:
+                    warnings.append(
+                        'User {} ({}) is enabled, '
+                        'but has no UserEnabled entry.'.format(
+                            user.email, user.id))
+
+                elif last_disabled_entry and (
+                        last_enabled_entry.timestamp < last_disabled_entry.timestamp):  # noqa
+                    warnings.append(
+                        'User {} ({}) is enabled, '
+                        'but has an UserDisabled entry '
+                        'after UserEnabled entry.'.format(
+                            user.email, user.id))
+
+            else:
+                if not last_disabled_entry:
+                    warnings.append(
+                        'User {} ({}) is disabled, '
+                        'but has no UserDisabled entry.'.format(
+                            user.email, user.id))
+
+                elif last_enabled_entry and (
+                        last_disabled_entry.timestamp < last_enabled_entry.timestamp):  # noqa
+                    warnings.append(
+                        'User {} ({}) is disabled, '
+                        'but has an UserEnabled entry '
+                        'after UserDisabled entry.'.format(
+                            user.email, user.id))
 
         return warnings

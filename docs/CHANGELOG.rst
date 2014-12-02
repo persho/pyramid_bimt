@@ -5,6 +5,9 @@ Changelog
 0.23.1 (unreleased)
 -------------------
 
+- Add sanity checks for enabled/disabled users without proper audit entries.
+  [ferewuz]
+
 - Fix logout view when it is called while not being logged in.
   [ferewuz]
 

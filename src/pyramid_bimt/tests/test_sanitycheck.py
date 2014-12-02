@@ -2,7 +2,9 @@
 """Testing sanity check view and email script."""
 
 from pyramid import testing
+from pyramid_basemodel import Session
 from pyramid_bimt import register_utilities
+from pyramid_bimt.testing import initTestingDB
 from pyramid_mailer import get_mailer
 
 import mock
@@ -170,6 +172,126 @@ class TestCheckUsersProperties(unittest.TestCase):
         self.assertEqual(
             CheckUsersProperties()(),
             [],
+        )
+
+
+class CheckUsersEnabledDisabled(unittest.TestCase):
+    def setUp(self):
+        from pyramid_bimt.tests.test_user_model import _make_user
+        testing.setUp()
+        initTestingDB(auditlog_types=True, groups=True)
+        self.user = _make_user()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def _make_disabled_entry(self):
+        from pyramid_bimt.models import AuditLogEventType
+        from pyramid_bimt.tests.test_auditlog_model import _make_entry
+        _make_entry(
+            user=self.user,
+            event_type=AuditLogEventType.by_name('UserDisabled'),
+        )
+
+    def _make_enabled_entry(self):
+        from pyramid_bimt.models import AuditLogEventType
+        from pyramid_bimt.tests.test_auditlog_model import _make_entry
+        _make_entry(
+            user=self.user,
+            event_type=AuditLogEventType.by_name('UserEnabled'),
+        )
+
+    def test_enabled_correct(self):
+        self.user.enable()
+        self._make_enabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            [],
+        )
+
+    def test_enabled_was_disabled_correct(self):
+        self.user.enable()
+        self._make_disabled_entry()
+        self._make_enabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            [],
+        )
+
+    def test_disabled_correct(self):
+        self.user.disable()
+        self._make_disabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            [],
+        )
+
+    def test_disabled_was_enabled_correct(self):
+        self.user.disable()
+        self._make_enabled_entry()
+        self._make_disabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            [],
+        )
+
+    def test_enabled_no_entry(self):
+        self.user.enable()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            ['User foo@bar.com (1) is enabled, but has no UserEnabled entry.'],
+        )
+
+    def test_enabled_disabled_entry_after_enabled(self):
+        self.user.enable()
+        self._make_disabled_entry()
+        self._make_enabled_entry()
+        self._make_disabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            ['User foo@bar.com (1) is enabled, but has an UserDisabled entry'
+                ' after UserEnabled entry.'],
+        )
+
+    def test_disabled_no_entry(self):
+        self.user.disable()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            ['User foo@bar.com (1) is disabled, but has no UserDisabled entry.'],  # noqa
+        )
+
+    def test_disabled_enabled_entry_after_disabled(self):
+        self.user.disable()
+        self._make_enabled_entry()
+        self._make_disabled_entry()
+        self._make_enabled_entry()
+        Session.flush()
+
+        from pyramid_bimt.sanitycheck import CheckUsersEnabledDisabled
+        self.assertEqual(
+            CheckUsersEnabledDisabled()(),
+            ['User foo@bar.com (1) is disabled, but has an UserEnabled entry'
+                ' after UserDisabled entry.'],
         )
 
 
