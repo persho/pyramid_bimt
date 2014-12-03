@@ -5,7 +5,9 @@ Changelog
 0.23.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Upgrade colander to version 1.0 to fix email validation error and get other
+  improvements.
+  [ferewuz]
 
 
 0.23.1 (2014-12-02)
