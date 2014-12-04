@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.23.3 (unreleased)
--------------------
+0.23.2.1 (unreleased)
+---------------------
 
-- Nothing changed yet.
+- Fix robot tests that were broken in latest release.
+  [ferewuz]
 
 
 0.23.2 (2014-12-04)

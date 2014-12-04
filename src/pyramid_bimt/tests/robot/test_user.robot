@@ -17,7 +17,6 @@ Scenario: Staff member adds a new user
       And I input text  name=email  user@xyz.Xyz
       And I input text  name=fullname  User Xyz
       And I select checkbox staff
-      And I select checkbox enabled
       And I click button  Submit
      Then location should be  /user/4/
       And page should contain  User "user@xyz.Xyz" added.
@@ -77,9 +76,6 @@ Scenario: User cannot edit users
 
 I select checkbox staff
     Select Checkbox  css=input[value="2"]
-
-I select checkbox enabled
-    Select Checkbox  css=input[value="3"]
 
 I unselect checkbox staff
     Unselect Checkbox  css=input[value="2"]
