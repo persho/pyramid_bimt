@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.23.2 (unreleased)
+0.23.2 (2014-12-04)
 -------------------
 
 - Upgrade colander to version 1.0 to fix email validation error and get other
