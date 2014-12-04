@@ -2,13 +2,7 @@ Changelog
 =========
 
 
-0.22.2.2 (unreleased)
----------------------
-
-- Nothing changed yet.
-
-
-0.22.2.1 (2014-12-04)
+0.23.2.1 (unreleased)
 ---------------------
 
 - Fix robot tests that were broken in latest release.
