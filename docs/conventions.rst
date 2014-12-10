@@ -4,9 +4,29 @@ Conventions & Assumptions
 Code style guide
 ----------------
 
-We follow `plone.api's style guide
-<http://ploneapi.readthedocs.org/en/latest/contribute/conventions.html>`_. Read
-it & use it.
+First and foremost: **use the English language**. Religiously. This includes:
+
+- Code: comments, variables, class names, filenames, etc.
+- Examples and placeholders: only use English names, URLs, domain, etc. for
+  placeholders in code, documentation and elsewhere.
+- Documentation, configuration files, etc.
+- Tickets titles, descriptions & comments, GitHub Pull Requests, inline
+  comments, etc.
+- Basically everything should be in English, bar two exceptions:
+
+  * emails to dev@niteoweb.com
+  * IRC communication
+
+With the choice of language behind us, let's move on to code styling
+guidelines. We follow the `plone.api style guide
+<http://ploneapi.readthedocs.org/en/latest/contribute/conventions.html>`_. The
+guidelines defined in this style guide should be used throughout our codebase,
+without much exceptions.
+
+That said, we do have some "overrides" to the rules in `plone.api style guide`:
+
+* We don't need to support Python 2.6, so using ``{}`` (insted of ``{0}``) for
+  string formatting is preferred.
 
 
 Ticket workflow
