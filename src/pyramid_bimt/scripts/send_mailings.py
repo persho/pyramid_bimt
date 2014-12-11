@@ -4,6 +4,7 @@
 from datetime import date
 from datetime import timedelta
 from pyramid.paster import bootstrap
+from pyramid.paster import setup_logging
 from pyramid_bimt.models import Mailing
 from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.models import User
@@ -59,6 +60,8 @@ def main(argv=sys.argv):
         help='Pyramid application configuration file.')
 
     env = bootstrap(parser.parse_args().config)
+    setup_logging(parser.parse_args().config)
+
     send_mailings()
 
     env['closer']()

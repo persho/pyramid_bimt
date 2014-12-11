@@ -2,6 +2,7 @@
 """Send sanity check report to email."""
 
 from pyramid.paster import bootstrap
+from pyramid.paster import setup_logging
 from pyramid.renderers import render
 from pyramid_bimt.sanitycheck import run_all_checks
 from pyramid_mailer import get_mailer
@@ -43,6 +44,8 @@ def main(argv=sys.argv):
         help='Pyramid application configuration file.')
 
     env = bootstrap(parser.parse_args().config)
+    setup_logging(parser.parse_args().config)
+
     settings = env['registry'].settings
     request = env['request']
     send_email(settings, request)

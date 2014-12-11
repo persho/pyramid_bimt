@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.23.2.2 (unreleased)
+0.23.3 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Fix logging in scripts to correctly use app logging settings.
+  [ferewuz]
 
 
 0.23.2.1 (2014-12-04)

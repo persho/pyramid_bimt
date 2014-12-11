@@ -3,6 +3,7 @@
 
 from datetime import date
 from pyramid.paster import bootstrap
+from pyramid.paster import setup_logging
 from pyramid_basemodel import Session
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
@@ -44,6 +45,8 @@ def main(argv=sys.argv):
         help='Pyramid application configuration file.')
 
     env = bootstrap(parser.parse_args().config)
+    setup_logging(parser.parse_args().config)
+
     expire_subscriptions()
 
     env['closer']()
