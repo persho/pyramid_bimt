@@ -3,6 +3,7 @@
 
 from pyramid.view import view_config
 from pyramid_bimt.const import BimtPermissions
+from pyramid_bimt.events import SanityCheckDone
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
@@ -33,21 +34,29 @@ class ISanityCheck(Interface):
 def sanitycheck_view(request):
     """An admin view for manual sanity checks."""
     app_assets.need()
-    warnings = run_all_checks(request.registry)
+    warnings = run_all_checks(request)
     return {
         'warnings': warnings,
     }
 
 
-def run_all_checks(registry):
+def run_all_checks(request):
     """Find all sanity checks and run them.
 
     :returns: sanitycheck warnings
     :rtype: list of strings
     """
     warnings = []
-    for check in registry.getAllUtilitiesRegisteredFor(ISanityCheck):
+    for check in request.registry.getAllUtilitiesRegisteredFor(ISanityCheck):
         warnings += check()()
+    if warnings:
+        comment = u', '.join(warnings)
+    else:
+        comment = u'Sanity check finished without any warnings.'
+
+    request.registry.notify(
+        SanityCheckDone(request, User.by_id(1), comment=comment)
+    )
 
     return warnings
 

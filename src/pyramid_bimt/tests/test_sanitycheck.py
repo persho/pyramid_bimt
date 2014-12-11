@@ -298,11 +298,13 @@ class CheckUsersEnabledDisabled(unittest.TestCase):
 class TestRunAllChecks(unittest.TestCase):
     def setUp(self):
         testing.setUp()
+        initTestingDB(auditlog_types=True, users=True)
         self.request = testing.DummyRequest()
         self.config = testing.setUp(request=self.request)
         register_utilities(self.config)
 
     def tearDown(self):
+        Session.remove()
         testing.tearDown()
 
     def test_no_warnings(self):
@@ -321,9 +323,36 @@ class TestRunAllChecks(unittest.TestCase):
 
         self.request.registry.getAllUtilitiesRegisteredFor = utilities
         from pyramid_bimt.sanitycheck import run_all_checks
-        self.assertEqual(run_all_checks(self.request.registry), [])
+        self.assertEqual(run_all_checks(self.request), [])
+
+    def test_one_warnings(self):
+        from pyramid_bimt.models import AuditLogEntry
+        check_admin_user = mock.Mock()
+        check_default_groups = mock.Mock()
+        check_users_properties = mock.Mock()
+
+        check_admin_user.return_value.return_value = ['admin warning', ]
+        check_default_groups.return_value.return_value = []
+        check_users_properties.return_value.return_value = []
+
+        def utilities(interface):
+            return [
+                check_admin_user, check_default_groups, check_users_properties
+            ]
+
+        self.request.registry.getAllUtilitiesRegisteredFor = utilities
+
+        from pyramid_bimt.sanitycheck import run_all_checks
+        self.assertEqual(
+            run_all_checks(self.request),
+            ['admin warning', ],
+        )
+        auditlog = AuditLogEntry.get_all(security=False).first()
+        self.assertEqual(auditlog.user.id, 1)
+        self.assertEqual(auditlog.comment, u'admin warning')
 
     def test_some_warnings(self):
+        from pyramid_bimt.models import AuditLogEntry
         check_admin_user = mock.Mock()
         check_default_groups = mock.Mock()
         check_users_properties = mock.Mock()
@@ -341,7 +370,39 @@ class TestRunAllChecks(unittest.TestCase):
 
         from pyramid_bimt.sanitycheck import run_all_checks
         self.assertEqual(
-            run_all_checks(self.request.registry),
+            run_all_checks(self.request),
+            [
+                'admin warning',
+                'groups warning',
+                'user warning',
+            ],
+        )
+        auditlog = AuditLogEntry.get_all(security=False).first()
+        self.assertEqual(auditlog.user.id, 1)
+        self.assertEqual(
+            auditlog.comment,
+            u'admin warning, groups warning, user warning'
+        )
+
+    def test_one_warning(self):
+        check_admin_user = mock.Mock()
+        check_default_groups = mock.Mock()
+        check_users_properties = mock.Mock()
+
+        check_admin_user.return_value.return_value = ['admin warning', ]
+        check_default_groups.return_value.return_value = ['groups warning', ]
+        check_users_properties.return_value.return_value = ['user warning']
+
+        def utilities(interface):
+            return [
+                check_admin_user, check_default_groups, check_users_properties
+            ]
+
+        self.request.registry.getAllUtilitiesRegisteredFor = utilities
+
+        from pyramid_bimt.sanitycheck import run_all_checks
+        self.assertEqual(
+            run_all_checks(self.request),
             [
                 'admin warning',
                 'groups warning',
@@ -398,13 +459,7 @@ class TestSanityCheckEmail(unittest.TestCase):
         send_email(self.config.registry.settings, self.request)
 
         mailer = get_mailer(self.config)
-        self.assertEqual(len(mailer.outbox), 1)
-        self.assertEqual(
-            mailer.outbox[0].recipients, ['maintenance@niteoweb.com', ])
-        self.assertEqual(
-            mailer.outbox[0].subject, u'BIMT sanity check OK')
-        self.assertIn(
-            'Everything in order, nothing to report.', mailer.outbox[0].html)
+        self.assertEqual(len(mailer.outbox), 0)
 
     @mock.patch('pyramid_bimt.scripts.sanitycheck_email.run_all_checks')
     def test_some_warnings(self, run_all_checks):
@@ -424,3 +479,19 @@ class TestSanityCheckEmail(unittest.TestCase):
             'The following warnings were found:', mailer.outbox[0].html)
         self.assertIn('<td>warning1</td>', mailer.outbox[0].html)
         self.assertIn('<td>warning2</td>', mailer.outbox[0].html)
+
+    @mock.patch('pyramid_bimt.scripts.sanitycheck_email.run_all_checks')
+    def test_no_warnings_verbose(self, run_all_checks):
+        run_all_checks.return_value = []
+
+        from pyramid_bimt.scripts.sanitycheck_email import send_email
+        send_email(self.config.registry.settings, self.request, verbose=True)
+
+        mailer = get_mailer(self.config)
+        self.assertEqual(len(mailer.outbox), 1)
+        self.assertEqual(
+            mailer.outbox[0].recipients, ['maintenance@niteoweb.com', ])
+        self.assertEqual(
+            mailer.outbox[0].subject, u'BIMT sanity check OK')
+        self.assertIn(
+            'Everything in order, nothing to report.', mailer.outbox[0].html)

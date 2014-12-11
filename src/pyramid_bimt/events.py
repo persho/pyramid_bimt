@@ -57,6 +57,13 @@ class IUserLoggedInAs(Interface):
     user = Attribute('The user who logged in.')
 
 
+class ISanityCheckDone(Interface):
+    """An event type that is emitted after a sanity check is done."""
+
+    request = Attribute('The request object.')
+    user = Attribute('The user who made the check.')
+
+
 class PyramidBIMTEvent(object):
     """A base class for events raised by pyramid_bimt package."""
 
@@ -138,3 +145,8 @@ class UserDisabled(PyramidBIMTEvent):
 @implementer(IUserLoggedInAs)
 class UserLoggedInAs(PyramidBIMTEvent):
     """Emitted whenever a user logs in as another user."""
+
+
+@implementer(ISanityCheckDone)
+class SanityCheckDone(PyramidBIMTEvent):
+    """Emitted whenever a sanity check is done."""

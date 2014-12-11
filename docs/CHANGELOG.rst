@@ -2,10 +2,18 @@ Changelog
 =========
 
 
-0.23.3 (unreleased)
----------------------
+0.24 (unreleased)
+-----------------
 
 - Fix logging in scripts to correctly use app logging settings.
+  [ferewuz]
+
+- [MIGRATION REQUIRED] Sanity check now adds an audit log every time it is run.
+  Apps need to add a SanityCheckDone audit log type to their DB.
+  [ferewuz]
+
+- Sanity check email script now has an option (--verbose) if you want the email
+  to be sent on every check, or only on checks with warnings in them.
   [ferewuz]
 
 

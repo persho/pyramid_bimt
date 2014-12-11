@@ -37,7 +37,7 @@ def initTestingDB(
     if auditlog_types:
         add_audit_log_event_types()
 
-    if groups:
+    if groups or users:
         add_groups()
 
     if users:
