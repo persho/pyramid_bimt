@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.24 (unreleased)
+0.24 (2014-12-12)
 -----------------
 
 - Fix logging in scripts to correctly use app logging settings.
