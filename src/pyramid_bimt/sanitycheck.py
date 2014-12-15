@@ -9,6 +9,8 @@ from pyramid_bimt.models import AuditLogEventType
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.static import app_assets
+from sqlalchemy.orm.exc import MultipleResultsFound
+from sqlalchemy.orm.exc import NoResultFound
 from zope.interface import Interface
 from zope.interface import implements
 
@@ -100,6 +102,24 @@ class CheckUsersProperties:
             if user.fullname is None or not user.fullname.strip():
                 warnings.append(
                     'User {} ({}) has an empty fullname.'.format(
+                        user.email, user.id))
+
+        return warnings
+
+
+class CheckUsersProductGroup:
+    implements(ISanityCheck)
+
+    def __call__(self):
+        warnings = []
+        for user in User.get_all():
+            try:
+                user.product_group
+            except NoResultFound:
+                pass  # continue to next user
+            except MultipleResultsFound:
+                warnings.append(
+                    'User {} ({}) has multiple product groups.'.format(
                         user.email, user.id))
 
         return warnings

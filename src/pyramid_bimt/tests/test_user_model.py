@@ -282,6 +282,38 @@ class TestStaff(unittest.TestCase):
         self.assertFalse(User.by_email('one@bar.com').staff)
 
 
+class TestProductGroup(unittest.TestCase):
+
+    def setUp(self):
+        initTestingDB(users=True, groups=True)
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        Session.remove()
+        testing.tearDown()
+
+    def test_no_product_group(self):
+        from sqlalchemy.orm.exc import NoResultFound
+        with self.assertRaises(NoResultFound):
+            User.by_email('one@bar.com').product_group
+
+    def test_single_product_group(self):
+        product_group = _make_group(name='foo', product_id='foo')
+        product_group.users.append(User.by_email('one@bar.com'))
+        self.assertEqual(
+            User.by_email('one@bar.com').product_group.name, 'foo')
+
+    def test_multiple_product_groups(self):
+        product_group_foo = _make_group(name='foo', product_id='foo')
+        product_group_bar = _make_group(name='bar', product_id='bar')
+        product_group_foo.users.append(User.by_email('one@bar.com'))
+        product_group_bar.users.append(User.by_email('one@bar.com'))
+
+        from sqlalchemy.orm.exc import MultipleResultsFound
+        with self.assertRaises(MultipleResultsFound):
+            User.by_email('one@bar.com').product_group
+
+
 class TestTrial(unittest.TestCase):
 
     def setUp(self):

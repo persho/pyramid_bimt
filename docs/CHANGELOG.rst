@@ -5,6 +5,11 @@ Changelog
 0.24.1 (unreleased)
 -------------------
 
+- Introduced the concept of a "product group" -- a group that has the
+  ``product_id`` value set. A single user can only be a member of one such
+  group.
+  [zupo]
+
 - Add user.id to body tag as data- attribute so it can be used in mixpanel JS.
   [zupo]
 

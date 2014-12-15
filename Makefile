@@ -29,7 +29,7 @@ bin/python:
 
 tests: .installed.cfg
 	@bin/nosetests --with-coverage --cover-package=pyramid_bimt \
-		--cover-min-percentage=100 --cover-html
+		--cover-min-percentage=100 --cover-html --cover-erase
 	@bin/flake8 setup.py
 	@bin/code-analysis
 

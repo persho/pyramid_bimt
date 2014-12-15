@@ -94,7 +94,8 @@ class Group(Base, BaseMixin):
         info={'colanderalchemy': dict(
             title='IPN Product ID',
             description='If this group is tied to a IPN product, enter its '
-            'ID here.'
+            'ID here. A single user can be a member of only one "product '
+            'group" -- a group with product_id set.'
         )},
     )
 

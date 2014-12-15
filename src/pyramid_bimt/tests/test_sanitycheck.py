@@ -111,6 +111,50 @@ class TestCheckDefaultGroups(unittest.TestCase):
         )
 
 
+class TestCheckUsersProductGroup(unittest.TestCase):
+    def setUp(self):
+        testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_no_product_group(self, User):
+        from sqlalchemy.orm.exc import NoResultFound
+        user = mock.Mock()
+        p = mock.PropertyMock(side_effect=NoResultFound('Boom!'))
+        type(user).product_group = p
+        User.get_all.return_value = [user, ]
+
+        from pyramid_bimt.sanitycheck import CheckUsersProductGroup
+        self.assertEqual(CheckUsersProductGroup()(), [])
+
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_single_product_group(self, User):
+        user = mock.Mock()
+        user.product_group = 'foo'
+        User.get_all.return_value = [user, ]
+
+        from pyramid_bimt.sanitycheck import CheckUsersProductGroup
+        self.assertEqual(CheckUsersProductGroup()(), [])
+
+    @mock.patch('pyramid_bimt.sanitycheck.User')
+    def test_multiple_product_groups(self, User):
+        from sqlalchemy.orm.exc import MultipleResultsFound
+        user = mock.Mock()
+        user.id = 1
+        user.email = 'foo@bar.com'
+        p = mock.PropertyMock(side_effect=MultipleResultsFound('Boom!'))
+        type(user).product_group = p
+        User.get_all.return_value = [user, ]
+
+        from pyramid_bimt.sanitycheck import CheckUsersProductGroup
+        self.assertEqual(
+            CheckUsersProductGroup()(),
+            ['User foo@bar.com (1) has multiple product groups.'],
+        )
+
+
 class TestCheckUsersProperties(unittest.TestCase):
     def setUp(self):
         testing.setUp()

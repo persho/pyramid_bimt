@@ -210,6 +210,13 @@ class User(Base, BaseMixin):
         return 'trial' in [g.name for g in self.groups]
 
     @property
+    def product_group(self):
+        """Get the user's group that has product_id set. Can be only one."""
+        return Group.query\
+            .filter(Group.users.contains(self))\
+            .filter(Group.product_id != None).one()  # noqa
+
+    @property
     def enabled(self):
         """True if User is in 'enabled' group, False otherwise."""
         return 'enabled' in [g.name for g in self.groups]
