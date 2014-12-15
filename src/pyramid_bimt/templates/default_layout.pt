@@ -18,7 +18,8 @@
 
   </head>
 
-  <body tal:attributes="class econtext.view.__name__ | econtext.view.__class__.__name__">
+  <body class="${econtext.view.__name__ | econtext.view.__class__.__name__}"
+        data-userid="${request.user.id if request.user else ''}">
 
     ${panel('navbar')}
 

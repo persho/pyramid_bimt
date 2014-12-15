@@ -5,7 +5,8 @@ Changelog
 0.24.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add user.id to body tag as data- attribute so it can be used in mixpanel JS.
+  [zupo]
 
 
 0.24 (2014-12-12)
