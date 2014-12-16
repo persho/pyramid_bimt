@@ -56,47 +56,17 @@ class TestGroupModel(unittest.TestCase):
             '<Group:1 (name=\'foo\')>',
         )
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import Group
+        from pyramid_bimt.models import GetByIdMixin
 
-class TestGroupById(unittest.TestCase):
+        self.assertTrue(issubclass(Group, GetByIdMixin))
 
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
+    def test_using_by_name_mixin(self):
+        from pyramid_bimt.models import Group
+        from pyramid_bimt.models import GetByNameMixin
 
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_id(self):
-        self.assertEqual(Group.by_id(1), None)
-        self.assertEqual(Group.by_id('foo'), None)
-        self.assertEqual(Group.by_id(None), None)
-
-    def test_valid_id(self):
-        _make_group(name='foo')
-        group = Group.by_id(1)
-        self.assertEqual(group.name, 'foo')
-
-
-class TestGroupByName(unittest.TestCase):
-
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
-
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_name(self):
-        self.assertEqual(Group.by_name(1), None)
-        self.assertEqual(Group.by_name('foo'), None)
-        self.assertEqual(Group.by_name(None), None)
-
-    def test_valid_name(self):
-        _make_group(name='foo')
-        group = Group.by_name('foo')
-        self.assertEqual(group.name, 'foo')
+        self.assertTrue(issubclass(Group, GetByNameMixin))
 
 
 class TestGroupByProductID(unittest.TestCase):

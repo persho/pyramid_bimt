@@ -56,26 +56,17 @@ class TestPortletModel(unittest.TestCase):
             '<Portlet:1 (name=\'foo\')>',
         )
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import Portlet
+        from pyramid_bimt.models import GetByIdMixin
 
-class TestPortletById(unittest.TestCase):
+        self.assertTrue(issubclass(Portlet, GetByIdMixin))
 
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
+    def test_using_by_name_mixin(self):
+        from pyramid_bimt.models import Portlet
+        from pyramid_bimt.models import GetByNameMixin
 
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_id(self):
-        self.assertEqual(Portlet.by_id(1), None)
-        self.assertEqual(Portlet.by_id('foo'), None)
-        self.assertEqual(Portlet.by_id(None), None)
-
-    def test_valid_id(self):
-        _make_portlet(name='foo')
-        portlet = Portlet.by_id(1)
-        self.assertEqual(portlet.name, 'foo')
+        self.assertTrue(issubclass(Portlet, GetByNameMixin))
 
 
 class TestPortletByUserAndPosition(unittest.TestCase):

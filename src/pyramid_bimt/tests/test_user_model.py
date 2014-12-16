@@ -73,26 +73,11 @@ class TestUserModel(unittest.TestCase):
             '<User:1 (email=\'foo@bar.com\')>',
         )
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.models import GetByIdMixin
 
-class TestUserById(unittest.TestCase):
-
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
-
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_id(self):
-        self.assertEqual(User.by_id(1), None)
-        self.assertEqual(User.by_id('foo'), None)
-        self.assertEqual(User.by_id(None), None)
-
-    def test_valid_id(self):
-        _make_user(email='foo@bar.com')
-        user = User.by_id(1)
-        self.assertEqual(user.email, 'foo@bar.com')
+        self.assertTrue(issubclass(User, GetByIdMixin))
 
 
 class TestUserByEmail(unittest.TestCase):

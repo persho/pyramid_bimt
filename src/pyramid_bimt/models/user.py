@@ -10,6 +10,7 @@ from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
+from pyramid_bimt.models import GetByIdMixin
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import ForeignKey
@@ -57,7 +58,7 @@ class UserProperty(Base, BaseMixin):
             self.__class__.__name__, self.id, repr(self.key), repr(self.value))
 
 
-class User(Base, BaseMixin):
+class User(Base, BaseMixin, GetByIdMixin):
     """A class representing a User."""
 
     __tablename__ = 'users'
@@ -274,11 +275,6 @@ class User(Base, BaseMixin):
         else:
             self.groups.append(Group.by_name('unsubscribed'))
             return True
-
-    @classmethod
-    def by_id(self, user_id):
-        """Get a User by id."""
-        return User.query.filter_by(id=user_id).first()
 
     @classmethod
     def by_email(self, email):

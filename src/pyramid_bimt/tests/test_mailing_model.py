@@ -49,47 +49,17 @@ class TestMailingModel(unittest.TestCase):
             '<Mailing:1 (name=\'foo\')>',
         )
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import Mailing
+        from pyramid_bimt.models import GetByIdMixin
 
-class TestMailingById(unittest.TestCase):
+        self.assertTrue(issubclass(Mailing, GetByIdMixin))
 
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
+    def test_using_by_name_mixin(self):
+        from pyramid_bimt.models import Mailing
+        from pyramid_bimt.models import GetByNameMixin
 
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_id(self):
-        self.assertEqual(Mailing.by_id(1), None)
-        self.assertEqual(Mailing.by_id('foo'), None)
-        self.assertEqual(Mailing.by_id(None), None)
-
-    def test_valid_id(self):
-        _make_mailing(name='foo')
-        mailing = Mailing.by_id(1)
-        self.assertEqual(mailing.name, 'foo')
-
-
-class TestMailingByName(unittest.TestCase):
-
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
-
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_name(self):
-        self.assertEqual(Mailing.by_name(1), None)
-        self.assertEqual(Mailing.by_name('foo'), None)
-        self.assertEqual(Mailing.by_name(None), None)
-
-    def test_valid_name(self):
-        _make_mailing(name='foo')
-        mailing = Mailing.by_name('foo')
-        self.assertEqual(mailing.name, 'foo')
+        self.assertTrue(issubclass(Mailing, GetByNameMixin))
 
 
 class TestSendMailingsScript(unittest.TestCase):

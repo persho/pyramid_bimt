@@ -6,6 +6,8 @@ from pyramid.security import Allow
 from pyramid_basemodel import Base
 from pyramid_basemodel import Session
 from pyramid_bimt.const import BimtPermissions
+from pyramid_bimt.models import GetByIdMixin
+from pyramid_bimt.models import GetByNameMixin
 from pyramid_bimt.models.user import User
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -20,12 +22,14 @@ import colander
 import deform
 
 
-class AuditLogEventType(Base):
+class AuditLogEventType(Base, GetByIdMixin, GetByNameMixin):
     """A class representing an Audit log event type."""
 
     __tablename__ = 'audit_log_event_types'
 
     entries = relationship('AuditLogEntry', backref='event_type')
+
+    query = Session.query_property()
 
     id = Column(
         Integer,
@@ -76,19 +80,7 @@ class AuditLogEventType(Base):
         :return: ``AuditLogEventType`` object of the given name
         :rtype: instance of ``AuditLogEventType``
         """
-        return Session.query(AuditLogEventType).filter_by(name=name).first()
-
-    @classmethod
-    def by_id(self, id):
-        """Get an auditlog event type by id.
-
-        :param name: ID of the ``AuditLogEventType`` you want to get.
-        :type name: int
-
-        :return: ``AuditLogEventType`` object of the given id
-        :rtype: instance of ``AuditLogEventType``
-        """
-        return Session.query(AuditLogEventType).filter_by(id=id).first()
+        return super(AuditLogEventType, self).by_name(name)
 
     @classmethod
     def get_all(class_, order_by='name', filter_by=None, limit=100):
@@ -131,7 +123,7 @@ def event_types_select_widget(node, kw):
     return deform.widget.SelectWidget(values=choices)
 
 
-class AuditLogEntry(Base):
+class AuditLogEntry(Base, GetByIdMixin):
     __tablename__ = 'audit_log_entries'
 
     @property
@@ -139,6 +131,8 @@ class AuditLogEntry(Base):
         return [  # pragma: no cover
             (Allow, self.user.email, BimtPermissions.manage),
         ]
+
+    query = Session.query_property()
 
     id = Column(
         Integer,
@@ -198,11 +192,6 @@ class AuditLogEntry(Base):
         event_type = self.event_type and self.event_type.name or None
         return u'<{}:{} (user={}, type={})>'.format(
             self.__class__.__name__, self.id, repr(user), repr(event_type))
-
-    @classmethod
-    def by_id(self, id):
-        """Get an AuditLogEntry by id."""
-        return Session.query(AuditLogEntry).filter_by(id=id).first()
 
     @classmethod
     def get_all(

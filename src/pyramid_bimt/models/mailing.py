@@ -11,6 +11,8 @@ from pyramid_basemodel import BaseMixin
 from pyramid_bimt.events import UserChangedPassword
 from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
+from pyramid_bimt.models import GetByIdMixin
+from pyramid_bimt.models import GetByNameMixin
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from sqlalchemy import Column
@@ -90,7 +92,7 @@ class MailingTriggers(Enum):
     after_user_changed_password = 'immediatelly after user changes password'
 
 
-class Mailing(Base, BaseMixin):
+class Mailing(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
     """A class representing a Mailing."""
 
     __tablename__ = 'mailings'
@@ -203,16 +205,6 @@ class Mailing(Base, BaseMixin):
             ))
             logger.info(u'Mailing "{}" sent to "{}".'.format(
                 self.name, recipient.email))
-
-    @classmethod
-    def by_id(self, mailing_id):
-        """Get a Mailing by id."""
-        return Mailing.query.filter_by(id=mailing_id).first()
-
-    @classmethod
-    def by_name(self, mailing_name):
-        """Get a Mailing by name."""
-        return Mailing.query.filter_by(name=mailing_name).first()
 
     @classmethod
     def by_trigger_name(self, trigger_name):

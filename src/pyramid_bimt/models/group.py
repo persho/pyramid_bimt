@@ -6,6 +6,8 @@ from pyramid.security import Allow
 from pyramid.security import DENY_ALL
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid_bimt.models import GetByIdMixin
+from pyramid_bimt.models import GetByNameMixin
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -68,7 +70,7 @@ class GroupProperty(Base, BaseMixin):
             self.__class__.__name__, self.id, repr(self.key), repr(self.value))
 
 
-class Group(Base, BaseMixin):
+class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
     """A class representing a Group."""
 
     __tablename__ = 'groups'
@@ -179,16 +181,6 @@ class Group(Base, BaseMixin):
             self.properties.append(GroupProperty(key=key, value=value))
         else:
             result.one().value = value
-
-    @classmethod
-    def by_id(self, group_id):
-        """Get a Group by id."""
-        return Group.query.filter_by(id=group_id).first()
-
-    @classmethod
-    def by_name(self, name):
-        """Get a Group by name."""
-        return Group.query.filter_by(name=name).first()
 
     @classmethod
     def by_product_id(self, product_id):

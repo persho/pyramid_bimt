@@ -5,7 +5,9 @@ Changelog
 0.27 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- [MIGRATION NEEDED] Models should now use bimt mixins instead of implementing
+  their own `by_id` and `by_name` methods.
+  [ferewuz]
 
 
 0.26 (2014-12-16)

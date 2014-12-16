@@ -99,6 +99,18 @@ class TestAuditLogEventType(unittest.TestCase):
         self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').title, 'User Changed Password')  # noqa
         self.assertEqual(AuditLogEventType.by_name('UserChangedPassword').description, 'Emitted whenever a user changes its password.')  # noqa
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import AuditLogEventType
+        from pyramid_bimt.models import GetByIdMixin
+
+        self.assertTrue(issubclass(AuditLogEventType, GetByIdMixin))
+
+    def test_using_by_name_mixin(self):
+        from pyramid_bimt.models import AuditLogEventType
+        from pyramid_bimt.models import GetByNameMixin
+
+        self.assertTrue(issubclass(AuditLogEventType, GetByNameMixin))
+
 
 class TestAuditLogEntryModel(unittest.TestCase):
 
@@ -134,26 +146,11 @@ class TestAuditLogEntryModel(unittest.TestCase):
             '<AuditLogEntry:None (user=None, type=None)>'  # noqa
         )
 
+    def test_using_by_id_mixin(self):
+        from pyramid_bimt.models import AuditLogEntry
+        from pyramid_bimt.models import GetByIdMixin
 
-class TestEntryById(unittest.TestCase):
-
-    def setUp(self):
-        self.config = testing.setUp()
-        initTestingDB()
-
-    def tearDown(self):
-        Session.remove()
-        testing.tearDown()
-
-    def test_invalid_id(self):
-        self.assertEqual(AuditLogEntry.by_id(1), None)
-        self.assertEqual(AuditLogEntry.by_id('foo'), None)
-        self.assertEqual(AuditLogEntry.by_id(None), None)
-
-    def test_valid_id(self):
-        _make_entry(comment=u'foö')
-        entry = AuditLogEntry.by_id(1)
-        self.assertEqual(entry.comment, u'foö')
+        self.assertTrue(issubclass(AuditLogEntry, GetByIdMixin))
 
 
 class TestEntryGetAll(unittest.TestCase):

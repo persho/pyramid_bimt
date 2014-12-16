@@ -6,6 +6,8 @@ from flufl.enum import Enum
 from pyramid.renderers import render
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
+from pyramid_bimt.models import GetByIdMixin
+from pyramid_bimt.models import GetByNameMixin
 from sqlalchemy import Column
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey
@@ -70,7 +72,7 @@ class PortletPositions(Enum):
     above_footer = 'Above Footer'
 
 
-class Portlet(Base, BaseMixin):
+class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
     """A class representing a Portlet."""
 
     __tablename__ = 'portlets'
@@ -139,11 +141,6 @@ class Portlet(Base, BaseMixin):
             'pyramid_bimt:templates/portlet.pt',
             {'content': self.html}
         )
-
-    @classmethod
-    def by_id(self, portlet_id):
-        """Get a Portlet by id."""
-        return Portlet.query.filter_by(id=portlet_id).first()
 
     @classmethod
     def by_user_and_position(self, user, position):
