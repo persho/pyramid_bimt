@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.24.1 (unreleased)
--------------------
+0.25 (2014-12-16)
+-----------------
 
 - Introduced the concept of a "product group" -- a group that has the
   ``product_id`` value set. A single user can only be a member of one such
