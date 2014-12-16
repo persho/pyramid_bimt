@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.26 (unreleased)
+0.26 (2014-12-16)
 -----------------
 
 - [MIGRATION NEEDED] Correctly define UniqueConstraints.
