@@ -390,12 +390,21 @@ class TestSubscription(unittest.TestCase):
 class TestUserProperties(unittest.TestCase):
 
     def setUp(self):
+        initTestingDB()
         self.config = testing.setUp()
         self.user = _make_user()
 
     def tearDown(self):
         Session.remove()
         testing.tearDown()
+
+    def test_unique_constraint(self):
+        Session.add(UserProperty(key='foo', user_id=1))
+        Session.flush()
+        with self.assertRaises(IntegrityError) as cm:
+            Session.add(UserProperty(key='foo', user_id=1))
+            Session.flush()
+        self.assertIn('key, user_id are not unique', cm.exception.message)
 
     def test_get_property(self):
         with self.assertRaises(KeyError) as cm:

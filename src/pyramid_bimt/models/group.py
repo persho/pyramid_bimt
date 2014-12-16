@@ -41,8 +41,9 @@ class GroupProperty(Base, BaseMixin):
     """A key value store for group properties."""
 
     __tablename__ = 'group_properties'
-
-    UniqueConstraint('key', 'group_id', name='key_group_id')
+    __table_args__ = (
+        UniqueConstraint('key', 'group_id', name='key_group_id'),
+    )
 
     #: unique for any key + group_id combination
     key = Column(

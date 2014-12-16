@@ -179,6 +179,7 @@ class TestGetAll(unittest.TestCase):
 class TestGroupProperties(unittest.TestCase):
 
     def setUp(self):
+        initTestingDB()
         self.config = testing.setUp()
         self.group = _make_group()
 
@@ -191,6 +192,14 @@ class TestGroupProperties(unittest.TestCase):
             repr(GroupProperty(id=1, key=u'foo', value=u'bar')),
             '<GroupProperty:1 (key=u\'foo\', value=u\'bar\')>',
         )
+
+    def test_unique_constraint(self):
+        Session.add(GroupProperty(key='foo', group_id=1))
+        Session.flush()
+        with self.assertRaises(IntegrityError) as cm:
+            Session.add(GroupProperty(key='foo', group_id=1))
+            Session.flush()
+        self.assertIn('key, group_id are not unique', cm.exception.message)
 
     def test_get_property(self):
         with self.assertRaises(KeyError) as cm:

@@ -30,8 +30,9 @@ class UserProperty(Base, BaseMixin):
     """A key value store for user properties."""
 
     __tablename__ = 'user_properties'
-
-    UniqueConstraint('key', 'user_id', name='key_user_id')
+    __table_args__ = (
+        UniqueConstraint('key', 'user_id', name='key_user_id'),
+    )
 
     #: unique for any key + user_id combination
     key = Column(

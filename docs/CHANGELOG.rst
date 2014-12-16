@@ -5,7 +5,8 @@ Changelog
 0.26 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- [MIGRATION NEEDED] Correctly define UniqueConstraints.
+  [zupo]
 
 
 0.25 (2014-12-16)
