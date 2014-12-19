@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.27 (unreleased)
+0.27 (2014-12-19)
 -----------------
 
 - [MIGRATION NEEDED] Models should now use bimt mixins instead of implementing
