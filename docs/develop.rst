@@ -366,9 +366,11 @@ To mock this POST request from JVZoo, use the following command:
 
 .. code-block:: bash
 
-    $ curl -d "TODO" http://localhost:8080/clickbank/
+    $ bin/py -c "import requests; requests.post('http://localhost:8080/clickbank/', json={'iv': 'MjAwQkFGNjYyNkNCMkMxMg==', 'notification': '6YMzizmNx9xuyLKEaTmBNgDQv8rJ//k6mi1mmaSFvgHaN/4ts3ypNpCNI8gvyOBnbimqD358hsCC\n1CH4UvyxszKCrdky+zhGGAHvWjDbjzaVwrbEovEI433lnyhoM5VuXXpCSOQBYxQODQJ7Vh/F92bt\nvNI7MEtqLM7Ij0OkEayy5+xLix9UHvlRC+cum4YqDWUkeXktkVDAGZkXEYmgtBmxcQ4hJLHYNEeQ\n9st4eVsX/4df5JCPKF/e7qxe+6C6S5LpcTwjRD7nXW7mJEFMgjZVOmhst2G1b5bHb3A6vHn0+eUe\ni4Lt2sIwQ4gkxsMgQakr1RO7ZJPuBhv8ZWZaLeZEy1pLz3XmlpdD9+4Sg19RVY38KmAR89QP12cV\n2xQgqSSisCb84XkG+AGQuLiNIuggnNj85KwZ3jqmH4ldcNVuZPnkOI9mnZq3JsdJoh9tmzh9LckE\nRzTIEwSVtDNH0aNwM0pmmCwgfAc2CLRJ6RzkP5RnxO5LmCAdmcoEkm5qk+aq6KdD0+RlUvYV/G+z\nwY5I2s1lC93/tpdNndEJaGTjpBiWi16kuig3kr2PhY+1I1ipp4EtpJcl8ePWxE+T9quy6r2bPt0K\nVsRfPZBlXN7A6nnbKE8iBz9qnyJJQM/yc6sO+rf710FtopvTa7Zix1+HwJhrvd4E7HmjcZ3iXicK\nWhYe/pm6zQkwkWO7K7TSv7IxxjxL2g61Ju9IUNqOyK2ogQhcZN07NLfCqeESUoXBvhE4h46JUcg8\nAA9EquqRQvzsPT5N184RWxZlgEqbJcfUw1Uc4tzKLa9cOoSmR80t7GDugQbfgzD/lPKwQcCqjL8O\nL/3l7oPjyVD3ZrFVxYhMS5U4RUdtItjUz0UWVXs0C6aZNftWoG/TWfSeqf31q/B99suDX2PkbSK5\nfhak9fzYpURXr6Z5vQiZ4HhA44HbijK4BkhXvzMEggjpzX7b7umZYlKUsCbrtOKuu/+wIOTRVP2b\nZYrv5Wkuw6Vem58dSxQYCUHrSGCda9FYvzMKgdEINT2dxuIHDmLQ9PceZB3t1WcO1VWB0J/anSjU\nzif4LwQSOCoZyzTwKJGGfFCWWo9QGLBG+qH9EgcoY6gvvrMSKdCR9aYw+wx5keLO3lKNTd8vt5ub\nVHNnRu/VIjo6U5DGjs6uYto5g4rrzaxVxAbmZKF4nc5fLdx8ZtVqZZb6ImiyOTd/ocpkJjmq2o1Z\nKR2iW/dSAzknLhEg9RWRNbVzzhTULthbRJq5iv+HrafOWOdiIN6LR7sSfiYCAb/SITTNSL+VDIgg\nbMjiq5bZZ1/QqIWQtXuHsmhryjnds5l9ZhHtvVqyhcQ3iXVhkejnyZHZw3yVM9CrOhnWzpBbBiGj\npi0lZd9HvY1m1/soJaJ8jJloEc/9Q+sU+anwRTNYAfSTGyVO62Ae7skviGQ2J95nOGw/H/FHLW3A\ncQDhO9YYBvJNrSf4C5C2stXk390WwKeX0JpgIq3tDtIj8zj64pArR6wgwm8uOQKW499ZtyKvQifo\nbYXaPszGcoeJ/w2KppULfhewlYfT2uV2UOuJaA=='})"
 
 
 The commands above assumes you have set your ``bimt.jvzoo_secret_key`` and
-``bimt.clickbank_secret_key``, respectively, set to ``secret`` in your local
-app (this is the default value).
+``bimt.clickbank_secret_key``, respectively, to ``secret`` and
+``SECRETSECRET1234``in your local app (this is the default value). The second
+assumtion is that you have a group with ``product_id`` set to ``1`` and
+``ipntest``, respectively.
