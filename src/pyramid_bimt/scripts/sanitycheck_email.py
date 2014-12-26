@@ -25,7 +25,7 @@ def send_email(settings, request, verbose=False):
     if warnings or verbose:
         mailer = get_mailer(request)
         mailer.send_immediately(Message(
-            recipients=['maintenance@niteoweb.com', ],
+            recipients=[settings['mail.default_sender'], ],
             subject=subject,
             html=render(
                 'pyramid_bimt:templates/sanitycheck_email.pt',

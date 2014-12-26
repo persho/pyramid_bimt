@@ -5,7 +5,8 @@ Changelog
 0.27.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use default sender apps as a recipient for sanity check emails.
+  [zupo]
 
 
 0.27 (2014-12-19)

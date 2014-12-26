@@ -515,7 +515,7 @@ class TestSanityCheckEmail(unittest.TestCase):
         mailer = get_mailer(self.config)
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(
-            mailer.outbox[0].recipients, ['maintenance@niteoweb.com', ])
+            mailer.outbox[0].recipients, ['info@bar.com', ])
         self.assertEqual(
             mailer.outbox[0].subject, u'BIMT sanity check found 2 warnings')
 
@@ -534,7 +534,7 @@ class TestSanityCheckEmail(unittest.TestCase):
         mailer = get_mailer(self.config)
         self.assertEqual(len(mailer.outbox), 1)
         self.assertEqual(
-            mailer.outbox[0].recipients, ['maintenance@niteoweb.com', ])
+            mailer.outbox[0].recipients, ['info@bar.com', ])
         self.assertEqual(
             mailer.outbox[0].subject, u'BIMT sanity check OK')
         self.assertIn(
