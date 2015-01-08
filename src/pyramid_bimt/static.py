@@ -4,7 +4,6 @@
 from fanstatic import Group
 from fanstatic import Library
 from fanstatic import Resource
-from js.bootstrap import bootstrap
 from js.deform import deform_form_css
 from js.deform import deform_js
 from js.jquery import jquery
@@ -23,6 +22,19 @@ logger = logging.getLogger(__name__)
 
 lib_deform = Library('deform', resource_filename('deform', 'static'))
 lib_bimt = Library('pyramid_bimt', 'static')
+
+bootstrap_js = Resource(
+    library=lib_bimt,
+    relpath='bootstrap.min.js',
+    depends=[jquery],
+    bottom=True)
+
+bootstrap_css = Resource(
+    library=lib_bimt,
+    relpath='bootstrap.min.css',
+)
+
+bootstrap = Group([bootstrap_js, bootstrap_css])
 
 chosen_js = Resource(
     library=lib_bimt,

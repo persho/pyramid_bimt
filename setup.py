@@ -43,7 +43,6 @@ setup(
         'cornice',
         'fanstatic [cssmin,jsmin]',
         'flufl.enum',
-        'js.bootstrap',
         'js.deform',
         'js.jquery',
         'js.jquery-timeago',

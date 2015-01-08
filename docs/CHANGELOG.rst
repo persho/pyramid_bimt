@@ -5,9 +5,12 @@ Changelog
 0.30 (unreleased)
 -----------------
 
+- Load webfonts from CDN, refs #1622.
+  [zupo]
+
 - Don't allow site loading in iframes. Redirect when this happens.
   [ferewuz]
-  
+
 
 0.29 (2015-01-16)
 -----------------
