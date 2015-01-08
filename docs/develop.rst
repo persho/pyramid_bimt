@@ -112,6 +112,7 @@ isolated from the app's environment, as they need to run in arbitrary apps.
     $ cd src/pyramid-bimt
     $ make tests
 
+
 .. _pinning_versions:
 
 Pinning versions
@@ -137,6 +138,7 @@ The ``pyramid_bimt`` package pins versions of its dependencies and publishes
 them in a ``versions-<VERSION>.cfg`` file on our internal PyPI server, next
 to the tarball of the package. Apps should use this `versions` file in their
 own ``version.cfg`` and just append app specific pins.
+
 
 Database migrations
 -------------------
@@ -179,8 +181,6 @@ Then also test the downgrade step::
 
     $ bin/alembic -c etc/development.ini -n app:main downgrade -1
 
-
-
 .. note::
 
     Alembic is smart enough to auto-generate upgrade/downgrade code for adding
@@ -221,6 +221,7 @@ We have a read-only user ``bimt`` on GitHub. Use this user to clone
 
 #. If you need code that is in a branch inside the ``pyramid_bimt`` repo, then
    append ``branch=yourbranch`` to the line in ``[sources]`` above.
+
 
 Running robot-framework tests locally
 -------------------------------------
@@ -270,8 +271,6 @@ However, the current version of ``robotframework-selenium2library`` has a bug
 that makes Firefox eat all our cookies and hence the login does not work. Use
 the branch from this Pull Request as a temporary workaround:
 https://github.com/rtomac/robotframework-selenium2library/pull/339
-
-
 
 
 Uploading robot-framework logs on Amazon S3
