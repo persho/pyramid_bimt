@@ -13,5 +13,6 @@ class Modes(Enum):
 
 class BimtPermissions(Enum):
     view = 'View'
+    loginas = 'Login As'
     manage = 'Manage'
     sudo = 'Super user'

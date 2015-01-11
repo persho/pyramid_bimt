@@ -146,7 +146,7 @@ class LoginAsSchema(colander.MappingSchema):
 
 @view_config(
     route_name='login_as',
-    permission=BimtPermissions.manage,
+    permission=BimtPermissions.loginas,
     layout='default',
     renderer='pyramid_bimt:templates/form.pt',
 )
@@ -173,6 +173,11 @@ class LoginAs(FormView):
         elif user.admin and not self.request.user.admin:
             self.request.session.flash(
                 u'You do not have permission to login as admin user.',
+                'error'
+            )
+        elif user.staff and not self.request.user.staff:
+            self.request.session.flash(
+                u'You do not have permission to login as staff user.',
                 'error'
             )
         else:

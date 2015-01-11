@@ -554,10 +554,10 @@ class TestLoginAsView(unittest.TestCase):
         self.assertEqual(resp['title'], 'Login as user')
         self.assertIn('Login as user', resp['form'])
 
-    def test_loginas_view_submit_admin(self):
+    def test_loginas_view_submit_success(self):
         from pyramid_bimt.models import User
         from pyramid_bimt.views.auth import LoginAs
-        context = User.by_email('admin@bar.com')
+        context = User.by_email('staff@bar.com')
         request = testing.DummyRequest(
             layout_manager=mock.Mock(),
             session=mock.Mock(),
@@ -573,10 +573,35 @@ class TestLoginAsView(unittest.TestCase):
             u'You have successfully logged in as user: one@bar.com'
         )
 
-    def test_loginas_view_submit_admin_no_user(self):
+    def test_loginas_view_submit_success_as_user(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.models import Group
+        from pyramid_bimt.views.auth import LoginAs
+
+        Session.add(
+            User(email='two@bar.com', groups=[Group.by_name('enabled'), ]))
+
+        context = User.by_email('one@bar.com')
+        context.groups.append(Group.by_name('impersonators'))
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'two@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        resp = view.login_as_success(form_values)
+        self.assertEqual(resp.location, 'http://example.com')
+        request.session.flash.assert_called_once_with(
+            u'You have successfully logged in as user: two@bar.com'
+        )
+
+    def test_loginas_view_submit_unknown_user(self):
         from pyramid_bimt.models import User
         from pyramid_bimt.views.auth import LoginAs
-        context = User.by_email('admin@bar.com')
+        context = User.by_email('staff@bar.com')
         request = testing.DummyRequest(
             layout_manager=mock.Mock(),
             session=mock.Mock(),
@@ -592,10 +617,10 @@ class TestLoginAsView(unittest.TestCase):
             'error'
         )
 
-    def test_loginas_view_submit_admin_disabled_user(self):
+    def test_loginas_view_submit_disabled_user(self):
         from pyramid_bimt.models import User
         from pyramid_bimt.views.auth import LoginAs
-        context = User.by_email('admin@bar.com')
+        context = User.by_email('staff@bar.com')
         request = testing.DummyRequest(
             layout_manager=mock.Mock(),
             session=mock.Mock(),
@@ -614,10 +639,8 @@ class TestLoginAsView(unittest.TestCase):
 
     def test_loginas_view_submit_staff_as_admin(self):
         from pyramid_bimt.models import User
-        from pyramid_bimt.models import Group
         from pyramid_bimt.views.auth import LoginAs
-        context = User.by_email('one@bar.com')
-        context.groups.append(Group.by_name('staff'))
+        context = User.by_email('staff@bar.com')
         self.config.testing_securitypolicy(
             userid='one@bar.com',
             permissive=False
@@ -634,6 +657,29 @@ class TestLoginAsView(unittest.TestCase):
         self.assertIsNone(view.login_as_success(form_values))
         request.session.flash.assert_called_once_with(
             u'You do not have permission to login as admin user.',
+            'error'
+        )
+
+    def test_loginas_view_submit_user_as_staff_member(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('one@bar.com')
+        self.config.testing_securitypolicy(
+            userid='one@bar.com',
+            permissive=False
+        )
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            session=mock.Mock(),
+        )
+        form_values = {
+            'email': 'staff@bar.com'
+        }
+        request.user = context
+        view = LoginAs(request)
+        self.assertIsNone(view.login_as_success(form_values))
+        request.session.flash.assert_called_once_with(
+            u'You do not have permission to login as staff user.',
             'error'
         )
 

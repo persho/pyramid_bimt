@@ -2,8 +2,12 @@ Changelog
 =========
 
 
-0.27.1 (unreleased)
--------------------
+0.28 (unreleased)
+-----------------
+
+- Added a new group ``impersonators`` whose members can use the ``login-as``
+  view to impersonate other users.
+  [zupo]
 
 - Use default sender apps as a recipient for sanity check emails.
   [zupo]

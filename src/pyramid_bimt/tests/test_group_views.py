@@ -120,9 +120,9 @@ class TestGroupAdd(unittest.TestCase):
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
-        self.assertEqual(result.location, '/group/6/edit/')
+        self.assertEqual(result.location, '/group/7/edit/')
 
-        group = Group.by_id(6)
+        group = Group.by_id(7)
         self.assertEqual(group.name, 'foo')
         self.assertEqual(group.product_id, '13')
         self.assertEqual(group.validity, 30)

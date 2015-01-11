@@ -108,6 +108,14 @@ def add_groups():
         )
         Session.add(unsubscribed)
 
+        impersonators = Group(
+            name='impersonators',
+            properties=[GroupProperty(
+                key=u'description',
+                value=u'Members can impersonate other users with login-as'), ],
+        )
+        Session.add(impersonators)
+
 
 def add_users():
     """Init the 'admin@bar.com' and 'one@bar.com' user accounts."""

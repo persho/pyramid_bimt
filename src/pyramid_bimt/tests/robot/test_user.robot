@@ -52,6 +52,11 @@ Scenario: Staff member logs in as another user
     Then I am logged in
      And page should contain  You have successfully logged in as user: one@bar.com
 
+Scenario: User cannot log in as another user
+   Given I am logged in as a user
+    When I go to  /login-as/
+    Then page should contain  Insufficient privileges.
+
 Scenario: User cannot add users
    Given I am logged in as a user
     When I Go to  /user/add/

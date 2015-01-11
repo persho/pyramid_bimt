@@ -26,6 +26,8 @@ def groupfinder(user_email, request):
 class RootFactory(object):
     __acl__ = [
         (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, 'g:impersonators', BimtPermissions.loginas),
+        (Allow, 'g:staff', BimtPermissions.loginas),
         (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
