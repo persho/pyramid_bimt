@@ -609,7 +609,7 @@ class TestLoginAsView(unittest.TestCase):
         self.assertIsNone(view.login_as_success(form_values))
         request.session.flash.assert_called_once_with(
             u'User: one@bar.com is disabled.',
-            'warning'
+            'error'
         )
 
     def test_loginas_view_submit_staff_as_admin(self):

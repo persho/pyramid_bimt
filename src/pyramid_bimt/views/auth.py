@@ -165,6 +165,11 @@ class LoginAs(FormView):
                 u'User with that email does not exist.',
                 'error'
             )
+        elif not user.enabled:
+            self.request.session.flash(
+                u'User: {} is disabled.'.format(user.email),
+                'error'
+            )
         elif user.admin and not self.request.user.admin:
             self.request.session.flash(
                 u'You do not have permission to login as admin user.',
@@ -172,6 +177,10 @@ class LoginAs(FormView):
             )
         else:
             headers = remember(self.request, user.email)
+            self.request.session.flash(
+                u'You have successfully logged in as user: {}'.format(
+                    user.email)
+            )
             self.request.registry.notify(
                 UserLoggedInAs(
                     self.request,
@@ -179,17 +188,7 @@ class LoginAs(FormView):
                     comment=u'Logged in as {}'.format(user.email)
                 )
             )
-
-            if not user.enabled:
-                self.request.session.flash(
-                    u'User: {} is disabled.'.format(user.email),
-                    'warning'
-                )
-            else:
-                self.request.session.flash(
-                    u'You have successfully logged in as user: {}'.format(user.email)  # noqa
-                )
-                return HTTPFound(
-                    location=self.request.host_url,
-                    headers=headers
-                )
+            return HTTPFound(
+                location=self.request.host_url,
+                headers=headers
+            )
