@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.28 (unreleased)
+0.28 (2015-01-11)
 -----------------
 
 - Added a new group ``impersonators`` whose members can use the ``login-as``
