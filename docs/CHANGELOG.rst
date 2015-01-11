@@ -5,7 +5,8 @@ Changelog
 0.29 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Robot fixes.
+  [zupo]
 
 
 0.28 (2015-01-11)

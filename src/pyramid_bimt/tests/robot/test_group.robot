@@ -20,7 +20,7 @@ Scenario: Staff member adds a new group
       And I input text  name=trial_validity  7
       And I select checkbox one@bar.com
       And I click button  Submit
-     Then location should be  /group/6/edit/
+     Then location should be  /group/7/edit/
       And page should contain  Group "monthly" added.
 
 Scenario: Staff member renames a group
