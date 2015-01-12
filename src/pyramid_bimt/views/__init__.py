@@ -180,7 +180,7 @@ def deferred_settings_email_validator(node, kw):
     return validator
 
 
-class SettingsSchema(colander.MappingSchema):
+class AccountInformation(colander.MappingSchema):
     email = colander.SchemaNode(
         colander.String(),
         validator=deferred_settings_email_validator,
@@ -194,6 +194,10 @@ class SettingsSchema(colander.MappingSchema):
             template='readonly/textinput'
         )
     )
+
+
+class SettingsSchema(colander.MappingSchema):
+    account_info = AccountInformation(title='Account Information')
 
 
 class SettingsForm(FormView):
@@ -217,9 +221,8 @@ class SettingsForm(FormView):
     def save_success(self, appstruct):
         user = self.request.user
         headers = None
-
         # if email was modified, we need to re-set the user's session
-        email = appstruct['email'].lower()
+        email = appstruct['account_info']['email'].lower()
         if user.email != email:
             user.email = email
             headers = remember(self.request, user.email)
@@ -239,8 +242,10 @@ class SettingsForm(FormView):
     def appstruct(self):
         user = self.request.user
         return {
-            'email': user.email,
-            'api_key': user.get_property('api_key', ''),
+            'account_info': {
+                'email': user.email,
+                'api_key': user.get_property('api_key', ''),
+            }
         }
 
 

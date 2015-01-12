@@ -54,7 +54,7 @@ class TestSettingsView(unittest.TestCase):
             userid='one@bar.com', permissive=True)
         self.request.user.email = 'one@bar.com'
         form_values = {
-            'email': 'TWO@bar.com',
+            'account_info': {'email': 'TWO@bar.com'},
         }
         settings_view = SettingsForm(self.request)
         settings_view.save_success(form_values)
@@ -72,7 +72,7 @@ class TestSettingsView(unittest.TestCase):
             userid='one@bar.com', permissive=True)
         self.request.user.email = 'one@bar.com'
         form_values = {
-            'email': 'one@bar.com',
+            'account_info': {'email': 'one@bar.com'},
         }
         settings_view = SettingsForm(self.request)
         settings_view.save_success(form_values)

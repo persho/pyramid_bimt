@@ -5,6 +5,9 @@ Changelog
 0.28.2 (unreleased)
 -------------------
 
+- Settings UI changes to divide different parts of settings.
+  [ferewuz]
+
 - Add ``above_sidebar`` position option to portlets.
   [ferewuz]
 
