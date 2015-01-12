@@ -10,6 +10,7 @@ from pyramid_bimt.models import GroupProperty
 from pyramid_bimt.testing import initTestingDB
 from sqlalchemy.exc import IntegrityError
 
+import mock
 import unittest
 
 
@@ -186,6 +187,16 @@ class TestGroupProperties(unittest.TestCase):
 
         self.group.set_property('foo', u'baz')
         self.assertEqual(self.group.get_property('foo'), u'baz')
+
+    @mock.patch('pyramid_bimt.security.get_current_registry')
+    def test_set_property_secure(self, get_current_registry):
+        get_current_registry.return_value.settings = {
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
+        }
+        self.group.set_property('foo', u'bar', secure=True)
+        self.assertEqual(self.group.get_property('foo', secure=True), u'bar')
+        self.assertNotEqual(
+            self.group.get_property('foo', secure=False), u'bar')
 
     def test_set_property_strict(self):
         with self.assertRaises(KeyError) as cm:

@@ -101,7 +101,10 @@ class TestSettingsView(unittest.TestCase):
 class TestGenerateAPIKeyOnUserCreation(unittest.TestCase):
 
     def setUp(self):
-        self.config = testing.setUp()
+        settings = {
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
+        }
+        self.config = testing.setUp(settings=settings)
         initTestingDB(groups=True, users=True, auditlog_types=True)
         configure(self.config)
 
@@ -121,7 +124,7 @@ class TestGenerateAPIKeyOnUserCreation(unittest.TestCase):
         request = testing.DummyRequest()
         request.registry.notify(UserCreated(request, user, u'foö'))
 
-        self.assertEqual(user.get_property('api_key', default=u''), u'foo')
+        self.assertEqual(user.get_property('api_key', secure=True), u'foo')
 
     def test_generate_api_key(self):
         from pyramid_bimt.views import generate_api_key

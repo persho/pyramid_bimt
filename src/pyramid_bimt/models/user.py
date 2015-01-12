@@ -11,6 +11,7 @@ from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_basemodel import Session
 from pyramid_bimt.models import GetByIdMixin
+from pyramid_bimt.security import SymmetricEncryption
 from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import ForeignKey
@@ -157,7 +158,7 @@ class User(Base, BaseMixin, GetByIdMixin):
         return u'<{}:{} (email={})>'.format(
             self.__class__.__name__, self.id, repr(self.email))
 
-    def get_property(self, key, default=_marker):
+    def get_property(self, key, default=_marker, secure=False):
         """Get a User's property by key.
 
         :param key: Key by which to find the property.
@@ -174,9 +175,13 @@ class User(Base, BaseMixin, GetByIdMixin):
                 raise KeyError(u'Property "{}" not found.'.format(key))
             else:
                 return default
-        return result.one().value
+        value = result.one().value
+        if secure:
+            return SymmetricEncryption().decrypt(value)
+        else:
+            return value
 
-    def set_property(self, key, value, strict=False):
+    def set_property(self, key, value, strict=False, secure=False):
         """Set a User's property by key.
 
         :param key: Key by which to save the property.
@@ -188,6 +193,8 @@ class User(Base, BaseMixin, GetByIdMixin):
             fail. False by default.
         :type strict: bool
         """
+        if secure:
+            value = SymmetricEncryption().encrypt(value)
         result = UserProperty.query.filter_by(user_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise KeyError('Property "{}" not found.'.format(key))

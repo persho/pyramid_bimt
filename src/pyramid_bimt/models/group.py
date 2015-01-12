@@ -8,6 +8,7 @@ from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_bimt.models import GetByIdMixin
 from pyramid_bimt.models import GetByNameMixin
+from pyramid_bimt.security import SymmetricEncryption
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -143,7 +144,7 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         return u'<{}:{} (name={})>'.format(
             self.__class__.__name__, self.id, repr(self.name))
 
-    def get_property(self, key, default=_marker):
+    def get_property(self, key, default=_marker, secure=False):
         """Get a Group's property by key.
 
         :param key: Key by which to find the property.
@@ -160,9 +161,13 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
                 raise KeyError(u'Property "{}" not found.'.format(key))
             else:
                 return default
-        return result.one().value
+        value = result.one().value
+        if secure:
+            return SymmetricEncryption().decrypt(value)
+        else:
+            return value
 
-    def set_property(self, key, value, strict=False):
+    def set_property(self, key, value, strict=False, secure=False):
         """Set a Group's property by key.
 
         :param key: Key by which to save the property.
@@ -170,10 +175,12 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         :param value: Value of the property.
         :type value: Unicode
         :param strict: If True, raise an error if property of given key key
-            does not yet exists. In other words, update an existing property or
-            fail. False by default.
+            does not yet exists. In other words, update an existing property
+            or fail. False by default.
         :type strict: bool
         """
+        if secure:
+            value = SymmetricEncryption().encrypt(value)
         result = GroupProperty.query.filter_by(group_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise KeyError('Property "{}" not found.'.format(key))

@@ -23,6 +23,7 @@ class TestCheckSettings(unittest.TestCase):
             'bimt.app_secret': '',
             'bimt.app_title': 'BIMT',
             'bimt.disabled_user_redirect_path': '',
+            'bimt.encryption_aes_16b_key': '',
             'mail.info_address': '',
             'script_location': '',
             'session.secret': '',

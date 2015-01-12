@@ -2,8 +2,13 @@ Changelog
 =========
 
 
-0.28.2 (unreleased)
+0.29 (unreleased)
 -------------------
+
+- [MIGRATION NEEDED] Symmetric encryption can now be used where needed. User
+  and group properties now have option to add them encrypted. API keys should
+  be now encrypted and encryption used everywhere where applicable.
+  [ferewuz]
 
 - Settings UI changes to divide different parts of settings.
   [ferewuz]

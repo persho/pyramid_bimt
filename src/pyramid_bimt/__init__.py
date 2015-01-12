@@ -34,6 +34,7 @@ REQUIRED_SETTINGS = [
     'bimt.app_name',
     'bimt.app_title',
     'bimt.disabled_user_redirect_path',
+    'bimt.encryption_aes_16b_key',
     'script_location',
     'session.encrypt_key',  # a fairly long randomly generated string
     'session.key',  # name of the cookie key used to save the session under

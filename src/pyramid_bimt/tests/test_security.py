@@ -2,7 +2,9 @@
 """Tests for pyramid_bimt events."""
 
 from pyramid import testing
+from pyramid_bimt.security import SymmetricEncryption
 
+import mock
 import unittest
 
 from zope.testing.loggingsupport import InstalledHandler  # noqa
@@ -56,3 +58,43 @@ class TestVerify(unittest.TestCase):
         encrypted_pass = encrypt(generated_pass)
 
         self.assertFalse(verify(object(), encrypted_pass))
+
+
+@mock.patch('pyramid_bimt.security.get_current_registry')
+class TestSymmetricEncryption(unittest.TestCase):
+
+    def setUp(self):
+        testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_pad(self, get_current_registry):
+        get_current_registry.return_value.settings = {
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
+        }
+        self.assertEqual(len(SymmetricEncryption()._pad('a')), 16)
+        self.assertEqual(len(SymmetricEncryption()._pad('')), 16)
+        self.assertEqual(
+            len(SymmetricEncryption()._pad('abcdabcdabcdabcda')),
+            32
+        )
+
+    def test_unpad(self, get_current_registry):
+        get_current_registry.return_value.settings = {
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
+        }
+        self.assertEqual(
+            len(SymmetricEncryption()._unpad(
+                'a\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f\x0f')),  # noqa
+            1
+        )
+
+    def test_encrypt_decrypt(self, get_current_registry):
+        secret = 'super_Secret_123'
+        get_current_registry.return_value.settings = {
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
+        }
+        encrypted = SymmetricEncryption().encrypt(secret)
+
+        self.assertEqual(SymmetricEncryption().decrypt(encrypted), secret)

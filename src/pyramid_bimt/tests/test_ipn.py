@@ -459,6 +459,7 @@ class TestJVZooViewFunctional(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
             'bimt.jvzoo_secret_key': 'secret',
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')
@@ -526,6 +527,7 @@ class TestClickBankViewFunctional(unittest.TestCase):
         settings = {
             'bimt.app_title': 'BIMT',
             'bimt.clickbank_secret_key': 'secret',
+            'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
         }
         self.config = testing.setUp(settings=settings)
         self.config.include('pyramid_mailer.testing')

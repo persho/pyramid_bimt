@@ -230,7 +230,8 @@ class SettingsForm(FormView):
         return HTTPFound(location=self.request.path_url, headers=headers)
 
     def regenerate_api_key_success(self, appstruct):
-        self.request.user.set_property('api_key', generate_api_key())
+        self.request.user.set_property(
+            'api_key', generate_api_key(), secure=True)
         self.request.session.flash(u'API key re-generated.')
 
     def subscribe_to_newsletter_success(self, appstruct):
@@ -244,7 +245,7 @@ class SettingsForm(FormView):
         return {
             'account_info': {
                 'email': user.email,
-                'api_key': user.get_property('api_key', ''),
+                'api_key': user.get_property('api_key', '', secure=True),
             }
         }
 
@@ -257,4 +258,4 @@ def generate_api_key():
 
 @subscriber(IUserCreated)
 def set_api_key(event):
-    event.user.set_property('api_key', generate_api_key())
+    event.user.set_property('api_key', generate_api_key(), secure=True)
