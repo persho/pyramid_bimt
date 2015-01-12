@@ -170,12 +170,14 @@ class TestPortletGetAll(unittest.TestCase):
     def test_ordered_by_position_by_default(self):
         _make_portlet(name='foo', position='above_content')
         _make_portlet(name='bar', position='above_footer')
+        _make_portlet(name='bla', position='above_sidebar')
         _make_portlet(name='baz', position='below_sidebar')
         portlets = Portlet.get_all()
-        self.assertEqual(len(portlets), 3)
+        self.assertEqual(len(portlets), 4)
         self.assertEqual(portlets[0].name, 'foo')
         self.assertEqual(portlets[1].name, 'bar')
-        self.assertEqual(portlets[2].name, 'baz')
+        self.assertEqual(portlets[2].name, 'bla')
+        self.assertEqual(portlets[3].name, 'baz')
 
     def test_override_ordered_by(self):
         _make_portlet(name='foo', weight=3)

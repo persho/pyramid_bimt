@@ -67,6 +67,9 @@ class PortletPositions(Enum):
     #: display a portlet in the sidebar column, below any other sidebar content
     below_sidebar = 'Below Sidebar'
 
+    #: display a portlet in the sidebar column, above any other sidebar content
+    above_sidebar = 'Above Sidebar'
+
     #: display a portlet in the footer row, full-width, before any other footer
     #: content
     above_footer = 'Above Footer'

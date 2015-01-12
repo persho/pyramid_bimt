@@ -5,7 +5,8 @@ Changelog
 0.28.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add ``above_sidebar`` position option to portlets.
+  [ferewuz]
 
 
 0.28.1 (2015-01-11)

@@ -4,6 +4,7 @@
 from pyramid import testing
 from pyramid_bimt.layout import above_content_portlets
 from pyramid_bimt.layout import above_footer_portlets
+from pyramid_bimt.layout import above_sidebar_portlets
 from pyramid_bimt.layout import below_sidebar_portlets
 from pyramid_bimt.models import Portlet
 
@@ -25,6 +26,7 @@ class TestPortletsFetchers(unittest.TestCase):
         request = testing.DummyRequest(user=None)
 
         self.assertEqual(above_content_portlets(self.context, request), '')
+        self.assertEqual(above_sidebar_portlets(self.context, request), '')
         self.assertEqual(below_sidebar_portlets(self.context, request), '')
         self.assertEqual(above_footer_portlets(self.context, request), '')
 
@@ -34,18 +36,22 @@ class TestPortletsFetchers(unittest.TestCase):
         Portlet.by_user_and_position.return_value = []
 
         self.assertEqual(above_content_portlets(self.context, request), '')
+        self.assertEqual(above_sidebar_portlets(self.context, request), '')
         self.assertEqual(below_sidebar_portlets(self.context, request), '')
         self.assertEqual(above_footer_portlets(self.context, request), '')
 
     @mock.patch('pyramid_bimt.layout.Portlet')
     def test_user_with_a_single_portlet(self, MockedPortlet):
-        from pyramid_bimt.layout import above_content_portlets
         request = testing.DummyRequest(user=mock.Mock(specs=()))
         MockedPortlet.by_user_and_position.return_value = [
             Portlet(html=u'foö'), ]
 
         self.assertEqual(
             above_content_portlets(self.context, request),
+            u'<div class="well">foö</div>\n'
+        )
+        self.assertEqual(
+            above_sidebar_portlets(self.context, request),
             u'<div class="well">foö</div>\n'
         )
         self.assertEqual(
@@ -59,13 +65,16 @@ class TestPortletsFetchers(unittest.TestCase):
 
     @mock.patch('pyramid_bimt.layout.Portlet')
     def test_user_with_multiple_portlets(self, MockedPortlet):
-        from pyramid_bimt.layout import above_content_portlets
         request = testing.DummyRequest(user=mock.Mock(specs=()))
         MockedPortlet.by_user_and_position.return_value = [
             Portlet(html=u'foö'), Portlet(html=u'bär')]
 
         self.assertEqual(
             above_content_portlets(self.context, request),
+            u'<div class="well">foö</div>\n<div class="well">bär</div>\n',
+        )
+        self.assertEqual(
+            above_sidebar_portlets(self.context, request),
             u'<div class="well">foö</div>\n<div class="well">bär</div>\n',
         )
         self.assertEqual(

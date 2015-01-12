@@ -78,6 +78,16 @@ def below_sidebar_portlets(context, request):
     return ''
 
 
+@panel_config(name='above_sidebar_portlets')
+def above_sidebar_portlets(context, request):
+    if request.user:
+        portlets = Portlet.by_user_and_position(
+            request.user, PortletPositions.above_sidebar.name)
+        if portlets:
+            return render_portlets(portlets)
+    return ''
+
+
 @panel_config(name='above_footer_portlets')
 def above_footer_portlets(context, request):
     if request.user:

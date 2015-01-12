@@ -27,6 +27,7 @@
       <div class="row-fluid">
 
         <div class="col-md-3" tal:condition="request.user and request.user.enabled and not layout.hide_sidebar">
+          ${panel('above_sidebar_portlets')}
           ${panel('sidebar')}
           ${panel('below_sidebar_portlets')}
         </div>
