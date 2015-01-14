@@ -5,6 +5,9 @@ Changelog
 0.29 (unreleased)
 -------------------
 
+- Allow Staff members to add and remove Auditlog Entries, refs #1756.
+  [zupo]
+
 - [MIGRATION NEEDED] Symmetric encryption can now be used where needed. User
   and group properties now have option to add them encrypted. API keys should
   be now encrypted and encryption used everywhere where applicable.

@@ -15,6 +15,10 @@ from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import DatatablesDataView
 from pyramid_deform import FormView
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 @view_config(
     route_name='audit_log',
@@ -88,11 +92,13 @@ class AuditLogAJAX(DatatablesDataView):
 
 @view_config(
     route_name='audit_log_delete',
-    permission=BimtPermissions.sudo,
+    permission=BimtPermissions.manage,
 )
 def audit_log_delete(request):
     entry = request.context
     Session.delete(entry)
+    logger.info(u'User {} removing auditlog entry {}.'.format(
+        request.user, entry))
     request.session.flash(u'Audit log entry deleted.')
     return HTTPFound(location=request.route_path('audit_log'))
 
@@ -100,7 +106,7 @@ def audit_log_delete(request):
 @view_config(
     route_name='audit_log_add',
     layout='default',
-    permission=BimtPermissions.sudo,
+    permission=BimtPermissions.manage,
     renderer='pyramid_bimt:templates/form.pt',
 )
 class AuditLogAddEntryForm(FormView):

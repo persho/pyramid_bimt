@@ -7,10 +7,13 @@ from pyramid_bimt import configure
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
+from zope.testing.loggingsupport import InstalledHandler
 
 import mock
 import unittest
 import webtest
+
+handler = InstalledHandler('pyramid_bimt.views.auditlog')
 
 
 class TestAuditLogViewIntegration(unittest.TestCase):
@@ -50,6 +53,7 @@ class TestAuditLogViewIntegration(unittest.TestCase):
 
 class TestAuditLogView(unittest.TestCase):
     def setUp(self):
+        handler.clear()
         settings = {
             'bimt.app_title': 'BIMT',
         }
@@ -65,6 +69,7 @@ class TestAuditLogView(unittest.TestCase):
             user=mock.Mock())
 
     def tearDown(self):
+        handler.clear()
         Session.remove()
         testing.tearDown()
 
@@ -75,6 +80,7 @@ class TestAuditLogView(unittest.TestCase):
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
         request = self.request
+        request.user = User(id=1, email='foo@bar.com')
         entry = AuditLogEntry(
             user_id=1,
             event_type_id=AuditLogEventType.by_name('UserCreated').id,
@@ -84,6 +90,13 @@ class TestAuditLogView(unittest.TestCase):
         transaction.commit()
         resp = audit_log_delete(request)
         self.assertIn('/activity/', resp.location)
+
+        self.assertEqual(len(handler.records), 1)
+        self.assertEqual(
+            handler.records[0].message,
+            'User <User:1 (email=\'foo@bar.com\')> removing auditlog entry '
+            '<AuditLogEntry:3 (user=u\'admin@bar.com\', type=u\'UserCreated\')>.'  # noqa
+        )
 
     def test_audit_log_add_submit_success(self):
         from pyramid_bimt.views.auditlog import AuditLogAddEntryForm
