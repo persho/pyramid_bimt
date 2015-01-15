@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.29 (unreleased)
--------------------
+0.29 (2015-01-16)
+-----------------
 
 - [MIGRATION NEEDED] Add not found view. Forbidden view now redirects to not
   found. When on root it still redirects to login. Apps should now override
