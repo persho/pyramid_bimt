@@ -19,4 +19,5 @@ Scenario: Open the Sanity Check view
 Scenario: User cannot view the Sanity Check view
    Given I am logged in as a user
     When I go to  /sanity-check/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count

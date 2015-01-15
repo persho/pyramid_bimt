@@ -5,9 +5,11 @@ from colanderalchemy import SQLAlchemySchemaNode
 from deform import Button
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
+from pyramid.renderers import render_to_response
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
+from pyramid.view import notfound_view_config
 from pyramid.view import view_config
 from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.events import UserChangedPassword
@@ -124,6 +126,11 @@ def logout(context, request):
     return HTTPFound(location=location, headers=headers)
 
 
+@notfound_view_config(append_slash=True)
+def notfound(request):
+    return render_to_response('pyramid_bimt:templates/404.pt', {})
+
+
 @view_config(
     context=HTTPForbidden,
     permission=NO_PERMISSION_REQUIRED,
@@ -132,12 +139,15 @@ def logout(context, request):
 def forbidden_redirect(context, request):
     """Redirect to the login form for anonymous users.
 
-    :result: Redirect to the login form.
+    :result: Redirect to the login form if on home page, otherwise return 404
     :rtype: pyramid.httpexceptions.HTTPFound
     """
-    request.session.flash(u'Insufficient privileges.')
-    location = request.route_path('login', _query={'came_from': request.url})
-    return HTTPFound(location=location)
+    if request.path == '/':
+        location = request.route_path(
+            'login', _query={'came_from': request.url})
+        return HTTPFound(location=location)
+    else:
+        return render_to_response('pyramid_bimt:templates/404.pt', {})
 
 
 class LoginAsSchema(colander.MappingSchema):

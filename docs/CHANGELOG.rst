@@ -5,6 +5,11 @@ Changelog
 0.29 (unreleased)
 -------------------
 
+- [MIGRATION NEEDED] Add not found view. Forbidden view now redirects to not
+  found. When on root it still redirects to login. Apps should now override
+  404.pt template.
+  [ferewuz]
+
 - Allow Staff members to add and remove Auditlog Entries, refs #1756.
   [zupo]
 

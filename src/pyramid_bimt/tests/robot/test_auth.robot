@@ -32,3 +32,7 @@ Scenario: User resets its password
      And last email should contain  To: one@bar.com
      And last email should contain  Subject: BIMT Password Reset
      And last email should contain encoded  Login to the members' area: ${APP_URL}/login/
+
+Scenario: User not logged in
+    When I go to  /
+     Then page should contain  Login

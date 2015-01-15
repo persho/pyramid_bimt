@@ -85,13 +85,7 @@ class TestLoginViewsFunctional(unittest.TestCase):
         self.assertIn('302 Found', resp.text)
         # /settings path does not exist in this package,
         # therefore we check for 404
-        with self.assertRaises(HTTPNotFound) as cm:
-            resp.follow()
-        if cm.exception.message != '/settings/':  # pragma: no cover
-            self.fail(
-                'This test should fail with message /settings/! '
-                'But it fails with message {}'.format(cm.exception.message)
-            )
+        self.assertIn('Page Not Found - Bimt', resp.follow().text)
 
     def test_login_reset_password(self):
         self.config.include('pyramid_mailer.testing')
@@ -193,12 +187,37 @@ class TestForbiddenRedirect(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    def test_forbidden_redirect_view(self):
+    def test_forbidden_redirect_view_root(self):
         from pyramid_bimt.views.auth import forbidden_redirect
-        request = testing.DummyRequest(layout_manager=mock.Mock())
+        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/')
         self.assertEqual(
             forbidden_redirect(None, request).location,
             request.route_path('login', _query={'came_from': request.url}),
+        )
+
+    def test_forbidden_redirect_view(self):
+        from pyramid_bimt.views.auth import forbidden_redirect
+        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/foo')
+        self.assertIn(
+            'Page Not Found - Bimt',
+            forbidden_redirect(None, request).text
+        )
+
+
+class TestNotFound(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        configure(self.config)
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def test_forbidden_redirect_view(self):
+        from pyramid_bimt.views.auth import notfound
+        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/foo')
+        self.assertIn(
+            'Page Not Found - Bimt',
+            notfound(request).text
         )
 
 

@@ -55,27 +55,32 @@ Scenario: Staff member logs in as another user
 Scenario: User cannot log in as another user
    Given I am logged in as a user
     When I go to  /login-as/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count
 
 Scenario: User cannot add users
    Given I am logged in as a user
     When I Go to  /user/add/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count
 
 Scenario: User cannot view the list of users
    Given I am logged in as a user
     When I go to  /users/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count
 
 Scenario: User cannot view a single user
    Given I am logged in as a user
     When I go to  /user/1/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count
 
 Scenario: User cannot edit users
    Given I am logged in as a user
     When I Go to  /user/1/edit/
-    Then page should contain  Insufficient privileges.
+    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Reset 404 count
 
 *** Keywords ***
 
