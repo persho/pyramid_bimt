@@ -1,9 +1,13 @@
 Changelog
 =========
 
+
 0.30 (unreleased)
 -----------------
 
+- Don't allow site loading in iframes. Redirect when this happens.
+  [ferewuz]
+  
 
 0.29 (2015-01-16)
 -----------------

@@ -54,6 +54,12 @@
     }
 
     $(document).ready(function () {
+        // Don't allow site loading in iframe, redirect and inform user.
+        if(top!=self){
+            top.location.replace(document.location);
+            alert("For security reasons, framing is not allowed;" +
+                "click OK to remove the frames.");
+        }
 
         enableDefaultPlugins();
 
