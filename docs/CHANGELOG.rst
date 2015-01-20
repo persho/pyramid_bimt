@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.30 (unreleased)
+0.30 (2015-01-20)
 -----------------
 
 - Load webfonts from CDN, refs #1622.
