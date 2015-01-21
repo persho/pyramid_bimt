@@ -7,6 +7,7 @@ from pyramid.httpexceptions import HTTPNotFound
 from pyramid_basemodel import Session
 from pyramid_bimt import add_home_view
 from pyramid_bimt import configure
+from pyramid_bimt.acl import AuditLogFactory
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.views.auth import LoginForm
 from pyramid_mailer import get_mailer
@@ -68,24 +69,6 @@ class TestLoginViewsFunctional(unittest.TestCase):
         resp.form['password'] = None
         resp = resp.form.submit('login')
         self.assertIn('Login failed.', resp.text)
-
-    @mock.patch.object(LoginForm, 'user_agent_info')
-    def test_login_disabled(self, user_agent_info):
-        user_agent_info.return_value = u'test_comment'
-        from pyramid_bimt.models import User
-        user = User.by_email('one@bar.com')
-        user.disable()
-
-        resp = self.testapp.get('/login/', status=200)
-        self.assertIn('<h1>Login</h1>', resp.text)
-
-        resp.form['email'] = 'ONE@bar.com'
-        resp.form['password'] = 'secret'
-        resp = resp.form.submit('login')
-        self.assertIn('302 Found', resp.text)
-        # /settings path does not exist in this package,
-        # therefore we check for 404
-        self.assertIn('Page Not Found - Bimt', resp.follow().text)
 
     def test_login_reset_password(self):
         self.config.include('pyramid_mailer.testing')
@@ -187,17 +170,32 @@ class TestForbiddenRedirect(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
-    def test_forbidden_redirect_view_root(self):
+    def test_forbidden_redirect_anonymous_on_root(self):
         from pyramid_bimt.views.auth import forbidden_redirect
-        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(), path='/', user=None)
         self.assertEqual(
             forbidden_redirect(None, request).location,
-            request.route_path('login', _query={'came_from': request.url}),
+            request.route_path('login'),
         )
 
-    def test_forbidden_redirect_view(self):
+    def test_forbidden_redirect_disabled_on_root(self):
         from pyramid_bimt.views.auth import forbidden_redirect
-        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/foo')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(), path='/', user=mock.Mock())
+        request.user.enabled = False
+        self.config.add_route(
+            'settings', '/settings/', factory=AuditLogFactory)
+
+        self.assertEqual(
+            forbidden_redirect(None, request).location,
+            request.route_path('settings'),
+        )
+
+    def test_forbidden_redirect(self):
+        from pyramid_bimt.views.auth import forbidden_redirect
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(), path='/foo', user=None)
         self.assertIn(
             'Page Not Found - Bimt',
             forbidden_redirect(None, request).text
@@ -214,7 +212,8 @@ class TestNotFound(unittest.TestCase):
 
     def test_forbidden_redirect_view(self):
         from pyramid_bimt.views.auth import notfound
-        request = testing.DummyRequest(layout_manager=mock.Mock(), path='/foo')
+        request = testing.DummyRequest(
+            layout_manager=mock.Mock(), path='/foo', user=None)
         self.assertIn(
             'Page Not Found - Bimt',
             notfound(request).text

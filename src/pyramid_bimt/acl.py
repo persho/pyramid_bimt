@@ -3,6 +3,7 @@
 
 from pyramid.security import ALL_PERMISSIONS
 from pyramid.security import Allow
+from pyramid.security import Authenticated
 from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.models import Group
@@ -38,6 +39,8 @@ class RootFactory(object):
 
 class UserFactory(object):
     __acl__ = [
+        (Allow, 'g:impersonators', BimtPermissions.loginas),
+        (Allow, 'g:staff', BimtPermissions.loginas),
         (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
@@ -57,6 +60,8 @@ class UserFactory(object):
 
 class GroupFactory(object):
     __acl__ = [
+        (Allow, 'g:impersonators', BimtPermissions.loginas),
+        (Allow, 'g:staff', BimtPermissions.loginas),
         (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]
@@ -76,7 +81,9 @@ class GroupFactory(object):
 
 class AuditLogFactory(object):
     __acl__ = [
-        (Allow, 'g:enabled', BimtPermissions.view),
+        (Allow, Authenticated, BimtPermissions.view),
+        (Allow, 'g:impersonators', BimtPermissions.loginas),
+        (Allow, 'g:staff', BimtPermissions.loginas),
         (Allow, 'g:staff', BimtPermissions.manage),
         (Allow, 'g:admins', ALL_PERMISSIONS),
     ]

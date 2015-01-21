@@ -5,7 +5,8 @@ Changelog
 0.31 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Allow disabled users access to Settings and Activity pages, refs #1785.
+  [zupo]
 
 
 0.30 (2015-01-20)

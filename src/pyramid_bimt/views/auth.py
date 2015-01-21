@@ -74,14 +74,6 @@ class LoginForm(FormView):
                 UserLoggedIn(self.request, user, comment=self.user_agent_info())  # noqa
             )
 
-            if not user.enabled:
-                self.request.session.flash(
-                    u'Your account is disabled.', 'warning')
-                return HTTPFound(
-                    location=self.request.registry.settings['bimt.disabled_user_redirect_path'],  # noqa
-                    headers=headers
-                )
-
             return HTTPFound(location=came_from, headers=headers)
         self.request.session.flash(u'Login failed.', 'error')
 
@@ -137,15 +129,21 @@ def notfound(request):
     accept='text/html'
 )
 def forbidden_redirect(context, request):
-    """Redirect to the login form for anonymous users.
+    """Redirect to 404 on forbidden access.
+
+    Show 404 instead of "insufficient privileges" so that adversaries can not
+    gather info on which resources exist by checking the responses.
+
+    If user is disabled, redirect to Settings page where he/she can extend
+    subscription.
 
     :result: Redirect to the login form if on home page, otherwise return 404
     :rtype: pyramid.httpexceptions.HTTPFound
     """
-    if request.path == '/':
-        location = request.route_path(
-            'login', _query={'came_from': request.url})
-        return HTTPFound(location=location)
+    if not request.user and request.path == '/':
+        return HTTPFound(location=request.route_path('login'))
+    elif request.user and not request.user.enabled and request.path == '/':
+        return HTTPFound(location=request.route_path('settings'))
     else:
         return render_to_response('pyramid_bimt:templates/404.pt', {})
 
