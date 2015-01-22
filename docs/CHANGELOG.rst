@@ -5,6 +5,15 @@ Changelog
 0.31 (unreleased)
 -----------------
 
+- [MIGRATION REQUIRED] Logout view now expects POST request that contains
+  ``csrf_token`` to prevent XSS logout. Apps need to correctly submit to that
+  view where applicable (navbar).
+  [ferewuz]
+
+- Change all forms to correctly include and check CSRF token to prevent XSS
+  attacks.
+  [ferewuz]
+
 - Allow disabled users access to Settings and Activity pages, refs #1785.
   [zupo]
 

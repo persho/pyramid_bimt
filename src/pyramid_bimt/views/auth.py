@@ -104,7 +104,12 @@ class LoginForm(FormView):
         }
 
 
-@view_config(route_name='logout', permission=NO_PERMISSION_REQUIRED)
+@view_config(
+    route_name='logout',
+    permission=NO_PERMISSION_REQUIRED,
+    check_csrf=True,
+    request_method='POST'
+)
 def logout(context, request):
     """Logout view.  Always redirects the user to where he came from.
 
