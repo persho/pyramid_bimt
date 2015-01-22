@@ -21,7 +21,9 @@ from pyramid_bimt.const import Modes
 from pyramid_bimt.hooks import get_authenticated_user
 from sqlalchemy import engine_from_config
 
+import deform
 import logging
+import pkg_resources
 import requests
 import sys
 import urllib
@@ -175,6 +177,12 @@ def kill_connections(username=None, password=None, apiurl=None):
         logger.warning(str(ex))
 
 
+def add_custom_deform_templates():
+    loader = deform.Form.default_renderer.loader
+    path = pkg_resources.resource_filename('pyramid_bimt', 'templates')
+    loader.search_path = loader.search_path + (path,)
+
+
 def configure(config, settings={}):
 
     # Include template renderers
@@ -209,6 +217,8 @@ def configure(config, settings={}):
 
     # register ZCA utilities
     register_utilities(config)
+
+    add_custom_deform_templates()
 
     # enable views that we need in Robot tests
     ignores = ['pyramid_bimt.tests']

@@ -64,6 +64,22 @@ class ISanityCheckDone(Interface):
     user = Attribute('The user who made the check.')
 
 
+class IUserSubscriptionChanged(Interface):
+    """An event type that is emitted after a user subscription is changed."""
+
+    request = Attribute('The request object.')
+    user = Attribute('The user who changed the subscription.')
+
+
+class IUserSubscriptionChangeFailed(Interface):
+    """An event type that is emitted after a user subscription change
+    failed.
+    """
+
+    request = Attribute('The request object.')
+    user = Attribute('The user who changed the subscription.')
+
+
 class PyramidBIMTEvent(object):
     """A base class for events raised by pyramid_bimt package."""
 
@@ -150,3 +166,13 @@ class UserLoggedInAs(PyramidBIMTEvent):
 @implementer(ISanityCheckDone)
 class SanityCheckDone(PyramidBIMTEvent):
     """Emitted whenever a sanity check is done."""
+
+
+@implementer(IUserSubscriptionChanged)
+class UserSubscriptionChanged(PyramidBIMTEvent):
+    """Emitted whenever a user subscription is changed."""
+
+
+@implementer(IUserSubscriptionChangeFailed)
+class UserSubscriptionChangeFailed(PyramidBIMTEvent):
+    """Emitted whenever a user subscription change failed."""

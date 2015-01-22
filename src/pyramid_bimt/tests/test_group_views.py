@@ -92,6 +92,7 @@ class TestGroupAdd(unittest.TestCase):
         'trial_validity': 7,
         'forward_ipn_to_url': 'http://example.com',
         'users': [1, ],
+        'upgrade_groups': [1, ],
         'properties': [{u'key': u'foo', u'value': u'bar'}, ],
     }
 
@@ -134,6 +135,7 @@ class TestGroupAdd(unittest.TestCase):
         self.assertEqual(group.trial_validity, 7)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(1), ])
+        self.assertEqual(group.upgrade_groups, [Group.by_id(1), ])
         self.assertEqual(group.get_property('foo'), 'bar')
 
         self.assertEqual(
@@ -162,31 +164,42 @@ class TestGroupEdit(unittest.TestCase):
 
         from pyramid_bimt.views.group import GroupEdit
         self.request = testing.DummyRequest()
-        self.view = GroupEdit(self.request)
+        self.request.context = mock.Mock(product_id=None)
+        self.view = GroupEdit
 
     def tearDown(self):
         Session.remove()
         testing.tearDown()
 
-    def test_appstruct_empty_context(self):
-        self.request.context = Group()
-        self.assertEqual(self.view.appstruct(), {})
+    def test_appstruct_base_context(self):
+        from pyramid_bimt.tests.test_group_model import _make_group
+        self.request.context = _make_group(name='test')
+        self.assertEqual(self.view(self.request).appstruct(), {'name': 'test'})
 
     def test_appstruct_full_context(self):
-        self.request.context = _make_group()
+        from pyramid_bimt.tests.test_group_model import _make_group
+        self.request.context = _make_group(
+            name='foo',
+            product_id=13,
+            validity=31,
+            trial_validity=7,
+            forward_ipn_to_url='http://example.com')
+        self.request.context.set_property('foo', 'bar')
         self.request.context.users = [User.by_email('one@bar.com'), ]
-        self.assertEqual(self.view.appstruct(), {
+        self.request.context.upgrade_groups = [_make_group(name='group2'), ]
+        self.assertEqual(self.view(self.request).appstruct(), {
             'name': 'foo',
             'product_id': 13,
             'validity': 31,
             'trial_validity': 7,
             'forward_ipn_to_url': 'http://example.com',
             'users': ['3', ],
+            'upgrade_groups': ['8', ],
             'properties': [{'key': u'foo', 'value': u'bar'}, ],
         })
 
     def test_view_csrf_token(self):
-        csrf_token_field = self.view.schema.get('csrf_token')
+        csrf_token_field = self.view(self.request).schema.get('csrf_token')
         self.assertIsNotNone(csrf_token_field)
         self.assertEqual(csrf_token_field.title, 'Csrf Token')
 
@@ -196,7 +209,7 @@ class TestGroupEdit(unittest.TestCase):
         # add a property that will get updated on save_success()
         self.request.context.set_property(key=u'foo', value=u'var')
 
-        result = self.view.save_success(self.APPSTRUCT)
+        result = self.view(self.request).save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, '/group/1/edit/')
 
@@ -216,7 +229,7 @@ class TestGroupEdit(unittest.TestCase):
         self.request.context = Group.by_id(1)
 
         self.APPSTRUCT['properties'] = []
-        result = self.view.save_success(self.APPSTRUCT)
+        result = self.view(self.request).save_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
         self.assertEqual(result.location, '/group/1/edit/')
 
@@ -230,6 +243,39 @@ class TestGroupEdit(unittest.TestCase):
         self.assertIsNone(group.get_property('foo', None))
         self.assertEqual(
             self.request.session.pop_flash(), [u'Group "foo" modified.'])
+
+    def test_group_cant_be_upgrade_group_to_itself(self):
+        from pyramid_bimt.tests.test_group_model import _make_group
+        self.request.context = _make_group(name='test1', product_id=1)
+        view = self.view(self.request)
+
+        self.assertIn(self.request.context, Group.get_all().all())
+        self.assertNotIn(
+            (str((self.request.context.id)), self.request.context.name),
+            view.schema.get('upgrade_groups').widget.values
+        )
+
+    def test_group_cant_be_upgrade_group_to_its_upgrade_group(self):
+        from pyramid_bimt.tests.test_group_model import _make_group
+        self.request.context = _make_group(name='test1', product_id=1)
+        group2 = _make_group(name='test2', product_id=2)
+        group2.upgrade_groups = [self.request.context]
+        view = self.view(self.request)
+
+        self.assertNotIn(
+            (str(group2.id), group2.name),
+            view.schema.get('upgrade_groups').widget.values
+        )
+
+    def test_non_product_group_cant_have_upgrade_groups(self):
+        from pyramid_bimt.tests.test_group_model import _make_group
+        self.request.context = _make_group(name='test', product_id=None)
+        view = self.view(self.request)
+
+        self.assertIn(self.request.context, Group.get_all().all())
+        self.assertIsNone(
+            view.schema.get('upgrade_groups')
+        )
 
 
 class TestGroupNameValidator(unittest.TestCase):

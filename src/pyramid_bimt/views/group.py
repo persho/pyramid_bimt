@@ -110,7 +110,6 @@ class GroupAdd(FormView):
                 'product_id': {'validator': deferred_group_product_id_validator}  # noqa
             }
         )
-
         # we don't like the way ColanderAlchemy renders SA Relationships so
         # we manually inject a suitable SchemaNode for users
         choices = [(user.id, user.email) for user in User.get_all()]
@@ -118,6 +117,18 @@ class GroupAdd(FormView):
             node=colander.SchemaNode(
                 colander.Set(),
                 name='users',
+                missing=[],
+                widget=deform.widget.CheckboxChoiceWidget(
+                    values=choices, inline=True),
+            ),
+        )
+
+        choices = [(group.id, group.name) for group in Group.get_all().filter(
+            Group.product_id != None)]  # noqa
+        self.schema.add(
+            node=colander.SchemaNode(
+                colander.Set(),
+                name='upgrade_groups',
                 missing=[],
                 widget=deform.widget.CheckboxChoiceWidget(
                     values=choices, inline=True),
@@ -132,6 +143,7 @@ class GroupAdd(FormView):
             trial_validity=appstruct.get('trial_validity'),
             forward_ipn_to_url=appstruct.get('forward_ipn_to_url'),
             users=[User.by_id(user_id) for user_id in appstruct.get('users', [])],  # noqa
+            upgrade_groups=[Group.by_id(group_id) for group_id in appstruct.get('upgrade_groups', [])],  # noqa
             properties=[GroupProperty(key=prop['key'], value=prop['value'])
                         for prop in appstruct.get('properties', [])],
         )
@@ -144,7 +156,7 @@ class GroupAdd(FormView):
 
     def appstruct(self):
         appstruct = dict()
-        for field in self.fields + ['users', 'properties']:
+        for field in self.fields + ['users', 'upgrade_groups', 'properties']:
             if self.request.params.get(field) is not None:
                 appstruct[field] = self.request.params[field]
 
@@ -162,6 +174,17 @@ class GroupEdit(GroupAdd):
     title = 'Edit Group'
     form_options = (('formid', 'group-edit'), ('method', 'POST'))
 
+    def __init__(self, request):
+        super(GroupEdit, self).__init__(request)
+        # Don't allow setting upgrade groups to non product groups
+        if not request.context.product_id:
+            self.schema.__delitem__('upgrade_groups')
+        else:
+            for group in self.request.context.downgrade_groups + [self.request.context, ]:  # noqa
+                self.schema.get(
+                    'upgrade_groups'
+                ).widget.values.remove((group.id, group.name))
+
     def save_success(self, appstruct):
         group = self.request.context
 
@@ -172,6 +195,7 @@ class GroupEdit(GroupAdd):
         group.forward_ipn_to_url = appstruct.get('forward_ipn_to_url')
 
         group.users = [User.by_id(user_id) for user_id in appstruct.get('users', [])]  # noqa
+        group.upgrade_groups = [Group.by_id(group_id) for group_id in appstruct.get('upgrade_groups', [])]  # noqa
 
         # remove properties that are not present in appstruct
         for prop in copy.copy(group.properties):
@@ -202,6 +226,10 @@ class GroupEdit(GroupAdd):
 
         if context.users:
             appstruct['users'] = [str(u.id) for u in context.users]
+
+        if context.upgrade_groups:
+            appstruct['upgrade_groups'] = [
+                str(g.id) for g in context.upgrade_groups]
 
         if context.properties:
             appstruct['properties'] = [

@@ -37,6 +37,28 @@ user_group_table = Table(
     UniqueConstraint('user_id', 'group_id', name='user_id_group_id'),
 )
 
+upgrade_group_downgrade_group_table = Table(
+    'upgrade_group_downgrade_group',
+    Base.metadata,
+    Column(
+        'upgrade_group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
+        primary_key=True
+    ),
+    Column(
+        'downgrade_group_id',
+        Integer,
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
+        primary_key=True
+    ),
+    UniqueConstraint(
+        'upgrade_group_id',
+        'downgrade_group_id',
+        name='upgrade_group_id_downgrade_group_id'
+    ),
+)
+
 _marker = object()
 
 
@@ -86,6 +108,8 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             ]
         return []  # traverse to GroupFactory's acl
 
+    id = Column(Integer, primary_key=True)
+
     name = Column(
         String,
         unique=True,
@@ -133,6 +157,14 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             'from JVZoo or Clickbank, if this field is not empty, it '
             're-posts the IPN POST request to the specified URL.'
         )},
+    )
+
+    upgrade_groups = relationship(
+        'Group',
+        secondary=upgrade_group_downgrade_group_table,
+        primaryjoin=id == upgrade_group_downgrade_group_table.c.downgrade_group_id,  # noqa
+        secondaryjoin=id == upgrade_group_downgrade_group_table.c.upgrade_group_id,  # noqa
+        backref='downgrade_groups',
     )
 
     #: shorthand for accessing group's properties

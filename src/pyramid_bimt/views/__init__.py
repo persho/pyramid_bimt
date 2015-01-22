@@ -3,23 +3,13 @@
 
 from colanderalchemy import SQLAlchemySchemaNode as BaseSQLAlchemySchemaNode
 from collections import OrderedDict
-from deform.form import Button
-from pyramid.events import subscriber
-from pyramid.httpexceptions import HTTPFound
-from pyramid.security import remember
 from pyramid_bimt.acl import BimtPermissions
-from pyramid_bimt.events import IUserCreated
-from pyramid_bimt.models import User
-from pyramid_bimt.security import generate
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_deform import CSRFSchema
 from pyramid_deform import FormView as BaseFormView
 
-import colander
 import copy
-import deform
-import re
 
 
 class SQLAlchemySchemaNode(CSRFSchema, BaseSQLAlchemySchemaNode):
@@ -168,100 +158,3 @@ class DatatablesDataView(object):
             # List of result contents for current set
             'aaData': data,
         }
-
-
-# Apps can use this validator for their settings views
-@colander.deferred
-def deferred_settings_email_validator(node, kw):
-    """Validator for setting email in settings, checks for email duplicates"""
-    request = kw['request']
-
-    def validator(node, cstruct):
-        colander.Email()(node, cstruct)
-        if request.user.email != cstruct and User.by_email(cstruct):
-            raise colander.Invalid(
-                node,
-                u'Email {} is already in use by another user.'.format(cstruct)
-            )
-    return validator
-
-
-class AccountInformation(colander.MappingSchema):
-    email = colander.SchemaNode(
-        colander.String(),
-        validator=deferred_settings_email_validator,
-    )
-
-    api_key = colander.SchemaNode(
-        colander.String(),
-        missing='',
-        title='API key',
-        widget=deform.widget.TextInputWidget(
-            template='readonly/textinput'
-        )
-    )
-
-
-class SettingsSchema(CSRFSchema, colander.MappingSchema):
-    account_info = AccountInformation(title='Account Information')
-
-
-class SettingsForm(FormView):
-    schema = SettingsSchema()
-    title = 'Settings'
-    form_options = (('formid', 'settings'), ('method', 'POST'))
-
-    def __call__(self):
-        self.buttons = (
-            'save',
-            Button(name='regenerate_api_key', title='Regenerate API key'),
-        )
-        if self.request.user.unsubscribed:
-            subscribe_button = Button(
-                name='subscribe_to_newsletter',
-                title='Subscribe to newsletter'
-            )
-            self.buttons = self.buttons + (subscribe_button, )
-        return super(SettingsForm, self).__call__()
-
-    def save_success(self, appstruct):
-        user = self.request.user
-        headers = None
-        # if email was modified, we need to re-set the user's session
-        email = appstruct['account_info']['email'].lower()
-        if user.email != email:
-            user.email = email
-            headers = remember(self.request, user.email)
-        self.request.session.flash(u'Your changes have been saved.')
-        return HTTPFound(location=self.request.path_url, headers=headers)
-
-    def regenerate_api_key_success(self, appstruct):
-        self.request.user.set_property(
-            'api_key', generate_api_key(), secure=True)
-        self.request.session.flash(u'API key re-generated.')
-
-    def subscribe_to_newsletter_success(self, appstruct):
-        self.request.session.flash(
-            u'You have been subscribed to newsletter.')
-        self.request.user.subscribe()
-        return HTTPFound(location=self.request.path_url)
-
-    def appstruct(self):
-        user = self.request.user
-        return {
-            'account_info': {
-                'email': user.email,
-                'api_key': user.get_property('api_key', '', secure=True),
-            }
-        }
-
-
-def generate_api_key():
-    return re.sub(
-        r'(....)(....)(....)(....)', r'\1-\2-\3-\4', unicode(generate(size=16))
-    )
-
-
-@subscriber(IUserCreated)
-def set_api_key(event):
-    event.user.set_property('api_key', generate_api_key(), secure=True)

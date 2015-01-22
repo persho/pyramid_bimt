@@ -279,9 +279,7 @@ class TestProductGroup(unittest.TestCase):
         testing.tearDown()
 
     def test_no_product_group(self):
-        from sqlalchemy.orm.exc import NoResultFound
-        with self.assertRaises(NoResultFound):
-            User.by_email('one@bar.com').product_group
+        self.assertIsNone(User.by_email('one@bar.com').product_group)
 
     def test_single_product_group(self):
         product_group = _make_group(name='foo', product_id='foo')

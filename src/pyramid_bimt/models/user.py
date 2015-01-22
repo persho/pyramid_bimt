@@ -21,6 +21,7 @@ from sqlalchemy import Unicode
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import or_
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 
 import colander
 import deform
@@ -221,9 +222,12 @@ class User(Base, BaseMixin, GetByIdMixin):
     @property
     def product_group(self):
         """Get the user's group that has product_id set. Can be only one."""
-        return Group.query\
-            .filter(Group.users.contains(self))\
-            .filter(Group.product_id != None).one()  # noqa
+        try:
+            return Group.query\
+                .filter(Group.users.contains(self))\
+                .filter(Group.product_id != None).one()  # noqa
+        except NoResultFound:
+                return None
 
     @property
     def enabled(self):

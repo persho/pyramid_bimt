@@ -5,7 +5,8 @@ Changelog
 0.33 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- [MIGRATION REQUIRED] Add support for up/downgrades via ClickBank's API.
+  [ferewuz]
 
 
 0.32 (2015-01-26)
