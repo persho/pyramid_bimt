@@ -572,6 +572,17 @@ class TestLoginAsView(unittest.TestCase):
         self.assertEqual(resp['title'], 'Login as user')
         self.assertIn('Login as user', resp['form'])
 
+    def test_view_csrf_token(self):
+        from pyramid_bimt.models import User
+        from pyramid_bimt.views.auth import LoginAs
+        context = User.by_email('admin@bar.com')
+        request = testing.DummyRequest(layout_manager=mock.Mock())
+        request.user = context
+        view = LoginAs(request)
+        csrf_token_field = view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     def test_loginas_view_submit_success(self):
         from pyramid_bimt.models import User
         from pyramid_bimt.views.auth import LoginAs

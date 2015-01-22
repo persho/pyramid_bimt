@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
-from colanderalchemy import SQLAlchemySchemaNode
 from collections import OrderedDict
 from datetime import datetime
 from pyramid.httpexceptions import HTTPFound
@@ -13,6 +12,7 @@ from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import DatatablesDataView
+from pyramid_bimt.views import SQLAlchemySchemaNode
 from pyramid_deform import FormView
 
 import logging

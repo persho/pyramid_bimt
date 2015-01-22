@@ -33,6 +33,13 @@ class TestSettingsView(unittest.TestCase):
         resp = SettingsForm(request)
         self.assertEqual(resp.title, 'Settings')
 
+    def test_view_csrf_token(self):
+        from pyramid_bimt.views import SettingsForm
+        settings_view = SettingsForm(self.request)
+        csrf_token_field = settings_view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     @mock.patch('pyramid_layout.layout.find_layout')
     def test_settings_view_response(self, find_layout):
         from pyramid_bimt.views import SettingsForm

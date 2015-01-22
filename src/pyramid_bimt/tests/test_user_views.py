@@ -567,6 +567,11 @@ class TestUserAdd(unittest.TestCase):
 
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     @mock.patch('pyramid_bimt.views.user.UserCreated')
     def test_submit_success(self, UserCreated):
         result = self.view.submit_success(self.APPSTRUCT)
@@ -627,6 +632,11 @@ class TestUserEdit(unittest.TestCase):
             'groups': ['1', ],
             'properties': [{'key': u'foo', 'value': u'bar'}, ],
         })
+
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
 
     APPSTRUCT = {
         'email': 'foo@bar.com',

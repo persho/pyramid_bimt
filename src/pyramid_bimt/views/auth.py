@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Views for loggin in, logging out, etc."""
 
-from colanderalchemy import SQLAlchemySchemaNode
 from deform import Button
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
@@ -21,6 +20,8 @@ from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
 from pyramid_bimt.security import verify
 from pyramid_bimt.views import FormView
+from pyramid_bimt.views import SQLAlchemySchemaNode
+from pyramid_deform import CSRFSchema
 from ua_parser import user_agent_parser
 
 import colander
@@ -148,7 +149,7 @@ def forbidden_redirect(context, request):
         return render_to_response('pyramid_bimt:templates/404.pt', {})
 
 
-class LoginAsSchema(colander.MappingSchema):
+class LoginAsSchema(CSRFSchema, colander.MappingSchema):
     email = colander.SchemaNode(colander.String())
 
 

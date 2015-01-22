@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Manage mailings."""
 
-from colanderalchemy import SQLAlchemySchemaNode
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
 from pyramid.threadlocal import get_current_registry
@@ -14,6 +13,7 @@ from pyramid_bimt.models import MailingTriggers
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import FormView
+from pyramid_bimt.views import SQLAlchemySchemaNode
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 

@@ -134,6 +134,11 @@ class TestMailingAdd(unittest.TestCase):
 
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
@@ -198,6 +203,11 @@ class TestMailingEdit(unittest.TestCase):
             'subject': u'Über Welcome!',
             'body': u'Welcome to this über amazing BIMT app!',
         })
+
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
 
     def test_save_success(self):
         self.request.context = Mailing.by_id(1)

@@ -112,6 +112,13 @@ class TestAuditLogView(unittest.TestCase):
         resp = audit_log_add_view.submit_success(form_values)
         self.assertIn('/activity/', resp.location)
 
+    def test_view_csrf_token(self):
+        from pyramid_bimt.views.auditlog import AuditLogAddEntryForm
+        audit_log_add_view = AuditLogAddEntryForm(self.request)
+        csrf_token_field = audit_log_add_view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     def _make_view(self):
         from pyramid_bimt.views.auditlog import AuditLogAJAX
 

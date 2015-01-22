@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Commonly shared view code."""
 
+from colanderalchemy import SQLAlchemySchemaNode as BaseSQLAlchemySchemaNode
 from collections import OrderedDict
 from deform.form import Button
 from pyramid.events import subscriber
@@ -12,12 +13,17 @@ from pyramid_bimt.models import User
 from pyramid_bimt.security import generate
 from pyramid_bimt.static import app_assets
 from pyramid_bimt.static import form_assets
+from pyramid_deform import CSRFSchema
 from pyramid_deform import FormView as BaseFormView
 
 import colander
 import copy
 import deform
 import re
+
+
+class SQLAlchemySchemaNode(CSRFSchema, BaseSQLAlchemySchemaNode):
+    pass
 
 
 class FormView(BaseFormView):
@@ -196,7 +202,7 @@ class AccountInformation(colander.MappingSchema):
     )
 
 
-class SettingsSchema(colander.MappingSchema):
+class SettingsSchema(CSRFSchema, colander.MappingSchema):
     account_info = AccountInformation(title='Account Information')
 
 

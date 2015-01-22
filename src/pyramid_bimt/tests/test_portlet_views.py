@@ -119,6 +119,11 @@ class TestPortletAdd(unittest.TestCase):
 
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
@@ -175,6 +180,11 @@ class TestPortletEdit(unittest.TestCase):
             'weight': -127,
             'html': u'You are admin.',
         })
+
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
 
     def test_save_success(self):
         self.request.context = Portlet.by_id(1)

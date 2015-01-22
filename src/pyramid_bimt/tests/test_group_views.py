@@ -117,6 +117,11 @@ class TestGroupAdd(unittest.TestCase):
 
         self.assertEqual(self.view.appstruct(), self.APPSTRUCT)
 
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
+
     def test_submit_success(self):
         result = self.view.submit_success(self.APPSTRUCT)
         self.assertIsInstance(result, HTTPFound)
@@ -179,6 +184,11 @@ class TestGroupEdit(unittest.TestCase):
             'users': ['3', ],
             'properties': [{'key': u'foo', 'value': u'bar'}, ],
         })
+
+    def test_view_csrf_token(self):
+        csrf_token_field = self.view.schema.get('csrf_token')
+        self.assertIsNotNone(csrf_token_field)
+        self.assertEqual(csrf_token_field.title, 'Csrf Token')
 
     def test_save_success(self):
         self.request.context = Group.by_id(1)
