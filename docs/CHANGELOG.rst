@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.31 (unreleased)
+0.31 (2015-01-23)
 -----------------
 
 - [MIGRATION REQUIRED] Logout view now expects POST request that contains
