@@ -100,6 +100,14 @@ class IPNView(object):
 
     def ipn(self):
         """The main IPN handler, called by the IPN service."""
+        # skip over to-be-ignored products
+        if self.params.product_id in self.request.registry.settings.get(
+           'bimt.products_to_ignore', '').split(','):
+            logger.info(
+                'The product is listed on the ignore list: {}'.format(
+                    self.params.product_id))
+            return 'Done.'
+
         # try to find an existing user with given email
         user = User.by_email(self.params.email)
         if not user:

@@ -40,6 +40,7 @@ class TestCheckSettings(unittest.TestCase):
             'bimt.amqp_password': '',
             'bimt.amqp_apiurl': '',
             'bimt.kill_cloudamqp_connections': True,
+            'bimt.products_to_ignore': '',
             'mail.default_sender': 'test@xyz.xyz',
             'mail.host': '',
             'mail.password': '',

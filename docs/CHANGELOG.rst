@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.31.2 (unreleased)
--------------------
+0.32 (unreleased)
+-----------------
 
-- Nothing changed yet.
+- Add support for ignoring arbitrary IPN products, refs #1807.
+  [zupo]
 
 
 0.31.1 (2015-01-23)

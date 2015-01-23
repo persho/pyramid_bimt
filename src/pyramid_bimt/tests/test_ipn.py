@@ -110,6 +110,17 @@ class TestIPNHandler(unittest.TestCase):
     def tearDown(self):
         testing.tearDown()
 
+    def test_products_to_ignore(self):
+        request = testing.DummyRequest()
+        request.registry.settings['bimt.products_to_ignore'] = '123,456'
+        view = IPNView(request)
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'product_id': '123',
+        })
+
+        self.assertEqual(view.ipn(), 'Done.')
+
     @mock.patch('pyramid_bimt.views.ipn.IPNView._parse_request_jvzoo')
     @mock.patch('pyramid_bimt.views.ipn.User')
     @mock.patch('pyramid_bimt.views.ipn.Group')
@@ -156,6 +167,7 @@ class TestIPNHandler(unittest.TestCase):
         User.by_email.return_value = mock.Mock(groups=[group_mock, ])
         request = testing.DummyRequest(post={'foo': 'bar'})
         request.registry = mock.Mock()
+        request.registry.settings = {}
 
         view = IPNView(request)
         view.params = AttrDict({

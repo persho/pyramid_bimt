@@ -52,6 +52,7 @@ REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.amqp_password',
     'bimt.amqp_apiurl',
     'bimt.kill_cloudamqp_connections',
+    'bimt.products_to_ignore',
     'mail.default_sender',
     'mail.host',
     'mail.password',
