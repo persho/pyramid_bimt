@@ -5,7 +5,8 @@ Changelog
 0.32 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Robot tests fix.
+  [zupo]
 
 
 0.31 (2015-01-23)

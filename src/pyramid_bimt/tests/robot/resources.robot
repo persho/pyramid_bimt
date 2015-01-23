@@ -5,6 +5,7 @@ Library         OperatingSystem
 Library         Collections
 Library         String
 Library         pyramid_bimt.tests.robot.reload_db.ReloadDB
+Library         DebugLibrary
 Documentation   A resource file containing the application specific keywords
 ...             that create our own domain specific language. This resource
 ...             implements keywords for testing HTML version of the test
@@ -148,7 +149,7 @@ I log in as admin
 
 I log out
     Click Element  id=usermenu
-    Click Link  Logout
+    Click Link  id=logout-link
     Page Should Contain  You have been logged out.
     I am logged out
 
