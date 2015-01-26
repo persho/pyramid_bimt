@@ -186,7 +186,21 @@ Then also test the downgrade step::
     Alembic is smart enough to auto-generate upgrade/downgrade code for adding
     and removing tables and columns. However, most of other migration tasks
     require that you manually write migration code.
+    
+    
+Preparing alembic migrate step locally
+--------------------------------------
 
+Using docker and local pgsql ::
+    
+    heroku pgbackups:capture --expire --app bimt-ebn
+    wget $(heroku pgbackups:url b214 --app bimt-ebn) -O latest.dump
+    docker run -d -P -e POSTGRES_PASSWORD=postgres -d postgres
+    pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres latest.dump
+
+Connection url: postgres://postgres:postgres@localhost:5432/postgres
+
+Bonus: Web UI https://github.com/sosedoff/pgweb
 
 Using a git checkout of pyramid_bimt on an app build on Travis
 --------------------------------------------------------------
