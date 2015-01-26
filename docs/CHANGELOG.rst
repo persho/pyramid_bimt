@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.32 (unreleased)
+0.32 (2015-01-26)
 -----------------
 
 - Add support for ignoring arbitrary IPN products, refs #1807.
