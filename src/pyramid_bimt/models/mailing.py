@@ -4,7 +4,6 @@
 from flufl.enum import Enum
 from pyramid.events import subscriber
 from pyramid.renderers import render
-from pyramid.threadlocal import get_current_registry
 from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
@@ -74,7 +73,7 @@ Enter the main body of the email. It will be injected between the
 You can use any user attributes in the email like so: ${user.fullname}.
 Also available to use is:
     - {request}
-    - {app_title}
+    - {settings}
     - {password} (only when mail trigger is after_user_created or
         after_user_changed_password)
 """
@@ -182,27 +181,21 @@ class Mailing(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             body_template.write(self.body.encode('utf-8'))
             body_template.seek(0)
 
-            body_template.seek(0)
-            body = render(
-                body_template.name,
-                dict(
-                    request=request,
-                    user=recipient,
-                    app_title=get_current_registry().settings['bimt.app_title'],  # noqa
-                    password=password,
-                ),
-            )
+            params = {
+                'request': request,
+                'user': recipient,
+                'settings': request.registry.settings,
+                'password': password,
+                'unsubscribe_url': None if self.allow_unsubscribed else request.route_url('user_unsubscribe'),  # noqa
+            }
+
+            body = render(body_template.name, params)
+            params['body'] = body
 
             mailer.send(Message(
                 subject=self.subject,
                 recipients=[recipient.email, ],
-                html=render('pyramid_bimt:templates/email.pt', {
-                    'fullname': recipient.fullname,
-                    'body': body,
-                    'app_title': get_current_registry().settings['bimt.app_title'],  # noqa
-                    'unsubscribe_url': None if self.allow_unsubscribed else request.route_url('user_unsubscribe'),  # noqa
-                }),
-            ))
+                html=render('pyramid_bimt:templates/email.pt', params)))
             logger.info(u'Mailing "{}" sent to "{}".'.format(
                 self.name, recipient.email))
 

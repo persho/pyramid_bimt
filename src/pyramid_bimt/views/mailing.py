@@ -3,7 +3,6 @@
 
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render
-from pyramid.threadlocal import get_current_registry
 from pyramid.view import view_config
 from pyramid_basemodel import Session
 from pyramid_bimt.const import BimtPermissions
@@ -180,14 +179,17 @@ class MailingEdit(MailingAdd):
     def test_success(self, appstruct):
         mailing = self.request.context
 
+        params = {
+            'request': self.request,
+            'user': self.request.user,
+            'settings': self.request.registry.settings,
+        }
+
         with tempfile.NamedTemporaryFile(suffix='.pt') as template:
             assert type(mailing.body) is unicode, 'Mail body type must be unicode, not {}!'.format(type(mailing.body))  # noqa
             template.write(mailing.body.encode('utf-8'))
             template.seek(0)
-            body = render(
-                template.name,
-                {'request': self.request, 'user': self.request.user},
-            )
+            body = render(template.name, params)
 
         # prepend a list of recipients that would receive this mailing in
         # a non-test run
@@ -196,20 +198,13 @@ class MailingEdit(MailingAdd):
         {} <br />
         ------------------ <br /><br />
         """.format('<br />'.join([r.email for r in self.recipients]))
-        body = prefix + body
+        params['body'] = prefix + body
 
         mailer = get_mailer(self.request)
         mailer.send(Message(
             subject=u'[Mailing Test] {}'.format(mailing.subject),
             recipients=[self.request.user.email, ],
-            html=render(
-                'pyramid_bimt:templates/email.pt',
-                {
-                    'fullname': self.request.user.fullname,
-                    'app_title': get_current_registry().settings['bimt.app_title'],  # noqa
-                    'body': body
-                }),
-        ))
+            html=render('pyramid_bimt:templates/email.pt', params)))
 
         self.request.session.flash(
             u'Mailing "{}" sent to "{}".'.format(

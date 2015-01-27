@@ -27,7 +27,7 @@ SECRET_ENC = u'$6$rounds=90000$hig2KnPEdjRThLyK$UzWLANWcJzO6YqphWT5nbSC4'\
     'RkYKLIvSbAT/XnsO4m6xtr5qsw5d4glhJWzonIqpBocwXiS9qMpia46woVSBc0'
 
 PASSWORD_EMAIL_BODY = u"""
-<p>Your new password for ${app_title} is: ${password}</p>
+<p>Your new password for ${settings['bimt.app_title']} is: ${password}</p>
 <p>Login to the members' area: ${request.route_url('login')}</p>
 """
 

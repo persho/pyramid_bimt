@@ -5,7 +5,8 @@ Changelog
 0.33.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Refactor parameters that are consumed by Mailings, refs #1803.
+  [zupo]
 
 
 0.33.1 (2015-01-29)
