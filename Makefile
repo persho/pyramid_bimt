@@ -35,7 +35,7 @@ tests: .installed.cfg
 
 release: .installed.cfg
 	@bin/prerelease
-	@VERSION=`python setup.py --version`; echo "Tagging version v$$VERSION"; \
+	@VERSION=`bin/python setup.py --version`; echo "Tagging version v$$VERSION"; \
 		git tag -a v$$VERSION -m "version $$VERSION"
 	@bin/postrelease
 
