@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.33 (unreleased)
+0.33 (2015-01-29)
 -----------------
 
 - [MIGRATION REQUIRED] Add support for up/downgrades via ClickBank's API.
