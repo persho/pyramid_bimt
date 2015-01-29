@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.33.2 (unreleased)
--------------------
+0.34 (2015-01-29)
+-----------------
 
 - Allow dynamic Mailing subjects, refs #1803.
   [zupo]
