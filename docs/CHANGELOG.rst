@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.33.1 (unreleased)
+0.33.1 (2015-01-29)
 -------------------
 
 - Fix Settings view to work correctly for trial users.
