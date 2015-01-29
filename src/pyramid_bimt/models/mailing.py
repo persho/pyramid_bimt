@@ -193,7 +193,7 @@ class Mailing(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             params['body'] = body
 
             mailer.send(Message(
-                subject=self.subject,
+                subject=self.subject.format(**params),
                 recipients=[recipient.email, ],
                 html=render('pyramid_bimt:templates/email.pt', params)))
             logger.info(u'Mailing "{}" sent to "{}".'.format(

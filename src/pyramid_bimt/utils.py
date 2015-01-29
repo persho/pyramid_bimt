@@ -25,3 +25,27 @@ def expandvars_dict(settings):
 
     return dict((key, safe_eval(os.path.expandvars(value))) for (key,
                 value) in settings.iteritems())
+
+
+class AttrDict(dict):
+    """Dict with support for attribute access."""
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
+def flatten(d):
+    """Flatten a nested dict into a one-level dict, fullstop-delimited."""
+    def items():
+        for key, value in d.items():
+            if isinstance(value, dict):
+                for subkey, subvalue in flatten(value).items():
+                    yield key + '.' + subkey, subvalue
+            if isinstance(value, list):
+                for index, item in enumerate(value):
+                    for subkey, subvalue in flatten(item).items():
+                        yield key + '.{}.'.format(index) + subkey, subvalue
+            else:
+                yield key, value
+
+    return dict(items())

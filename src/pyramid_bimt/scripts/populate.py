@@ -168,7 +168,7 @@ def add_mailings(app_title=u'BIMT'):
             name='after_creation',
             trigger=MailingTriggers.after_user_created.name,
             days=0,
-            subject=u'Welcome to {}!'.format(app_title),
+            subject=u'Welcome to {settings[bimt.app_title]}!',
             body=USER_CREATED_BODY,
         )
         Session.add(mailing_created)

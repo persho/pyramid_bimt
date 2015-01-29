@@ -10,7 +10,7 @@ from pyramid_bimt import configure
 from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
-from pyramid_bimt.views.ipn import AttrDict
+from pyramid_bimt.utils import AttrDict
 from pyramid_bimt.views.ipn import IPNView
 from pyramid_mailer import get_mailer
 from zope.testing.loggingsupport import InstalledHandler

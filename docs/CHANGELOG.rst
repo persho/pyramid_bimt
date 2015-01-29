@@ -5,6 +5,9 @@ Changelog
 0.33.2 (unreleased)
 -------------------
 
+- Allow dynamic Mailing subjects, refs #1803.
+  [zupo]
+
 - Refactor parameters that are consumed by Mailings, refs #1803.
   [zupo]
 

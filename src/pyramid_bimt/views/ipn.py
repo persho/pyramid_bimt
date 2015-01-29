@@ -15,6 +15,8 @@ from pyramid_bimt.models import Session
 from pyramid_bimt.models import User
 from pyramid_bimt.security import encrypt
 from pyramid_bimt.security import generate
+from pyramid_bimt.utils import AttrDict
+from pyramid_bimt.utils import flatten
 
 import hashlib
 import json
@@ -48,13 +50,6 @@ class UserActions(Enum):
     """Actions that can be performed on a User object."""
     enable = 'enable'
     disable = 'disable'
-
-
-class AttrDict(dict):
-    """Dict with support for attribute access."""
-    def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
 
 
 class IPNView(object):
@@ -317,7 +312,7 @@ class IPNView(object):
             ' \x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f')
 
         try:
-            self.request.decrypted = __flatten__(json.loads(decrypted_str))
+            self.request.decrypted = flatten(json.loads(decrypted_str))
         except ValueError as e:
             logger.exception(e)
             raise ValueError('Decryption failed: {}'.format(decrypted_str))
@@ -334,19 +329,3 @@ class IPNView(object):
                 self.params[key] = value.decode('utf-8')
             if key in ['email', ]:
                 self.params[key] = value.lower()
-
-
-def __flatten__(d):
-    def items():
-        for key, value in d.items():
-            if isinstance(value, dict):
-                for subkey, subvalue in __flatten__(value).items():
-                    yield key + '.' + subkey, subvalue
-            if isinstance(value, list):
-                for index, item in enumerate(value):
-                    for subkey, subvalue in __flatten__(item).items():
-                        yield key + '.{}.'.format(index) + subkey, subvalue
-            else:
-                yield key, value
-
-    return dict(items())
