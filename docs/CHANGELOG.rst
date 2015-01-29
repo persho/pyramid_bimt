@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.34 (unreleased)
------------------
+0.33.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Fix Settings view to work correctly for trial users.
+  [ferewuz]
 
 
 0.33 (2015-01-29)

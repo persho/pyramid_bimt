@@ -32,8 +32,18 @@ class TestSettingsView(unittest.TestCase):
     def test_settings_view(self):
         request = testing.DummyRequest()
         request.context = mock.Mock()
+        request.user = mock.Mock(trial=False)
         resp = SettingsForm(request)
         self.assertEqual(resp.title, 'Settings')
+        self.assertIsNotNone(resp.schema.get('change_subscription'))
+
+    def test_settings_view_trial_user(self):
+        request = testing.DummyRequest()
+        request.context = mock.Mock()
+        request.user = mock.Mock(trial=True)
+        resp = SettingsForm(request)
+        self.assertEqual(resp.title, 'Settings')
+        self.assertIsNone(resp.schema.get('change_subscription'))
 
     def test_view_csrf_token(self):
         settings_view = SettingsForm(self.request)
@@ -254,27 +264,6 @@ class TestDefferedSubscriptionWidget(unittest.TestCase):
 
         self.assertEqual(widget.product_group, group)
         self.assertEqual(widget.template, 'subscription_mapping')
-
-    def test_widget_no_product_group(self):
-        from pyramid_bimt.views.settings import deferred_subscription_widget
-        from deform.widget import HiddenWidget
-        kw = mock.MagicMock()
-        kw.get.return_value.user.trial = False
-        kw.get.return_value.user.product_group = None
-        widget = deferred_subscription_widget(None, kw)
-
-        self.assertEqual(type(widget), HiddenWidget)
-
-    def test_widget_trial_user(self):
-        from pyramid_bimt.views.settings import deferred_subscription_widget
-        from deform.widget import HiddenWidget
-        group = mock.Mock(name='test_group')
-        kw = mock.MagicMock()
-        kw.get.return_value.user.trial = True
-        kw.get.return_value.user.product_group = group
-        widget = deferred_subscription_widget(None, kw)
-
-        self.assertEqual(type(widget), HiddenWidget)
 
 
 class TestUpgradeGroupsChoicesWidget(unittest.TestCase):

@@ -65,8 +65,6 @@ class AccountInformation(colander.MappingSchema):
 @colander.deferred
 def deferred_subscription_widget(node, kw):
     request = kw.get('request')
-    if not request.user.product_group or request.user.trial:
-        return deform.widget.HiddenWidget()
     return deform.widget.MappingWidget(
         product_group=request.user.product_group,
         template='subscription_mapping'
@@ -134,6 +132,14 @@ class SettingsForm(FormView):
     schema = SettingsSchema()
     title = 'Settings'
     form_options = (('formid', 'settings'), ('method', 'POST'))
+
+    def __init__(self, request):
+        super(SettingsForm, self).__init__(request)
+        # Don't allow upgrading to trial users and users without product group
+        if ((not request.user.product_group or request.user.trial) and
+                self.schema.get('change_subscription')):
+            self.schema = self.schema.clone()
+            self.schema.__delitem__('change_subscription')
 
     def __call__(self):
         self.buttons = (
