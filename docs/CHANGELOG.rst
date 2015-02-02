@@ -5,6 +5,9 @@ Changelog
 0.34.1 (unreleased)
 -------------------
 
+- Register all sanity check classes, as some were not registered correctly.
+  [ferewuz]
+
 - Remove manual subscription downgrading, fix settings form UI.
   [ferewuz]
 

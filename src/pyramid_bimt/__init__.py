@@ -154,6 +154,10 @@ def register_utilities(config):
         sanitycheck.CheckDefaultGroups, sanitycheck.ISanityCheck)
     config.registry.registerUtility(
         sanitycheck.CheckUsersProperties, sanitycheck.ISanityCheck)
+    config.registry.registerUtility(
+        sanitycheck.CheckUsersProductGroup, sanitycheck.ISanityCheck)
+    config.registry.registerUtility(
+        sanitycheck.CheckUsersEnabledDisabled, sanitycheck.ISanityCheck)
 
 
 def kill_connections(username=None, password=None, apiurl=None):
