@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.35 (unreleased)
------------------
+0.34.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Remove manual subscription downgrading, fix settings form UI.
+  [ferewuz]
 
 
 0.34 (2015-01-29)

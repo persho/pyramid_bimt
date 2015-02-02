@@ -15,7 +15,8 @@
           class string: form-control ${css_class or ''};
           multiple multiple;
           size size;
-          style style;">
+          style style;
+          disabled not:values | nothing">
     <tal:loop tal:repeat="item values">
       <optgroup tal:condition="isinstance(item, optgroup_class)"
                 tal:attributes="label item.label">
@@ -33,8 +34,9 @@
               class css_class;
               value item[0]">${item[1]}</option>
     </tal:loop>
+    <option tal:condition="not:values" selected >There are no available subscriptions for upgrade</option>
   </select>
   <input type="hidden" name="__end__" value="${name}:sequence"
          tal:condition="multiple" />
-  <button tal:condition="values" id="settingsupgrade_subscription1" name="settings_upgrade_subscription" type="submit" class="btn btn-default btn-confirmation" value="This will upgrade your subscription and can only be changed once a month. Are you sure you want to proceed?" style="margin-top: 10px">Upgrade Subscription</button>
+  <button tal:condition="values" id="settingsupgrade_subscription1" name="settings_upgrade_subscription" type="submit" class="btn btn-default btn-confirmation" value="Changing your subscription can be done once per 30 days. After the confirmation Clickbank will automatically change your subscription to the new one. Please confirm the change by clicking OK." style="margin-top: 10px">Upgrade Subscription</button>
 </div>

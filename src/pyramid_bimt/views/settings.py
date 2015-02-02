@@ -77,29 +77,11 @@ def deferred_upgrade_group_choices_widget(node, kw):
     if request.user.product_group and request.user.product_group.upgrade_groups:  # noqa
         choices = [(g.id, g.name) for
                    g in request.user.product_group.upgrade_groups]
-        template = 'upgrade_select'
     else:
         choices = []
-        template = 'readonly/select'
     return deform.widget.SelectWidget(
         values=choices,
-        template=template
-    )
-
-
-@colander.deferred
-def deferred_downgrade_group_choices_widget(node, kw):
-    request = kw.get('request')
-    if request.user.product_group and request.user.product_group.downgrade_groups:  # noqa
-        choices = [(g.id, g.name) for
-                   g in request.user.product_group.downgrade_groups]
-        template = 'downgrade_select'
-    else:
-        choices = []
-        template = 'readonly/select'
-    return deform.widget.SelectWidget(
-        values=choices,
-        template=template
+        template='upgrade_select'
     )
 
 
@@ -108,15 +90,19 @@ class UpgradeDowngradeSubscription(colander.MappingSchema):
     upgrade_subscription = colander.SchemaNode(
         colander.String(),
         missing='',
-        title='Upgrade subscription',
+        title='Upgrade Subscription',
         widget=deferred_upgrade_group_choices_widget
     )
 
     downgrade_subscription = colander.SchemaNode(
         colander.String(),
         missing='',
-        title='Downgrade subscription',
-        widget=deferred_downgrade_group_choices_widget
+        default=('For downgrading your subscription, please contact us '
+                 ' at support@easyblognetworks.com'),
+        title='Downgrade Subscription',
+        widget=deform.widget.TextInputWidget(
+            template='readonly/textinput'
+        )
     )
 
 
@@ -146,7 +132,6 @@ class SettingsForm(FormView):
             'save',
             Button(name='regenerate_api_key', title='Regenerate API key'),
             Button(name='upgrade_subscription', css_class='hidden'),
-            Button(name='downgrade_subscription', css_class='hidden'),
         )
         if self.request.user.unsubscribed:
             subscribe_button = Button(
@@ -199,44 +184,6 @@ class SettingsForm(FormView):
         self.request.user.groups.append(new_group)
         comment = (
             u'Your subscription ({}) has been upgraded '
-            'from {} to {}.'.format(receipt, old_group.name, new_group.name)
-        )
-        self.request.session.flash(comment)
-        self.request.registry.notify(
-            UserSubscriptionChanged(
-                self.request,
-                self.request.user,
-                comment=comment
-            )
-        )
-        return HTTPFound(location=self.request.path_url)
-
-    def downgrade_subscription_success(self, appstruct):
-        old_group = self.request.user.product_group
-        new_group = Group.by_id(
-            appstruct['change_subscription']['downgrade_subscription'])
-
-        try:
-            receipt = self._change_clickbank_subscription(new_group)
-        except ClickbankException as exc:
-            comment = (
-                u'Your downgrade has not completed successfully. Support team '
-                'has been notified and they are looking into the problem.')
-            self.request.session.flash(comment)
-            self.request.registry.notify(
-                UserSubscriptionChangeFailed(
-                    self.request,
-                    self.request.user,
-                    comment=comment
-                )
-            )
-            logger.exception(exc)
-            return HTTPFound(location=self.request.path_url)
-
-        self.request.user.groups.remove(old_group)
-        self.request.user.groups.append(new_group)
-        comment = (
-            u'Your subscription ({}) has been downgraded '
             'from {} to {}.'.format(receipt, old_group.name, new_group.name)
         )
         self.request.session.flash(comment)

@@ -16,7 +16,7 @@
         </p>
         <p>${errormsg}</p>
       </div>
-      <h4>Your current subscription</h4>
+      <h4>Your Current Subscription</h4>
       <p tal:condition="product_group">${product_group.name}</p>
       <p tal:condition="not:product_group">No active subscription!</p>
 

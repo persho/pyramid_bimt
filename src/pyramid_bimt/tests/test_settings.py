@@ -292,7 +292,7 @@ class TestUpgradeGroupsChoicesWidget(unittest.TestCase):
         widget = self.widget(None, kw)
 
         self.assertEqual(widget.values, [])
-        self.assertEqual(widget.template, 'readonly/select')
+        self.assertEqual(widget.template, 'upgrade_select')
 
     def test_no_choices_widget(self):
         groups = []
@@ -304,48 +304,7 @@ class TestUpgradeGroupsChoicesWidget(unittest.TestCase):
         widget = self.widget(None, kw)
 
         self.assertEqual(widget.values, [])
-        self.assertEqual(widget.template, 'readonly/select')
-
-
-class TestDowngradeGroupsChoicesWidget(unittest.TestCase):
-
-    def setUp(self):
-        from pyramid_bimt.views.settings import deferred_downgrade_group_choices_widget  # noqa
-        self.widget = deferred_downgrade_group_choices_widget
-
-    def test_present_choices_widget(self):
-        from pyramid_bimt.models import Group
-        groups = [Group(id=1, name='one'), Group(id=2, name='two')]
-
-        group = mock.Mock(name='test_group', product_id=1)
-        group.downgrade_groups = groups
-        kw = mock.MagicMock()
-        kw.get.return_value.user.product_group = group
-        widget = self.widget(None, kw)
-
-        self.assertEqual(widget.values[0], (groups[0].id, groups[0].name))
-        self.assertEqual(widget.values[1], (groups[1].id, groups[1].name))
-        self.assertEqual(widget.template, 'downgrade_select')
-
-    def test_no_product_group_widget(self):
-        kw = mock.MagicMock()
-        kw.get.return_value.user.product_group = None
-        widget = self.widget(None, kw)
-
-        self.assertEqual(widget.values, [])
-        self.assertEqual(widget.template, 'readonly/select')
-
-    def test_no_choices_widget(self):
-        groups = []
-
-        group = mock.Mock(name='test_group', product_id=1)
-        group.downgrade_groups = groups
-        kw = mock.MagicMock()
-        kw.get.return_value.user.product_group = group
-        widget = self.widget(None, kw)
-
-        self.assertEqual(widget.values, [])
-        self.assertEqual(widget.template, 'readonly/select')
+        self.assertEqual(widget.template, 'upgrade_select')
 
 
 @mock.patch.object(SettingsForm, '_change_clickbank_subscription')
@@ -410,53 +369,6 @@ class TestUpgradeDowngradeSubscription(unittest.TestCase):
         self.assertEqual(
             entry.comment,
             u'Your upgrade has not completed successfully. Support team has been notified and they are looking into the problem.'  # noqa
-        )
-        self.assertEqual(entry.user.id, self.request.user.id)
-
-    def test_downgrade_subscription_success(
-            self, find_layout, _change_clickbank_subscription):
-
-        _change_clickbank_subscription.return_value = 1
-        self.config.testing_securitypolicy(
-            userid='one@bar.com', permissive=True)
-
-        settings_view = SettingsForm(self.request)
-        settings_view.downgrade_subscription_success(
-            {'change_subscription':
-                {'downgrade_subscription': self.group2.id}})
-        self.assertEqual(
-            settings_view.request.session['_f_'],
-            [u'Your subscription (1) has been downgraded from group1 to group2.'],  # noqa
-        )
-
-        from pyramid_bimt.models import AuditLogEntry
-        entry = AuditLogEntry.get_all(security=False).first()
-        self.assertEqual(
-            entry.comment,
-            u'Your subscription (1) has been downgraded from group1 to group2.'
-        )
-        self.assertEqual(entry.user.id, self.request.user.id)
-
-    def test_downgrade_subscription_exception(
-            self, find_layout, _change_clickbank_subscription):
-        from pyramid_bimt.clickbank import ClickbankException
-
-        _change_clickbank_subscription.side_effect = ClickbankException()
-
-        settings_view = SettingsForm(self.request)
-        settings_view.downgrade_subscription_success(
-            {'change_subscription':
-                {'downgrade_subscription': self.group2.id}})
-        self.assertEqual(
-            settings_view.request.session['_f_'],
-            [u'Your downgrade has not completed successfully. Support team has been notified and they are looking into the problem.'],  # noqa
-        )
-
-        from pyramid_bimt.models import AuditLogEntry
-        entry = AuditLogEntry.get_all(security=False).first()
-        self.assertEqual(
-            entry.comment,
-            u'Your downgrade has not completed successfully. Support team has been notified and they are looking into the problem.'  # noqa
         )
         self.assertEqual(entry.user.id, self.request.user.id)
 
