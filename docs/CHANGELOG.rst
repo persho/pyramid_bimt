@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.35 (unreleased)
--------------------
+0.35 (2015-02-03)
+-----------------
 
 - BimtPermissions are now global variable that can be used in templates, no
   need return it explicitly in views anymore.
