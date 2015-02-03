@@ -40,7 +40,7 @@ def audit_log(request):
     if new:  # pragma: no branch
         request.session.flash('{} new notifications.'.format(new))
 
-    return {'BimtPermissions': BimtPermissions}
+    return {}
 
 
 @view_config(

@@ -5,6 +5,10 @@ Changelog
 0.35 (unreleased)
 -------------------
 
+- BimtPermissions are now global variable that can be used in templates, no
+  need return it explicitly in views anymore.
+  [ferewuz]
+
 - Add mark all as read button to activity log view.
   [ferewuz]
 
