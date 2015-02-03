@@ -20,6 +20,7 @@
       <tbody>
       </tbody>
     </table>
+    <a class="btn btn-info btn-mark-read clearfix" href="${request.route_path('audit_log_read_all')}">Mark all as read</a>
   </div>
 
 </metal:block>

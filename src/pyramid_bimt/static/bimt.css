@@ -9,3 +9,7 @@
 .picker__footer button {
     font-size: 100%;
 }
+
+.btn-mark-read {
+    background-color: #428bca;
+}

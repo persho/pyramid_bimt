@@ -98,6 +98,27 @@ class TestAuditLogView(unittest.TestCase):
             '<AuditLogEntry:3 (user=u\'admin@bar.com\', type=u\'UserCreated\')>.'  # noqa
         )
 
+    def test_audit_log_read_all(self):
+        from pyramid_bimt.models import AuditLogEventType
+        from pyramid_bimt.views.auditlog import audit_log_read_all
+        import transaction
+        self.config.testing_securitypolicy(
+            userid='one@bar.com', permissive=True)
+        request = self.request
+        request.user = User(id=1, email='foo@bar.com')
+        entry = AuditLogEntry(
+            user_id=1,
+            event_type_id=AuditLogEventType.by_name('UserCreated').id,
+        )
+        Session.add(entry)
+        transaction.commit()
+        self.assertFalse(AuditLogEntry.get_all(request=request).first().read)
+
+        resp = audit_log_read_all(request)
+        self.assertIn('/activity/', resp.location)
+
+        self.assertTrue(AuditLogEntry.get_all(request=request).first().read)
+
     def test_audit_log_add_submit_success(self):
         from pyramid_bimt.views.auditlog import AuditLogAddEntryForm
         import datetime

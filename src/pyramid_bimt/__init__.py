@@ -115,6 +115,8 @@ def add_routes_audit_log(config):
         factory=AuditLogFactory,
         traverse='/{entry_id}',
     )
+    config.add_route(
+        'audit_log_read_all', '/audit_log_read_all/', factory=AuditLogFactory)
 
 
 def add_routes_portlet(config):

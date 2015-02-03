@@ -91,6 +91,20 @@ class AuditLogAJAX(DatatablesDataView):
 
 
 @view_config(
+    route_name='audit_log_read_all',
+    permission=BimtPermissions.view,
+)
+def audit_log_read_all(request):
+    for entry in AuditLogEntry.get_all(
+        request=request,
+        filter_by={'read': False}
+    ):
+        entry.read = True
+    request.session.flash(u'All activity entries marked as read.')
+    return HTTPFound(location=request.route_path('audit_log'))
+
+
+@view_config(
     route_name='audit_log_delete',
     permission=BimtPermissions.manage,
 )

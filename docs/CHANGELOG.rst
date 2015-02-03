@@ -2,8 +2,11 @@ Changelog
 =========
 
 
-0.34.1 (unreleased)
+0.35 (unreleased)
 -------------------
+
+- Add mark all as read button to activity log view.
+  [ferewuz]
 
 - Register all sanity check classes, as some were not registered correctly.
   [ferewuz]
