@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.35.1.1 (unreleased)
+0.35.1.1 (2015-02-05)
 ---------------------
 
 - Fix sanity check robot test.
