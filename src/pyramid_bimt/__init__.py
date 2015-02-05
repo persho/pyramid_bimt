@@ -151,15 +151,30 @@ def register_utilities(config):
     """Register ZCA Utilities to the Pyramid's ZCA registry."""
     # register Sanity Checks
     config.registry.registerUtility(
-        sanitycheck.CheckAdminUser, sanitycheck.ISanityCheck)
+        sanitycheck.CheckAdminUser,
+        sanitycheck.ISanityCheck,
+        name='check_admin_user'
+    )
     config.registry.registerUtility(
-        sanitycheck.CheckDefaultGroups, sanitycheck.ISanityCheck)
+        sanitycheck.CheckDefaultGroups,
+        sanitycheck.ISanityCheck,
+        name='check_default_groups'
+    )
     config.registry.registerUtility(
-        sanitycheck.CheckUsersProperties, sanitycheck.ISanityCheck)
+        sanitycheck.CheckUsersProperties,
+        sanitycheck.ISanityCheck,
+        name='check_users_properties'
+    )
     config.registry.registerUtility(
-        sanitycheck.CheckUsersProductGroup, sanitycheck.ISanityCheck)
+        sanitycheck.CheckUsersProductGroup,
+        sanitycheck.ISanityCheck,
+        name='check_users_product_group'
+    )
     config.registry.registerUtility(
-        sanitycheck.CheckUsersEnabledDisabled, sanitycheck.ISanityCheck)
+        sanitycheck.CheckUsersEnabledDisabled,
+        sanitycheck.ISanityCheck,
+        name='check_users_enabled_disabled'
+    )
 
 
 def kill_connections(username=None, password=None, apiurl=None):

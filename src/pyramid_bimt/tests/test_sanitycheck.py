@@ -351,6 +351,16 @@ class TestRunAllChecks(unittest.TestCase):
         Session.remove()
         testing.tearDown()
 
+    def test_registered_utilities(self):
+        from pyramid_bimt import sanitycheck
+        utilities = self.request.registry.getAllUtilitiesRegisteredFor(
+            sanitycheck.ISanityCheck)
+        self.assertIn(sanitycheck.CheckAdminUser, utilities)
+        self.assertIn(sanitycheck.CheckDefaultGroups, utilities)
+        self.assertIn(sanitycheck.CheckUsersProperties, utilities)
+        self.assertIn(sanitycheck.CheckUsersProductGroup, utilities)
+        self.assertIn(sanitycheck.CheckUsersEnabledDisabled, utilities)
+
     def test_no_warnings(self):
         check_admin_user = mock.Mock()
         check_default_groups = mock.Mock()

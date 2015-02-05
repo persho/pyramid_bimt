@@ -2,11 +2,11 @@ Changelog
 =========
 
 
-0.36 (unreleased)
------------------
+0.35.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
-
+- Fix sanity checks registration to correctly include all of them.
+  [ferewuz]
 
 0.35 (2015-02-03)
 -----------------
