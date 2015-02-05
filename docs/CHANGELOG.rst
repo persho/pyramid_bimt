@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.35.2 (unreleased)
--------------------
+0.35.1.1 (unreleased)
+---------------------
 
-- Nothing changed yet.
+- Fix sanity check robot test.
+  [ferewuz]
 
 
 0.35.1 (2015-02-05)

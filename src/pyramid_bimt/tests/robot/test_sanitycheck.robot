@@ -14,7 +14,7 @@ Suite Teardown  Suite Teardown
 Scenario: Open the Sanity Check view
    Given I am logged in as a staff member
     When I go to  /sanity-check/
-    Then page should contain  Everything in order, nothing to report.
+    Then page should contain  User "admin" should be disabled in production.
 
 Scenario: User cannot view the Sanity Check view
    Given I am logged in as a user
