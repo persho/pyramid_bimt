@@ -28,10 +28,10 @@ bin/python:
 	@touch $@
 
 tests: .installed.cfg
-	@bin/nosetests --with-coverage --cover-package=pyramid_bimt \
-		--cover-min-percentage=100 --cover-html --cover-erase
 	@bin/flake8 setup.py
 	@bin/code-analysis
+	@bin/nosetests --with-coverage --cover-package=pyramid_bimt \
+		--cover-min-percentage=100 --cover-html --cover-erase
 
 release: .installed.cfg
 	@bin/prerelease

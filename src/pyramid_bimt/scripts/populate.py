@@ -56,8 +56,8 @@ def default_audit_log_event_types():
     types = []
     for name, obj in inspect.getmembers(events, inspect.isclass):
         if (
-            issubclass(obj, events.PyramidBIMTEvent)
-            and name != 'PyramidBIMTEvent'
+            issubclass(obj, events.PyramidBIMTEvent) and
+            name != 'PyramidBIMTEvent'
         ):
             types.append(AuditLogEventType(
                 name=name,
