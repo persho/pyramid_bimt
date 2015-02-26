@@ -1,0 +1,2 @@
+[flake8]
+ignore = D101,D102,N802

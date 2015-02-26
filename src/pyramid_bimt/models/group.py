@@ -212,7 +212,7 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         :type strict: bool
         """
         if secure:
-            value = SymmetricEncryption().encrypt(value)
+            value = unicode(SymmetricEncryption().encrypt(value))
         result = GroupProperty.query.filter_by(group_id=self.id, key=key)
         if result.count() < 1 and strict:
             raise KeyError('Property "{}" not found.'.format(key))

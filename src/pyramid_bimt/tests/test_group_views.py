@@ -184,7 +184,7 @@ class TestGroupEdit(unittest.TestCase):
             validity=31,
             trial_validity=7,
             forward_ipn_to_url='http://example.com')
-        self.request.context.set_property('foo', 'bar')
+        self.request.context.set_property('foo', u'bar')
         self.request.context.users = [User.by_email('one@bar.com'), ]
         self.request.context.upgrade_groups = [_make_group(name='group2'), ]
         self.assertEqual(self.view(self.request).appstruct(), {

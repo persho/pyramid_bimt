@@ -233,7 +233,7 @@ def add_demo_auditlog_entries():
         read = AuditLogEntry(
             user=User.by_email('staff@bar.com'),
             event_type_id=2,
-            comment='read entry',
+            comment=u'read entry',
             read=True,
         )
         Session.add(read)
@@ -241,7 +241,7 @@ def add_demo_auditlog_entries():
         unread = AuditLogEntry(
             user=User.by_email('one@bar.com'),
             event_type_id=2,
-            comment='unread entry',
+            comment=u'unread entry',
             read=False,
         )
         Session.add(unread)

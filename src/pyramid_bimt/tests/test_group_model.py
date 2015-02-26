@@ -193,7 +193,7 @@ class TestGroupProperties(unittest.TestCase):
         get_current_registry.return_value.settings = {
             'bimt.encryption_aes_16b_key': 'abcdabcdabcdabcd',
         }
-        self.group.set_property('foo', u'bar', secure=True)
+        self.group.set_property(u'foo', u'bar', secure=True)
         self.assertEqual(self.group.get_property('foo', secure=True), u'bar')
         self.assertNotEqual(
             self.group.get_property('foo', secure=False), u'bar')
