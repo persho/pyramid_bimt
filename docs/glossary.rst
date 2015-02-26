@@ -26,6 +26,9 @@ Definitions of basic terms
     ClickBank
         Same as :term:`JVZoo`, only bigger and older.
 
+    CB
+        Shorthand for :term:`ClickBank`.
+
     IPN
         A POST request from JVZoo's or ClickBank's servers, notifying us of a
         purchase and giving user's details so we can create a user account in
