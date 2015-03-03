@@ -6,12 +6,24 @@ Prerequisites
 
 * GCC, make, and similar (``apt-get install build-essential``)
 * PostgreSQL development headers (``apt-get install libpq-dev``)
+* SQLite development headers (``apt-get install libsqlite3-dev python-pysqlite2``)
 * SQLite database browser (``apt-get install sqlitebrowser``)
 * Python 2.7 with development headers (``apt-get install python-dev``)
 * virtualenv (``apt-get install python-virtualenv``)
 * pip (``apt-get install python-pip``)
 * git (``apt-get install git``)
 
+If the project depends on ``lxml`` then you also need:
+* libxml  (``apt-get install libxslt1-dev``)
+* libxslt (``apt-get install libxml2-dev``)
+
+If for some reason your system Python is not the latest of the ``2.7.x`` branch
+you need to compile/install the latest Python to ``~/.localpython/bin/python``
+and then run the following before setting up the local environment:
+
+  $ ~/.localpython/bin/virtualenv PATH/TO/YOU/PROJECT
+  $ PATH/TO/YOUR/PROJECT/bin/pip install -U setuptools
+  $ PATH/TO/YOUR/PROJECT/bin/pip install pysqlite
 
 .. _setting-up-a-local-development-environment:
 
@@ -44,6 +56,18 @@ Now you can run a variety of commands:
     $ make tests  # run all tests
     $ make coverage  # generate HTML report of test coverage
     $ make clean  # clean up if something is broken and start from scratch
+
+
+Speeding up your buildout
+-------------------------
+
+You should configure a "buildout default file" which tells buildout to use
+a download cache in your home directory, so every-time you do ``make clean``
+and ``make`` your buildout does not need to download all egg again, but just
+takes them from your local download cache. Instructions on:
+http://docs.plone.org/old-reference-manuals/buildout/defaults.html,
+best-practice example on
+https://github.com/plone/plone.dotfiles/tree/master/.buildout.
 
 
 Running a local copy of production DB
@@ -186,13 +210,13 @@ Then also test the downgrade step::
     Alembic is smart enough to auto-generate upgrade/downgrade code for adding
     and removing tables and columns. However, most of other migration tasks
     require that you manually write migration code.
-    
-    
+
+
 Preparing alembic migrate step locally
 --------------------------------------
 
 Using docker and local pgsql ::
-    
+
     heroku pgbackups:capture --expire --app bimt-ebn
     wget $(heroku pgbackups:url b214 --app bimt-ebn) -O latest.dump
     docker run -d -P -e POSTGRES_PASSWORD=postgres -d postgres
