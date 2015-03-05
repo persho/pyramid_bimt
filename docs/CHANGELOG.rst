@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.36.3 (unreleased)
--------------------
+0.37 (unreleased)
+-----------------
 
-- Nothing changed yet.
+- Integration layer for ``repoze.workflow``.
+  [zupo]
 
 
 0.36.2 (2015-03-13)
@@ -28,6 +29,7 @@ Changelog
 - Add view for sending referral invites in user's name using prepared
   mail with user's affiliate link.
   [ferewuz]
+
 - Add option to change items per page on each datatable.
   [nightmarebadger]
 

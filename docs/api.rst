@@ -8,9 +8,10 @@ BIMT API
     auditlog.rst
     user.rst
     portlets.rst
+    workflows.rst
     scripts.rst
-    js.rst
     emails.rst
+    js.rst
 
 
 BIMT data model
