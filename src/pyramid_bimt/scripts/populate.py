@@ -232,7 +232,7 @@ def add_demo_auditlog_entries():
     with transaction.manager:
         read = AuditLogEntry(
             user=User.by_email('staff@bar.com'),
-            event_type_id=2,
+            event_type_id=AuditLogEventType.by_name(u'UserChangedPassword').id,
             comment=u'read entry',
             read=True,
         )
@@ -240,7 +240,7 @@ def add_demo_auditlog_entries():
 
         unread = AuditLogEntry(
             user=User.by_email('one@bar.com'),
-            event_type_id=2,
+            event_type_id=AuditLogEventType.by_name(u'UserChangedPassword').id,
             comment=u'unread entry',
             read=False,
         )

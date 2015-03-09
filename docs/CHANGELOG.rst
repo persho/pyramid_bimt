@@ -5,7 +5,9 @@ Changelog
 0.36 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add view for sending referral invites in user's name using prepared
+  mail with user's affiliate link.
+  [ferewuz]
 
 
 0.35.1.1 (2015-02-05)

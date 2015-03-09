@@ -106,12 +106,23 @@ class UpgradeDowngradeSubscription(colander.MappingSchema):
     )
 
 
+class AffiliateSchema(colander.MappingSchema):
+    clickbank_affiliate_id = colander.SchemaNode(
+        colander.String(),
+        missing='',
+        description='Enter your approved Clickbank Affiliate ID.',
+        title='Clickbank Affiliate ID',
+        validator=colander.Range(50),
+    )
+
+
 class SettingsSchema(CSRFSchema, colander.MappingSchema):
     account_info = AccountInformation(title='Account Information')
     change_subscription = UpgradeDowngradeSubscription(
         title='Change Subscription',
         widget=deferred_subscription_widget,
     )
+    affiliate_settings = AffiliateSchema(title='Affiliate Settings')
 
 
 class SettingsForm(FormView):
@@ -150,6 +161,10 @@ class SettingsForm(FormView):
             user.email = email
             headers = remember(self.request, user.email)
         user.fullname = appstruct['account_info']['fullname']
+        self.request.user.set_property(
+            'clickbank_affiliate_id',
+            appstruct['affiliate_settings']['clickbank_affiliate_id'],
+        )
         self.request.session.flash(u'Your changes have been saved.')
         return HTTPFound(location=self.request.path_url, headers=headers)
 
@@ -209,6 +224,10 @@ class SettingsForm(FormView):
                 'email': user.email,
                 'fullname': user.fullname,
                 'api_key': user.get_property('api_key', '', secure=True),
+            },
+            'affiliate_settings': {
+                'clickbank_affiliate_id': user.get_property(
+                    'clickbank_affiliate_id', '')
             }
         }
 

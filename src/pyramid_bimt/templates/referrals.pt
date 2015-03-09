@@ -1,0 +1,39 @@
+<metal:block use-macro="main_template">
+
+    <div metal:fill-slot="content" id="content">
+        <div tal:condition="python: request.user.get_property('clickbank_affiliate_id', None)" class="modal fade" id="invites" tabindex="-1" role="dialog" aria-labelledby="Send Invites" aria-hidden="true" data-show="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Referral Invites</h4>
+              </div>
+              <div class="modal-body">
+                <form tal:replace="structure form" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+              <div class="modal-footer">
+             </div>
+            </div>
+          </div>
+        </div>
+        <h3>Affiliate Program</h3>
+        <p>${request.registry.settings['bimt.affiliate_text']}</p>
+
+        <p>${request.registry.settings['bimt.app_title']} affiliate program is exclusive to users. <a href="${request.registry.settings['bimt.referral_url']}">Sign up here</a>.</p>
+
+        <p>After you're approved you'll receive access to our resources page where you can find free checklists, guides and videos you can give away to your subscribers.</p>
+        <h3>Invite Your Friends</h3>
+        <p>You might not have a big list of subscribers but you probably have friends doing SEO. After you're approved you can easily invite those friends by selecting only the ones you'd like to invite and we'll email them with your affiliate link.</p>
+
+        <button tal:condition="python: request.user.get_property('clickbank_affiliate_id', None)" type="button" class="btn btn-primary" data-toggle="modal" data-target="#invites" data-show="true">Invites</button>
+        <h4 class="alert" tal:condition="python: not request.user.get_property('clickbank_affiliate_id', None)">
+            You need to set your approved Clickbank Affiliate ID in <a href="${request.route_path('settings')}">settings</a> to use this feature!
+        </h4>
+        <script tal:condition="python: 'alert' in form" type="text/javascript">
+            $(window).load(function(){
+                $('#invites').modal('show');
+            });
+        </script>
+    </div>
+</metal:block>

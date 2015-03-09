@@ -80,6 +80,14 @@ class IUserSubscriptionChangeFailed(Interface):
     user = Attribute('The user who changed the subscription.')
 
 
+class IReferralEmailSent(Interface):
+    """An event type that is emitted after a user sends a referral email.
+    """
+
+    request = Attribute('The request object.')
+    user = Attribute('The user who sent the referral email.')
+
+
 class PyramidBIMTEvent(object):
     """A base class for events raised by pyramid_bimt package."""
 
@@ -176,3 +184,8 @@ class UserSubscriptionChanged(PyramidBIMTEvent):
 @implementer(IUserSubscriptionChangeFailed)
 class UserSubscriptionChangeFailed(PyramidBIMTEvent):
     """Emitted whenever a user subscription change failed."""
+
+
+@implementer(IReferralEmailSent)
+class ReferralEmailSent(PyramidBIMTEvent):
+    """Emitted whenever a user sends a referral email."""

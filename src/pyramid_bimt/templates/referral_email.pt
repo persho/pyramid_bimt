@@ -1,0 +1,8 @@
+Hi,
+
+your friend has invited you to ${request.registry.settings['bimt.app_title']}
+
+>>> Visit <a href="${request.host_url}">
+${request.registry.settings['bimt.app_title']}</a>
+
+${request.registry.settings['bimt.app_title']} Team,

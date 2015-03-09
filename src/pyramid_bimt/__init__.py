@@ -37,6 +37,8 @@ REQUIRED_SETTINGS = [
     'bimt.app_title',
     'bimt.disabled_user_redirect_path',
     'bimt.encryption_aes_16b_key',
+    'bimt.referral_url',
+    'bimt.affiliate_text',
     'script_location',
     'session.encrypt_key',  # a fairly long randomly generated string
     'session.key',  # name of the cookie key used to save the session under
@@ -55,6 +57,9 @@ REQUIRED_SETTINGS_PRODUCTION = [
     'bimt.amqp_apiurl',
     'bimt.kill_cloudamqp_connections',
     'bimt.products_to_ignore',
+    'bimt.referrals_mail_username',
+    'bimt.referrals_mail_password',
+    'bimt.referrals_mail_sender',
     'mail.default_sender',
     'mail.host',
     'mail.password',
@@ -145,6 +150,7 @@ def add_routes_other(config):
     config.add_route('config', '/config/')
     config.add_route('sanitycheck', '/sanity-check/')
     config.add_route('login_as', '/login-as/')
+    config.add_route('referrals', '/referrals/')
 
 
 def register_utilities(config):

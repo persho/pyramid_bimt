@@ -72,11 +72,14 @@ class TestSettingsView(unittest.TestCase):
         self.request.user.fullname = 'John'
         form_values = {
             'account_info': {'email': 'TWO@bar.com', 'fullname': 'James'},
+            'affiliate_settings': {'clickbank_affiliate_id': 'test_id'}
         }
         settings_view = SettingsForm(self.request)
         settings_view.save_success(form_values)
         self.assertEqual(self.request.user.email, 'two@bar.com')
         self.assertEqual(self.request.user.fullname, 'James')
+        self.request.user.set_property.assert_called_with(
+            'clickbank_affiliate_id', 'test_id')
         self.assertEqual(
             settings_view.request.session['_f_'],
             [u'Your changes have been saved.'],
@@ -91,6 +94,7 @@ class TestSettingsView(unittest.TestCase):
         self.request.user.fullname = 'John'
         form_values = {
             'account_info': {'email': 'one@bar.com', 'fullname': 'John'},
+            'affiliate_settings': {'clickbank_affiliate_id': ''}
         }
         settings_view = SettingsForm(self.request)
         settings_view.save_success(form_values)
