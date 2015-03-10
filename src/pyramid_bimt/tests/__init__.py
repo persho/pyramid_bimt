@@ -3,4 +3,9 @@
 import sqlalchemy
 import warnings
 
-warnings.simplefilter('error', category=sqlalchemy.exc.SAWarning)
+# Only throw errors for SAWarnings not related to sqlite
+warnings.filterwarnings(
+    'error',
+    message='^(.(?!(sqlite)))*$',
+    category=sqlalchemy.exc.SAWarning,
+)
