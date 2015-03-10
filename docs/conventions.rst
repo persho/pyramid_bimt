@@ -93,6 +93,28 @@ as it should and either:
    changes.
 
 
+Arbirary storage on Amazon S3
+-----------------------------
+
+We use S3 extensively for storing arbitrary files that each project needs.
+For every type of storage need, we create a separate "bucket" and a respective
+user, that has read/write access to this bucket only.
+
+Our main account is under the ``info@niteoweb.com`` identity, which is managed
+by Dejan & Nejc. If you need a new bucket to store sth., ping them to create
+the bucket and the respective user and give you access.
+
+Things that we keep on S3 (but not a limited to):
+
+* Travis build artifacts (such as robot-framework screenshots)
+* Generated HTML files of per-project Sphinx docs for docs.niteoweb.com
+* eBooks for docs.niteoweb.com
+* archive of Papertrail logs for each Heroku-based project
+* archive of PostgreSQL dumps for each Heroku-based project
+* builds & releases of whatever cannot be release as a Python egg and uploaded
+  to pypi.niteoweb.com
+
+
 Additional conventions
 ----------------------
 

@@ -58,28 +58,35 @@ exclude_portlet_group_table = Table(
 
 
 class PortletPositions(Enum):
-    """Supported positions for portlets"""
+    """Supported positions for portlets."""
 
-    #: display a portlet in the main content area, next to the sidebar, just
-    #: before any othercontent
+    #: Display a portlet in the main content area, next to the sidebar, just
+    #: before any othercontent.
     above_content = 'Above Content'
 
-    #: display a portlet in the sidebar column, below any other sidebar content
+    #: Display a portlet in the sidebar column, below any other sidebar
+    #: content.
     below_sidebar = 'Below Sidebar'
 
-    #: display a portlet in the sidebar column, above any other sidebar content
+    #: Display a portlet in the sidebar column, above any other sidebar
+    #: content.
     above_sidebar = 'Above Sidebar'
 
-    #: display a portlet in the footer row, full-width, before any other footer
-    #: content
+    #: Display a portlet in the footer row, full-width, before any other footer
+    #: content.
     above_footer = 'Above Footer'
 
 
 class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
-    """A class representing a Portlet."""
+    """A class representing a Portlet.
+
+    Portlets are small bits of HTML that are injected in header, sidebar
+    or footer. They are managed TTW by Staff members.
+    """
 
     __tablename__ = 'portlets'
 
+    #: Name of the portlet, for internal use only.
     name = Column(
         String,
         unique=True,
@@ -91,27 +98,33 @@ class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         )},
     )
 
+    #: Groups for which this portlet is displayed.
     groups = relationship(
         'Group',
         secondary=portlet_group_table,
         backref='portlets',
     )
 
+    #: Groups for which this portlet is not displayed.
     exclude_groups = relationship(
         'Group',
         secondary=exclude_portlet_group_table,
     )
 
+    #: Position where this portlet is displayed.
     position = Column(
-        SAEnum(*[p.name for p in PortletPositions], name='positions'),
+        SAEnum(*[_p.name for _p in PortletPositions], name='positions'),
         info={'colanderalchemy': dict(
             title='Position',
             description='Choose where to show this portlet.',
             widget=deform.widget.SelectWidget(
-                values=[(p.name, p.value) for p in PortletPositions]),
+                values=[(_p.name, _p.value) for _p in PortletPositions]),
         )},
     )
 
+    #: Used for ordering portlets. The higher the weight, the higher the
+    #: portlet will be displayed, in relation to other portlets in the same
+    #: position.
     weight = Column(
         Integer,
         default=0,
@@ -123,6 +136,7 @@ class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         )},
     )
 
+    #: The body of the portlet.
     html = Column(
         Unicode,
         default=u'',
@@ -139,14 +153,14 @@ class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             self.__class__.__name__, self.id, repr(self.name))
 
     def get_rendered_portlet(self):
-        """Get rendered portlet html"""
+        """Get rendered portlet html."""
         return render(
             'pyramid_bimt:templates/portlet.pt',
             {'content': self.html}
         )
 
     @classmethod
-    def by_user_and_position(self, user, position):
+    def by_user_and_position(cls, user, position):
         """Get all portlets that are visible to a user."""
         portlets = Portlet.query.filter(Portlet.position == position) \
             .order_by(Portlet.weight.desc())
@@ -165,15 +179,14 @@ class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         return shown_portlets
 
     @classmethod
-    def get_all(class_, order_by='position', filter_by=None, limit=None):
+    def get_all(cls, order_by='position', filter_by=None, limit=None):
         """Return all Portlets.
 
         filter_by: dict -> {'name': 'foo'}
 
         By default, order by Portlet.position.
         """
-        Portlet = class_
-        q = Portlet.query
+        q = cls.query
         q = q.order_by(getattr(Portlet, order_by))
         if filter_by:
             q = q.filter_by(**filter_by)

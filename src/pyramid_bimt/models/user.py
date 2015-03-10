@@ -167,7 +167,9 @@ class User(Base, BaseMixin, GetByIdMixin):
         :param default: The return value if no property is found. Raises
             ValueError by default.
         :type default: anything
-        :return: value of the property
+        :param secure: Symetrically encrypt the property before storing to DB.
+        :type secure: bool
+        :return: Value of the property.
         :rtype: Unicode
         """
         result = UserProperty.query.filter_by(user_id=self.id, key=key)

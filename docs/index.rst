@@ -10,7 +10,6 @@ Table of Contents
     glossary.rst
     process.rst
     api.rst
-    troubleshooting.rst
     CHANGELOG.rst
     LICENSE.rst
 

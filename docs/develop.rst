@@ -12,14 +12,24 @@ Prerequisites
 * virtualenv (``apt-get install python-virtualenv``)
 * pip (``apt-get install python-pip``)
 * git (``apt-get install git``)
+* Node Package Manager (``apt-get install npm``)
+* PhantomJS headless browser (``npm install -g phantomjs``)
+* Heroku Toolbelt (https://toolbelt.heroku.com/)
+* Travis CI CLI tool (``gem install travis``)
+* GitHub CLI tool (``gem install github_cli``)
 
 If the project depends on ``lxml`` then you also need:
 * libxml  (``apt-get install libxslt1-dev``)
 * libxslt (``apt-get install libxml2-dev``)
 
+About PostgreSQL version: we use what Heroku provides. Normally this means
+we are on latest or pre-latest stable version.
+
 If for some reason your system Python is not the latest of the ``2.7.x`` branch
 you need to compile/install the latest Python to ``~/.localpython/bin/python``
 and then run the following before setting up the local environment:
+
+.. code-block:: bash
 
   $ ~/.localpython/bin/virtualenv PATH/TO/YOU/PROJECT
   $ PATH/TO/YOUR/PROJECT/bin/pip install -U setuptools
@@ -193,15 +203,21 @@ so you have a temporary DB to work with. Follow these steps to prepare one:
     # modify the sqlalchemy.url in development.ini with the new connection string
 
 Now you are ready to prepare a migration script. Run the following to ask
-Alembic to generate a migration script for you::
+Alembic to generate a migration script for you:
+
+.. code-block:: bash
 
     $ bin/alembic -c etc/development.ini -n app:main revision --autogenerate -m "XXX: describe task"
 
-Review it, remove commented stuff and test::
+Review it, remove commented stuff and test:
+
+.. code-block:: bash
 
     $ bin/alembic -c etc/development.ini -n app:main upgrade head
 
-Then also test the downgrade step::
+Then also test the downgrade step:
+
+.. code-block:: bash
 
     $ bin/alembic -c etc/development.ini -n app:main downgrade -1
 
@@ -215,12 +231,14 @@ Then also test the downgrade step::
 Preparing alembic migrate step locally
 --------------------------------------
 
-Using docker and local pgsql ::
+Using docker and local pgsql:
 
-    heroku pgbackups:capture --expire --app bimt-ebn
-    wget $(heroku pgbackups:url b214 --app bimt-ebn) -O latest.dump
-    docker run -d -P -e POSTGRES_PASSWORD=postgres -d postgres
-    pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres latest.dump
+.. code-block:: bash
+
+    $ heroku pgbackups:capture --expire --app bimt-ebn
+    $ wget $(heroku pgbackups:url b214 --app bimt-ebn) -O latest.dump
+    $ docker run -d -P -e POSTGRES_PASSWORD=postgres -d postgres
+    $ pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres latest.dump
 
 Connection url: postgres://postgres:postgres@localhost:5432/postgres
 
@@ -270,19 +288,14 @@ resulting HTML. JavaScript is run before HTML is validated so our JS files
 are also tested this way. For performance purposes, by default, robot tests run
 against a headless browser implementation called `PhantomJS`.
 
-  .. code-block:: ini
+.. code-block:: bash
 
-    # install PhantomJS
-    $ {apt-get/brew/yum} install npm
-    $ npm install -g phantomjs
-
-    # run robot tests
     $ make robot
 
 To run the PhantomJS with a remote debugger, insert the following lines to
-the ``resources.robot`` file, replacing the ``Open browser ...`` line::
+the ``resources.robot`` file, replacing the ``Open browser ...`` line:
 
-  .. code-block::
+.. code-block:: ini
 
     @{args}=  Create List
     Append To List  ${args}  --remote-debugger-port=9000
@@ -292,16 +305,16 @@ the ``resources.robot`` file, replacing the ``Open browser ...`` line::
 Since Robot-framework hijacks the standard output, you cannot use
 ``pdb.set_trace`` to step through your code as it's being executed by Robot.
 However, with the following incantation you can steal the standard output back
-and happily use the `pdb`::
+and happily use the `pdb`:
 
-  .. code-block:: python
+.. code-block:: python
 
     import pdb; import sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
 
 To run robot tests against an actual browser for easier development and
 debugging, set the BROWSER environment variable:
 
-  .. code-block:: ini
+.. code-block:: bash
 
     $ BROWSER=firefox make robot
 

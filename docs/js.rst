@@ -60,12 +60,13 @@ To change the items per page options, add ``data-datatables-lengthMenu`` to the
 
     <table class="table datatable" data-datatables-lengthMenu="[20,50,100]">
 
+
 Configure sorting with `query string` URL parameters
 ----------------------------------------------------
 
 You can append `query string` parameters to a URL displaying a datatable to
 configure how the table will be sorted. A URL like this will make the table
-sorted on the 5th column (counting from zero), in `descending` order::
+sorted on the 5th column (counting from zero), in `descending` order:
 
 .. code-block:: html
 
@@ -78,8 +79,8 @@ Dynamic tables with AJAX loading
 If you have many thousands of rows to show, it's better to load data into
 datatables via AJAX. Do it like so:
 
- * add the ``data-ajax="true"`` attribute to the ``table`` tag
- * remove any HTML code inside the ``<tbody`` tag
+ * add the ``data-ajax="true"`` attribute to the ``<table>`` tag
+ * remove any HTML code inside the ``<tbody>`` tag
  * provide an implementation of the
    :class:`pyramid_bimt.views.DatatablesDataView` class:
 
@@ -165,7 +166,7 @@ To display a nice "xx time ago" fuzzy timestamp instead of the boring standard
 date/time representation, do the following:
 
 
-.. code-block:: python
+.. code-block:: html
 
     <time class="timeago" datetime="${context.created.strftime('%Y-%m-%dT%H:%M:%SZ')}">
         ${context.created.strftime('%Y-%m-%d %H:%M:%S')} UTC

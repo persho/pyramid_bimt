@@ -82,3 +82,7 @@ Definitions of basic terms
     Assignee
         The person who is currently working on an issue, or who's input is
         required.
+
+    TTW
+        Through-The-Web. Meaning some task can be achieved via the browser,
+        by a non-tech person. No coding required.

@@ -4,6 +4,7 @@ BIMT API
 .. toctree::
     :maxdepth: 2
 
+    models.rst
     form.rst
     auditlog.rst
     user.rst
