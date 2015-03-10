@@ -104,6 +104,17 @@
                     /* jshint ignore:end */
                 }
 
+                // If data-datatables-lengthMenu is set, use that for items per
+                // page select
+                var lengthMenu = $(this).attr('data-datatables-lengthMenu');
+                if (lengthMenu !== undefined) {
+                    lengthMenu = $.parseJSON(lengthMenu);
+
+                    // jshint ignore:start
+                    settings["lengthMenu"] = lengthMenu;
+                    // jshint ignore:end
+                }
+
                 // Initialize datatable
                 $table.dataTable(settings);
 

@@ -52,7 +52,13 @@ attribute to the ``<table>`` tag:
 
     <table class="table datatable" data-sort-descending="true">
 
+To change the items per page options, add ``data-datatables-lengthMenu`` to the
+``<table>`` tag. For all available options, look at the `official documentation
+<https://datatables.net/reference/option/lengthMenu>`_
 
+.. code-block:: html
+
+    <table class="table datatable" data-datatables-lengthMenu="[20,50,100]">
 
 Configure sorting with `query string` URL parameters
 ----------------------------------------------------

@@ -8,6 +8,8 @@ Changelog
 - Add view for sending referral invites in user's name using prepared
   mail with user's affiliate link.
   [ferewuz]
+- Add option to change items per page on each datatable.
+  [nightmarebadger]
 
 
 0.35.1.1 (2015-02-05)
