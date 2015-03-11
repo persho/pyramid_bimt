@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.36.1 (unreleased)
------------------
+0.36.1 (2015-03-11)
+-------------------
 
 - Fix unicode error in settings view.
   [ferewuz]
