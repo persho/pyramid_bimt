@@ -109,11 +109,13 @@
                 var lengthMenu = $(this).attr('data-datatables-lengthMenu');
                 if (lengthMenu !== undefined) {
                     lengthMenu = $.parseJSON(lengthMenu);
-
-                    // jshint ignore:start
-                    settings["lengthMenu"] = lengthMenu;
-                    // jshint ignore:end
+                } else {
+                    // We use this as defaults
+                    lengthMenu = [20, 50, 100];
                 }
+                // jshint ignore:start
+                settings["lengthMenu"] = lengthMenu;
+                // jshint ignore:end
 
                 // Initialize datatable
                 $table.dataTable(settings);
