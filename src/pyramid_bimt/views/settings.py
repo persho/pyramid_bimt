@@ -109,7 +109,7 @@ class UpgradeDowngradeSubscription(colander.MappingSchema):
 class AffiliateSchema(colander.MappingSchema):
     clickbank_affiliate_id = colander.SchemaNode(
         colander.String(),
-        missing='',
+        missing=u'',
         description='Enter your approved Clickbank Affiliate ID.',
         title='Clickbank Affiliate ID',
         validator=colander.Range(50),
