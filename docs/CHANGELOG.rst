@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.36 (unreleased)
+0.36 (2015-03-11)
 -----------------
 
 - Add view for sending referral invites in user's name using prepared
