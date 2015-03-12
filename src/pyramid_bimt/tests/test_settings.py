@@ -53,7 +53,7 @@ class TestSettingsView(unittest.TestCase):
 
     @mock.patch('pyramid_layout.layout.find_layout')
     def test_settings_view_response(self, find_layout):
-
+        self.request.registry.settings['bimt.referral_url'] = 'test_url'
         self.config.testing_securitypolicy(
             userid='one@bar.com', permissive=True)
         find_layout.return_value = mock.Mock(spec='current_page')
@@ -175,11 +175,13 @@ class TestSubscription(unittest.TestCase):
 
     @mock.patch('pyramid_layout.layout.find_layout')
     def test_subscribe_to_newsletter_button_missing(self, find_layout):
+        self.request.registry.settings['bimt.referral_url'] = 'test_url'
         response = self.view()
         self.assertNotIn('Subscribe to newsletter', response['form'])
 
     @mock.patch('pyramid_layout.layout.find_layout')
     def test_subscribe_to_newsletter_button_present(self, find_layout):
+        self.request.registry.settings['bimt.referral_url'] = 'test_url'
         self.request.user.unsubscribe()
         response = self.view()
         self.assertIn('Subscribe to newsletter', response['form'])

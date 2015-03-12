@@ -72,6 +72,15 @@ def deferred_subscription_widget(node, kw):
 
 
 @colander.deferred
+def deferred_affiliate_widget(node, kw):
+    request = kw.get('request')
+    return deform.widget.TextInputWidget(
+        referral_url=request.registry.settings['bimt.referral_url'],
+        template='clickbank_affiliate_id.pt'
+    )
+
+
+@colander.deferred
 def deferred_upgrade_group_choices_widget(node, kw):
     request = kw.get('request')
     if request.user.product_group and request.user.product_group.upgrade_groups:  # noqa
@@ -110,9 +119,9 @@ class AffiliateSchema(colander.MappingSchema):
     clickbank_affiliate_id = colander.SchemaNode(
         colander.String(),
         missing=u'',
-        description='Enter your approved Clickbank Affiliate ID.',
         title='Clickbank Affiliate ID',
         validator=colander.Range(50),
+        widget=deferred_affiliate_widget,
     )
 
 

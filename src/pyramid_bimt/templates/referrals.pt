@@ -26,7 +26,7 @@
         <h3>Invite Your Friends</h3>
         <p>You might not have a big list of subscribers but you probably have friends doing SEO. After you're approved you can easily invite those friends by selecting only the ones you'd like to invite and we'll email them with your affiliate link.</p>
 
-        <button tal:condition="python: request.user.get_property('clickbank_affiliate_id', None)" type="button" class="btn btn-primary" data-toggle="modal" data-target="#invites" data-show="true">Invites</button>
+        <button tal:condition="python: request.user.get_property('clickbank_affiliate_id', None)" type="button" class="btn btn-primary" data-toggle="modal" data-target="#invites" data-show="true">Invite Friends by Email</button>
         <h4 class="alert" tal:condition="python: not request.user.get_property('clickbank_affiliate_id', None)">
             You need to set your approved Clickbank Affiliate ID in <a href="${request.route_path('settings')}">settings</a> to use this feature!
         </h4>

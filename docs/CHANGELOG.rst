@@ -5,7 +5,8 @@ Changelog
 0.36.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- UI fixes to referral view and email.
+  [ferewuz]
 
 
 0.36.1 (2015-03-11)

@@ -63,7 +63,8 @@ class ReferralsView(FormView):
                 html=render(
                     'pyramid_bimt:templates/referral_email.pt',
                     {'request': self.request}
-                ))
+                ),
+                ),
             )
             self.request.registry.notify(
                 ReferralEmailSent(
