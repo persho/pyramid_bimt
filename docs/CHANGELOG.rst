@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.36.2 (unreleased)
+0.36.2 (2015-03-13)
 -------------------
 
 - UI fixes to referral view and email.
