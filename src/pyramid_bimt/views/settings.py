@@ -210,6 +210,7 @@ class SettingsForm(FormView):
             u'Your subscription ({}) has been upgraded '
             'from {} to {}.'.format(receipt, old_group.name, new_group.name)
         )
+        self.request.user.set_property('upgrade_completed', True)
         self.request.session.flash(comment)
         self.request.registry.notify(
             UserSubscriptionChanged(

@@ -8,6 +8,9 @@ Changelog
 - Integration layer for ``repoze.workflow``.
   [zupo]
 
+- Change IPN callback views to correctly handle clickbank upgrades.
+  [ferewuz]
+
 
 0.36.2 (2015-03-13)
 -------------------

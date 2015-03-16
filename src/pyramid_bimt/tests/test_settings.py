@@ -347,6 +347,7 @@ class TestUpgradeDowngradeSubscription(unittest.TestCase):
             settings_view.request.session['_f_'],
             [u'Your subscription (1) has been upgraded from group1 to group2.'],  # noqa
         )
+        self.assertTrue(self.request.user.get_property('upgrade_completed'))
 
         from pyramid_bimt.models import AuditLogEntry
         entry = AuditLogEntry.get_all(security=False).first()
@@ -369,6 +370,8 @@ class TestUpgradeDowngradeSubscription(unittest.TestCase):
             settings_view.request.session['_f_'],
             [u'Your upgrade has not completed successfully. Support team has been notified and they are looking into the problem.'],  # noqa
         )
+        self.assertIsNone(
+            self.request.user.get_property('upgrade_completed', None))
 
         from pyramid_bimt.models import AuditLogEntry
         entry = AuditLogEntry.get_all(security=False).first()

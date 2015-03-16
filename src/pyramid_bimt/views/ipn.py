@@ -170,6 +170,12 @@ class IPNView(object):
         elif self.params.trans_type in ['RFND', 'CGBK', 'TEST_RFND']:
             self.ipn_disable_transaction(user, group)
 
+        # IPN that clickbank sends after upgrade. Log it and do nothing
+        # as upgrade is already completed
+        elif 'SUBSCRIPTION-CHG' in self.params.trans_type:
+            logger.info(
+                '{} finished correctly.'.format(self.params.trans_type))
+
         elif self.params.trans_type in [
             'CANCEL-REBILL', 'INSF', 'CANCEL-TEST-REBILL',
         ]:
@@ -246,6 +252,11 @@ class IPNView(object):
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
         """
+        # If user just completed an upgrade, refund is part of the upgrade
+        # and should not disable user
+        if user.get_property('upgrade_completed', False):
+            user.set_property('upgrade_completed', False)
+            return
         groups_comment = 'removed from groups: {}'.format(
             ', '.join([g.name for g in user.groups]))
         user.valid_to = date.today()

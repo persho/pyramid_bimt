@@ -247,6 +247,15 @@ class TestIpnTransaction(unittest.TestCase):
             'subscription runs out.',
         )
 
+    def test_SUBSCRIPTION_CHG(self):
+        self.view.params.trans_type = 'SUBSCRIPTION-CHG: SKU foo->bar'
+        self.view.ipn_transaction(self.user, self.group)
+        self.assertEqual(len(handler.records), 1)
+        self.assertEqual(
+            handler.records[0].message,
+            'SUBSCRIPTION-CHG: SKU foo->bar finished correctly.',
+        )
+
     @mock.patch('pyramid_bimt.views.ipn.IPNView.ipn_disable_transaction')
     def test_CANCEL_REBILL(self, disable_transaction):
         self.view.params.trans_type = 'CANCEL-REBILL'
@@ -381,6 +390,32 @@ class TestIPNViewIntegration(unittest.TestCase):
             u'Disabled by clickbank, transaction id: 123, type: RFND, note: '
             u'removed from groups: enabled, trial, monthly',
         )
+
+    @mock.patch('pyramid_bimt.views.ipn.date')
+    def test_existing_user_refund_after_upgrade(self, mocked_date):
+        user = self._make_user(
+            email='foo@bar.com',
+            groups=[
+                Group.by_name('enabled'),
+                Group.by_name('trial'),
+                Group.by_name('monthly'),
+            ])
+        user.set_property('upgrade_completed', True)
+
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'clickbank'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'trans_type': 'RFND',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+        resp = view.ipn()
+        self.assertEqual(resp, 'Done.')
+        self.assertEqual(user.enabled, True)
+        self.assertIn(Group.by_name('monthly'), user.groups)
+
+        self.assertEqual(len(user.audit_log_entries), 0)
 
     @mock.patch('pyramid_bimt.views.ipn.date')
     def test_existing_user_billing_email_and_rejoin(self, mocked_date):
