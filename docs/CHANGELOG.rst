@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.37 (unreleased)
+0.37 (2015-03-17)
 -----------------
 
 - Integration layer for ``repoze.workflow``.
