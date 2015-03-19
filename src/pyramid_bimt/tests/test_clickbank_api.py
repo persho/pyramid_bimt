@@ -126,3 +126,14 @@ class TestClickbankAPI(unittest.TestCase):
         with self.assertRaises(ClickbankException):
             self.client.change_user_subscription(
                 'john.smith@gmail.com', 'ipntest', 'ipntest2')
+
+    def test_get_date_different_timezone(self):
+        date1 = self.client._get_date(
+            {'date': '2014-12-18T01:53:59-08:00'})
+        date2 = self.client._get_date(
+            {'date': '2014-12-18T01:53:59-07:00'})
+        date3 = self.client._get_date(
+            {'date': '2014-12-18T01:53:59+07:00'})
+
+        self.assertTrue(date2 > date1)
+        self.assertTrue(date3 > date2)

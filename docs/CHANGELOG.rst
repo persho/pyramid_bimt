@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.38 (unreleased)
------------------
+0.37.1 (unreleased)
+-------------------
 
-- Nothing changed yet.
+- Fix clickbank date timezones parsing.
+  [ferewuz]
 
 
 0.37 (2015-03-17)

@@ -2,6 +2,7 @@
 """Clickbank API."""
 
 from datetime import datetime
+from datetime import timedelta
 import requests
 
 
@@ -28,6 +29,15 @@ class ClickbankAPI(object):
             params=params,
         )
 
+    def _get_date(self, response):
+        date = datetime.strptime(response['date'][:-6], '%Y-%m-%dT%H:%M:%S')
+        timezone_hours = timedelta(hours=int(response['date'][-5:-3]))
+        if response['date'][-6] == '+':
+            date = date + timezone_hours
+        else:
+            date = date - timezone_hours
+        return date
+
     def get_user_latest_receipt(self, email, product):
         response = self._request(
             'orders/list',
@@ -35,10 +45,7 @@ class ClickbankAPI(object):
         )
         orders = response.json()['orderData']
 
-        latest_order = max(
-            orders,
-            key=lambda x: datetime.strptime(x['date'], '%Y-%m-%dT%H:%M:%S-08:00')  # noqa
-        )
+        latest_order = max(orders, key=self._get_date)
         return latest_order['receipt']
 
     def change_user_subscription(self, email, existing_product, new_product):
