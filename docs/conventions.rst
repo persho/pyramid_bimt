@@ -109,9 +109,9 @@ Things that we keep on S3 (but not a limited to):
 * Travis build artifacts (such as robot-framework screenshots)
 * Generated HTML files of per-project Sphinx docs for docs.niteoweb.com
 * eBooks for docs.niteoweb.com
-* archive of Papertrail logs for each Heroku-based project
-* archive of PostgreSQL dumps for each Heroku-based project
-* builds & releases of whatever cannot be release as a Python egg and uploaded
+* Archive of Papertrail logs for each Heroku-based project
+* Archive of PostgreSQL dumps for each Heroku-based project
+* Builds & releases of whatever cannot be released as a Python egg and uploaded
   to pypi.niteoweb.com
 
 
