@@ -42,25 +42,25 @@ Scenario: Staff member edits a group
 Scenario: User cannot add groups
    Given I am logged in as a user
     When I Go to  /group/add/
-    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Then page should contain  page does not exist
     Reset 404 count
 
 Scenario: User cannot view the list of groups
    Given I am logged in as a user
     When I go to  /groups/
-    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Then page should contain  page does not exist
     Reset 404 count
 
 Scenario: User cannot edit groups
    Given I am logged in as a user
     When I Go to  /group/1/edit/
-    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Then page should contain  page does not exist
     Reset 404 count
 
 Scenario: Staff member cannot edit admin group
    Given I am logged in as a staff member
     When I Go to  /group/1/edit/
-    Then page should contain  Sorry, but the page you were trying to view does not exist.
+    Then page should contain  page does not exist
     Reset 404 count
 
 Scenario: Admin can edit admin group
