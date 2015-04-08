@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.37.2 (unreleased)
+0.37.2 (2015-04-08)
 -------------------
 
 - Flash messages garden.
