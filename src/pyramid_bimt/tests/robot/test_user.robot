@@ -50,7 +50,7 @@ Scenario: Staff member logs in as another user
      And I input text  name=email  one@bar.com
      And I click button  Login as user
     Then I am logged in
-     And page should contain  You have successfully logged in as user: one@bar.com
+     And page should contain  You have successfully logged in as user "one@bar.com".
 
 Scenario: User cannot log in as another user
    Given I am logged in as a user

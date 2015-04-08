@@ -5,7 +5,11 @@ Changelog
 0.37.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Flash messages garden.
+  [zupo]
+
+- Updates to robot tests to allow more customized 404 pages.
+  [zupo]
 
 
 0.37.1 (2015-03-19)

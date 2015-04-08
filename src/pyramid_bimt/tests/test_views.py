@@ -599,7 +599,7 @@ class TestLoginAsView(unittest.TestCase):
         resp = view.login_as_success(form_values)
         self.assertEqual(resp.location, 'http://example.com')
         request.session.flash.assert_called_once_with(
-            u'You have successfully logged in as user: one@bar.com'
+            u'You have successfully logged in as user "one@bar.com".'
         )
 
     def test_loginas_view_submit_success_as_user(self):
@@ -624,7 +624,7 @@ class TestLoginAsView(unittest.TestCase):
         resp = view.login_as_success(form_values)
         self.assertEqual(resp.location, 'http://example.com')
         request.session.flash.assert_called_once_with(
-            u'You have successfully logged in as user: two@bar.com'
+            u'You have successfully logged in as user "two@bar.com".'
         )
 
     def test_loginas_view_submit_unknown_user(self):
@@ -662,7 +662,7 @@ class TestLoginAsView(unittest.TestCase):
         User.by_email('one@bar.com').disable()
         self.assertIsNone(view.login_as_success(form_values))
         request.session.flash.assert_called_once_with(
-            u'User: one@bar.com is disabled.',
+            u'User "one@bar.com" is disabled.',
             'error'
         )
 

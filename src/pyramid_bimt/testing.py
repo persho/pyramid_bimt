@@ -235,7 +235,7 @@ def log_notfound(handler, registry):  # pragma: no cover
     def log_notfound_tween(request):
         response = handler(request)
         if response.content_type == 'text/html':
-            if u'page you were trying to view does not exist' in response.text:
+            if u'page does not exist' in response.text:
                 notfound_info.append({
                     'url': request.url,
                     'referrer': request.referrer

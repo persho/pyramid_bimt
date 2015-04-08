@@ -181,7 +181,7 @@ class LoginAs(FormView):
             )
         elif not user.enabled:
             self.request.session.flash(
-                u'User: {} is disabled.'.format(user.email),
+                u'User "{}" is disabled.'.format(user.email),
                 'error'
             )
         elif user.admin and not self.request.user.admin:
@@ -197,14 +197,14 @@ class LoginAs(FormView):
         else:
             headers = remember(self.request, user.email)
             self.request.session.flash(
-                u'You have successfully logged in as user: {}'.format(
+                u'You have successfully logged in as user "{}".'.format(
                     user.email)
             )
             self.request.registry.notify(
                 UserLoggedInAs(
                     self.request,
                     self.request.user,
-                    comment=u'Logged in as {}'.format(user.email)
+                    comment=u'Logged in as "{}".'.format(user.email)
                 )
             )
             return HTTPFound(
