@@ -55,7 +55,7 @@ bimt_css = Resource(
     relpath='bimt.css',
     minified='bimt.min.css',
     minifier='cssmin',
-    depends=[bootstrap, chosen_css],
+    depends=[bootstrap],
 )
 
 bimt_js = Resource(
@@ -63,7 +63,7 @@ bimt_js = Resource(
     relpath='bimt.js',
     minified='bimt.min.js',
     minifier='jsmin',
-    depends=[jquery, chosen_js],
+    depends=[jquery],
     bottom=True,
 )
 
@@ -92,6 +92,11 @@ bootbox_js = Resource(
     depends=[bootstrap],
     bottom=True,
 )
+
+chosen_assets = Group([
+    chosen_js,
+    chosen_css,
+])
 
 bimt_assets = Group([
     jquery,

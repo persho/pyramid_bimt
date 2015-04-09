@@ -5,7 +5,8 @@ Changelog
 0.37.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add chosen as custom deform widget.
+  [dz0ny]
 
 
 0.37.2 (2015-04-08)

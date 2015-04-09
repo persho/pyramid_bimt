@@ -1,4 +1,6 @@
 .coverage
+.idea
+.venv
 .installed.cfg
 .mr.developer.cfg
 bimt-app.db
@@ -13,4 +15,7 @@ lib/
 local
 man/
 parts
+eggs
+develop-eggs
 var
+*.egg-info
