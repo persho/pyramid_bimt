@@ -266,7 +266,7 @@ class UserAdd(FormView):
             valid_to=appstruct.get('valid_to'),
             last_payment=appstruct.get('last_payment'),
             groups=[Group.by_id(group_id) for group_id in appstruct.get('groups', [])],  # noqa
-            properties=[UserProperty(key=prop['key'], value=prop['value'])
+            properties=[UserProperty(key=prop.get('key'), value=prop.get('value'))  # noqa
                         for prop in appstruct.get('properties', [])],
         )
 
@@ -334,10 +334,10 @@ class UserEdit(UserAdd):
         # update/create properties present in appstruct
         for prop in appstruct['properties']:
             if user.get_property(prop['key'], None) is not None:
-                user.set_property(key=prop['key'], value=prop['value'])
+                user.set_property(key=prop['key'], value=prop.get('value'))
             else:
                 user.properties.append(
-                    UserProperty(key=prop['key'], value=prop['value']))
+                    UserProperty(key=prop['key'], value=prop.get('value')))
 
         self.request.session.flash(
             u'User "{}" modified.'.format(user.email))

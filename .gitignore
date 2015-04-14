@@ -19,3 +19,4 @@ eggs
 develop-eggs
 var
 *.egg-info
+*.pyc

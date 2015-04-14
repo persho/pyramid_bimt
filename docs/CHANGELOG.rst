@@ -5,7 +5,10 @@ Changelog
 0.37.3 (unreleased)
 -------------------
 
-- Add chosen as custom deform widget.
+- Convert chosen to custom deform widget.
+  [dz0ny]
+
+- Use getter for user properties.
   [dz0ny]
 
 
