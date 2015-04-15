@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.37.3 (unreleased)
+0.37.3 (2015-04-15)
 -------------------
 
 - Convert chosen to custom deform widget.
