@@ -5,7 +5,9 @@ Changelog
 0.37.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use pyramid's API for forbidden view instead of manually constructing
+  the view predicate.
+  [zupo]
 
 
 0.37.3 (2015-04-15)

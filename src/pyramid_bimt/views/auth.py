@@ -2,12 +2,12 @@
 """Views for loggin in, logging out, etc."""
 
 from deform import Button
-from pyramid.httpexceptions import HTTPForbidden
 from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import render_to_response
 from pyramid.security import NO_PERMISSION_REQUIRED
 from pyramid.security import forget
 from pyramid.security import remember
+from pyramid.view import forbidden_view_config
 from pyramid.view import notfound_view_config
 from pyramid.view import view_config
 from pyramid_bimt.const import BimtPermissions
@@ -126,16 +126,13 @@ def logout(context, request):
 
 @notfound_view_config(append_slash=True)
 def notfound(request):
+    """Return a static 404 page when HTTPNotFound exception is raised."""
     return render_to_response('pyramid_bimt:templates/404.pt', {})
 
 
-@view_config(
-    context=HTTPForbidden,
-    permission=NO_PERMISSION_REQUIRED,
-    accept='text/html'
-)
+@forbidden_view_config()
 def forbidden_redirect(context, request):
-    """Redirect to 404 on forbidden access.
+    """Redirect to 404 page when HTTPForbidden is raised.
 
     Show 404 instead of "insufficient privileges" so that adversaries can not
     gather info on which resources exist by checking the responses.
