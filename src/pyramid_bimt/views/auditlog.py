@@ -9,6 +9,7 @@ from pyramid_basemodel import Session
 from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import AuditLogEntry
 from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import chosen_assets
 from pyramid_bimt.static import form_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import DatatablesDataView
@@ -135,6 +136,7 @@ class AuditLogAddEntryForm(FormView):
     def __call__(self):
         app_assets.need()
         form_assets.need()
+        chosen_assets.need()
         result = super(AuditLogAddEntryForm, self).__call__()
         if isinstance(result, dict):  # pragma: no cover
             result['title'] = self.title

@@ -39,10 +39,10 @@
                 tal:condition="multiple" />
         <script type="text/javascript">
             deform.addCallback(
-                    '${field.oid}',
-                    function (oid) {
-                        $('#' + oid).chosen({search_contains: true});
-                    }
+                '${field.oid}',
+                function (oid) {
+                    $('#' + oid).chosen(${settings});
+                }
             );
         </script>
     </div>

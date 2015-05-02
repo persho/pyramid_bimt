@@ -2,8 +2,23 @@ Changelog
 =========
 
 
-0.37.4 (unreleased)
--------------------
+0.38 (unreleased)
+-----------------
+
+- [MIGRATION REQUIRED] The previous release (0.37.3) introduced a new feature
+  so we should have bumped the MINOR version. The change introduced was
+  switching from applying the Chosen jQuery plugin to *all* SelectWidget
+  instances (default widget for HTML options tags in deform). Now, if you
+  want Chosen, you need to use the ChosenSelectWidget provided in the
+  ``pyramid_bimt.widgets`` module.
+  [zupo]
+
+- Support for per-instance settings of the ChosenSelectWidget.
+  [zupo]
+
+- Re-add ``bimt.min.js`` that was removed in 12b41eea, as if it is missing
+  from git, robot on Travis has problems.
+  [zupo]
 
 - Use pyramid's API for forbidden view instead of manually constructing
   the view predicate.

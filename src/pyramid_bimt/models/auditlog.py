@@ -9,6 +9,7 @@ from pyramid_bimt.const import BimtPermissions
 from pyramid_bimt.models import GetByIdMixin
 from pyramid_bimt.models import GetByNameMixin
 from pyramid_bimt.models.user import User
+from pyramid_bimt.widgets import ChosenSelectWidget
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
@@ -19,7 +20,6 @@ from sqlalchemy import Unicode
 from sqlalchemy.orm import relationship
 
 import colander
-import deform
 
 
 class AuditLogEventType(Base, GetByIdMixin, GetByNameMixin):
@@ -113,14 +113,14 @@ class AuditLogEventType(Base, GetByIdMixin, GetByNameMixin):
 def users_select_widget(node, kw):
     users = User.get_all()
     choices = [(user.id, user.email) for user in users]
-    return deform.widget.SelectWidget(values=choices)
+    return ChosenSelectWidget(values=choices)
 
 
 @colander.deferred
 def event_types_select_widget(node, kw):
     types = AuditLogEventType.get_all()
     choices = [(type_.id, type_.name) for type_ in types]
-    return deform.widget.SelectWidget(values=choices)
+    return ChosenSelectWidget(values=choices)
 
 
 class AuditLogEntry(Base, GetByIdMixin):

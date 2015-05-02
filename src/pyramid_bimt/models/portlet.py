@@ -8,6 +8,7 @@ from pyramid_basemodel import Base
 from pyramid_basemodel import BaseMixin
 from pyramid_bimt.models import GetByIdMixin
 from pyramid_bimt.models import GetByNameMixin
+from pyramid_bimt.widgets import ChosenSelectWidget
 from sqlalchemy import Column
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey
@@ -117,7 +118,7 @@ class Portlet(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         info={'colanderalchemy': dict(
             title='Position',
             description='Choose where to show this portlet.',
-            widget=deform.widget.SelectWidget(
+            widget=ChosenSelectWidget(
                 values=[(_p.name, _p.value) for _p in PortletPositions]),
         )},
     )

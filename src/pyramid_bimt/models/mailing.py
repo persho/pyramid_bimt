@@ -12,6 +12,7 @@ from pyramid_bimt.events import UserCreated
 from pyramid_bimt.events import UserDisabled
 from pyramid_bimt.models import GetByIdMixin
 from pyramid_bimt.models import GetByNameMixin
+from pyramid_bimt.widgets import ChosenSelectWidget
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 from sqlalchemy import Column
@@ -80,7 +81,7 @@ Also available to use is:
 
 
 class MailingTriggers(Enum):
-    """Supported operators for a mailing"""
+    """Supported operators for a mailing."""
 
     after_created = 'x days after created'
     after_last_payment = 'x days after last_payment'
@@ -123,7 +124,7 @@ class Mailing(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
         info={'colanderalchemy': dict(
             title='Trigger',
             description='Choose when to send this mailing.',
-            widget=deform.widget.SelectWidget(
+            widget=ChosenSelectWidget(
                 values=[(o.name, o.value) for o in MailingTriggers]),
         )},
     )

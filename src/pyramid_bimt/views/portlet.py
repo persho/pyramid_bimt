@@ -10,6 +10,7 @@ from pyramid_bimt.models import Group
 from pyramid_bimt.models import Portlet
 from pyramid_bimt.models import PortletPositions
 from pyramid_bimt.static import app_assets
+from pyramid_bimt.static import chosen_assets
 from pyramid_bimt.static import table_assets
 from pyramid_bimt.views import FormView
 from pyramid_bimt.views import SQLAlchemySchemaNode
@@ -60,6 +61,8 @@ class PortletAdd(FormView):
     ]
 
     def __init__(self, request):
+        chosen_assets.need()
+
         self.request = request
         self.schema = SQLAlchemySchemaNode(Portlet, includes=self.fields)
 
