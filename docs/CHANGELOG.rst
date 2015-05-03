@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.38 (unreleased)
+0.38 (2015-05-03)
 -----------------
 
 - [MIGRATION REQUIRED] The previous release (0.37.3) introduced a new feature
