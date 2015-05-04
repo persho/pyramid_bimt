@@ -236,7 +236,5 @@ class GroupEdit(GroupAdd):
                 {'key': prop.key, 'value': prop.value}
                 for prop in context.properties
             ]
-        else:
-            del appstruct['properties']
 
         return appstruct
