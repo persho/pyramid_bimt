@@ -39,7 +39,7 @@ class FormView(BaseFormView):
         app_assets.need()
         form_assets.need()
 
-        if hasattr(self, 'hide_sidebar') and self.hide_sidebar:
+        if getattr(self, 'hide_sidebar', None) and self.hide_sidebar:
             self.request.layout_manager.layout.hide_sidebar = True
 
         result = super(FormView, self).__call__()

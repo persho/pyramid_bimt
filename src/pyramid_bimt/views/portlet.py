@@ -146,7 +146,7 @@ class PortletEdit(PortletAdd):
         appstruct = dict()
         for field in self.fields:
             if (
-                hasattr(context, field) and
+                getattr(context, field, None) and
                 getattr(context, field) is not None
             ):
                 appstruct[field] = getattr(context, field)
