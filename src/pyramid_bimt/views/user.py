@@ -179,11 +179,13 @@ class UserListAJAX(DatatablesDataView):
                     getattr(user, column),
                 )
 
-        groups = [u'<a href="{}">{}</a>'.format(
-            self.request.route_path('group_edit', group_id=group.id),
-            group.name,
+        groups = [
+            u'<a href="{}">{}</a>'.format(
+                self.request.route_path('group_edit', group_id=group.id),
+                group.name,
             )
-            for group in user.groups]
+            for group in user.groups
+        ]
 
         self.columns['groups'] = '<span>, </span>'.join(groups)
         self.columns['created'] = user.created.strftime('%Y/%m/%d %H:%M:%S')

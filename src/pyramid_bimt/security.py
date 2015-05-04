@@ -48,7 +48,7 @@ class SymmetricEncryption(object):
         return s + (self.BS - len(s) % self.BS) * chr(self.BS - len(s) % self.BS)  # noqa
 
     def _unpad(self, s):
-        return s[:-ord(s[len(s)-1:])]
+        return s[:-ord(s[len(s) - 1:])]
 
     def encrypt(self, s):
         s = self._pad(s)
