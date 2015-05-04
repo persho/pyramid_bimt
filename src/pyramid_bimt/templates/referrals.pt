@@ -20,9 +20,10 @@
         <h3>Affiliate Program</h3>
         <p>${request.registry.settings['bimt.affiliate_text']}</p>
 
-        <p>${request.registry.settings['bimt.app_title']} affiliate program is exclusive to users. <a href="${request.registry.settings['bimt.referral_url']}">Sign up here</a>.</p>
-
         <p>After you're approved you'll receive access to our resources page where you can find free checklists, guides and videos you can give away to your subscribers.</p>
+
+        <p><a class="btn btn-primary" href="${request.registry.settings['bimt.referral_url']}">Sign up here</a></p>
+
         <h3>Invite Your Friends</h3>
         <p>You might not have a big list of subscribers but you probably have friends doing SEO. After you're approved you can easily invite those friends by selecting only the ones you'd like to invite and we'll email them with your affiliate link.</p>
 
