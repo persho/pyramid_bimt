@@ -1,4 +1,5 @@
 *.egg-info
+*.patch
 *.pyc
 .coverage
 .idea
@@ -8,6 +9,7 @@
 bimt-app.db
 bin/
 bms-app.db
+bower_components
 build/
 cover/
 develop-eggs
@@ -18,5 +20,6 @@ include/
 lib/
 local
 man/
+node_modules
 parts
 var
