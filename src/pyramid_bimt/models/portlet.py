@@ -29,13 +29,13 @@ portlet_group_table = Table(
     Column(
         'portlet_id',
         Integer,
-        ForeignKey('portlets.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('portlets.id', onupdate='cascade', ondelete='cascade'),
         primary_key=True,
     ),
     Column(
         'group_id',
         Integer,
-        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
         primary_key=True,
     ),
     UniqueConstraint('portlet_id', 'group_id', name='portlet_id_group_id'),
@@ -47,12 +47,12 @@ exclude_portlet_group_table = Table(
     Column(
         'portlet_id',
         Integer,
-        ForeignKey('portlets.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('portlets.id', onupdate='cascade', ondelete='cascade'),
     ),
     Column(
         'group_id',
         Integer,
-        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
     ),
     UniqueConstraint('portlet_id', 'group_id', name='exclude_portlet_id_group_id'),  # noqa
 )

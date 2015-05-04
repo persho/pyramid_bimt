@@ -132,7 +132,7 @@ class TestAutoKillConnections(unittest.TestCase):
         try:
             # empty arguments could throw exception
             self.kill_connections(username=None, password=None, apiurl=None)
-        except:
+        except:  # noqa
             self.fail('kill_connections function should not raise exception')
 
     @mock.patch('pyramid_bimt.requests')

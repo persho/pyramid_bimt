@@ -40,12 +40,12 @@ mailing_group_table = Table(
     Column(
         'mailing_id',
         Integer,
-        ForeignKey('mailings.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('mailings.id', onupdate='cascade', ondelete='cascade'),
     ),
     Column(
         'group_id',
         Integer,
-        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
     ),
     UniqueConstraint('mailing_id', 'group_id', name='mailing_id_group_id'),
 )
@@ -56,12 +56,12 @@ exclude_mailing_group_table = Table(
     Column(
         'mailing_id',
         Integer,
-        ForeignKey('mailings.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('mailings.id', onupdate='cascade', ondelete='cascade'),
     ),
     Column(
         'group_id',
         Integer,
-        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
     ),
     UniqueConstraint('mailing_id', 'group_id', name='exclude_mailing_id_group_id'),  # noqa
 )

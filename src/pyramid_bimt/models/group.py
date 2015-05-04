@@ -25,13 +25,13 @@ user_group_table = Table(
     Column(
         'user_id',
         Integer,
-        ForeignKey('users.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('users.id', onupdate='cascade', ondelete='cascade'),
         primary_key=True,
     ),
     Column(
         'group_id',
         Integer,
-        ForeignKey('groups.id', onupdate="cascade", ondelete="cascade"),
+        ForeignKey('groups.id', onupdate='cascade', ondelete='cascade'),
         primary_key=True,
     ),
     UniqueConstraint('user_id', 'group_id', name='user_id_group_id'),
