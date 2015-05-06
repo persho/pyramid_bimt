@@ -5,7 +5,11 @@ Changelog
 0.39 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Update of code analysis package
+  [zupo]
+
+- Consistent affiliate view 
+  [dz0ny]
 
 
 0.38 (2015-05-03)
