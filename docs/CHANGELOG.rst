@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.39 (unreleased)
+0.39 (2015-05-06)
 -----------------
 
 - Update of code analysis package
