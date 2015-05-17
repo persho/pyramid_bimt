@@ -1,3 +1,4 @@
+sudo: false
 language: python
 python:
   - 2.7
@@ -20,16 +21,14 @@ env:
 install:
   - $(which echo) -e "[buildout]\nextends = buildout.d/travis.cfg" > buildout.cfg
   - make .installed.cfg
+  - curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 
 script:
   - make tests
   - make docs
 
 after_success:
-  - sudo apt-get install s3cmd
-  - echo "access_key=$AWS_ACCESS_KEY_ID" >> .s3cfg
-  - echo "secret_key=$AWS_SECRET_KEY" >> .s3cfg
-  - test $TRAVIS_BRANCH == 'master' && s3cmd sync --config=.s3cfg docs/html/* s3://docs.niteoweb.com/pyramid_bimt/
+  - test $TRAVIS_BRANCH == 'master' && make upload_docs
 
 before_deploy:
   - git fetch --unshallow

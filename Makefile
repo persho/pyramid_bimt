@@ -44,6 +44,9 @@ graphviz: .installed.cfg
 	@dot -Tpng /tmp/schema.dot > docs/images/schema.png
 	@echo "Graphviz image generated at 'docs/images/schema.png'."
 
+upload_docs:
+	~/bin/artifacts -D upload --key $$AWS_ACCESS_KEY_ID --secret $$AWS_SECRET_KEY --bucket docs.niteoweb.com --target-paths "pyramid_bimt/" docs/html/
+
 clean:
 	@rm -rf .coverage .installed.cfg .mr.developer.cfg .Python bin build \
 		develop-eggs dist docs/html cover lib include man parts \

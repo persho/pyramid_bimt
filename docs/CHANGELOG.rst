@@ -5,16 +5,17 @@ Changelog
 0.40 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Update ``.travis.yml`` to latest best practice.
+  [zupo]
 
 
 0.39 (2015-05-06)
 -----------------
 
-- Update of code analysis package
+- Update of code analysis package.
   [zupo]
 
-- Consistent affiliate view 
+- Consistent affiliate view.
   [dz0ny]
 
 
