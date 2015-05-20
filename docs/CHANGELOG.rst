@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.40 (unreleased)
+0.40 (2015-05-20)
 -----------------
 
 - Change robot runner to GhostDriver and disable image loading.
