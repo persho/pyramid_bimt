@@ -22,7 +22,8 @@ Suite Setup
     Init DB  ${APP_NAME}
     Reset 404 count
     Reset Javascript Exception count
-    Open browser  ${APP_URL}/ping/  browser=${BROWSER}  remote_url=${REMOTE_URL}  desired_capabilities=${DESIRED_CAPABILITIES}
+    Create Webdriver    PhantomJS    service_args=${PHANTOMJS_ARGS}
+    Go To  ${APP_URL}/ping/
     Set window size   1024  768
 
     ${app_name}=  Get API result  app_name

@@ -5,6 +5,9 @@ Changelog
 0.40 (unreleased)
 -----------------
 
+- Change robot runner to GhostDriver and disable image loading.
+  [dz0ny]
+
 - Update ``.travis.yml`` to latest best practice.
   [zupo]
 
