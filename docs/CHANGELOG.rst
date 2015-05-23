@@ -5,7 +5,8 @@ Changelog
 0.41 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix upgrade process for users that use billing email, refs #2795.
+  [zupo]
 
 
 0.40 (2015-05-20)

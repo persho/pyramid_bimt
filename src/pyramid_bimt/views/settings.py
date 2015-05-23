@@ -246,8 +246,9 @@ class SettingsForm(FormView):
             self.request.registry.settings['bimt.clickbank_dev_key'],
             self.request.registry.settings['bimt.clickbank_api_key'],
         )
+        email = self.request.user.billing_email or self.request.user.email
         return clickbank_client.change_user_subscription(
-            self.request.user.email,
+            email,
             self.request.user.product_group.product_id,
             new_group.product_id
         )

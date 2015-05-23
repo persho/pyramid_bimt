@@ -7,6 +7,10 @@ Releasing apps
 BIMT apps do not need to be released as eggs. They are continuously deployed
 to Heroku, on every push to master on GitHub.
 
+However, if you change static resources, such as CSS and JS, you need to
+manually purge CloudFlare's cache: Login to their control panel and provider
+URLs to static files that need purging.
+
 
 Releasing ``pyramid_bimt``
 --------------------------

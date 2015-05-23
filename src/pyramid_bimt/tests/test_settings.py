@@ -5,10 +5,10 @@ from pyramid import testing
 from pyramid.threadlocal import get_current_request
 from pyramid_basemodel import Session
 from pyramid_bimt import configure
+from pyramid_bimt.models import Group
 from pyramid_bimt.models import User
 from pyramid_bimt.testing import initTestingDB
 from pyramid_bimt.views.settings import SettingsForm
-
 
 import mock
 import unittest
@@ -405,3 +405,22 @@ class TestChangeSubscription(unittest.TestCase):
         ClickbankAPI.return_value.change_user_subscription.side_effect = ClickbankException()  # noqa
         with self.assertRaises(ClickbankException):
             self.view._change_clickbank_subscription(mock.Mock(product_id=1))
+
+    def test_use_billing_email(self, ClickbankAPI):
+        self.request.registry.settings['bimt.clickbank_dev_key'] = 'dev'
+        self.request.registry.settings['bimt.clickbank_api_key'] = 'key'
+        self.request.user.product_group.product_id = 'foo'
+
+        self.request.user.email = 'foo@bar.com'
+        self.request.user.billing_email = None
+        self.view._change_clickbank_subscription(
+            Group(id=1, name='bar', product_id='baz'))
+        ClickbankAPI.return_value.change_user_subscription.assert_called_with(
+            'foo@bar.com', 'foo', 'baz')
+
+        self.request.user.email = 'foo@bar.com'
+        self.request.user.billing_email = 'billing@bar.com'
+        self.view._change_clickbank_subscription(
+            Group(id=1, name='bar', product_id='baz'))
+        ClickbankAPI.return_value.change_user_subscription.assert_called_with(
+            'billing@bar.com', 'foo', 'baz')
