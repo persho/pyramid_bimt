@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.41 (unreleased)
------------------
+0.40.1 (2015-05-23)
+-------------------
 
 - Fix upgrade process for users that use billing email, refs #2795.
   [zupo]
