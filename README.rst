@@ -25,7 +25,7 @@ that is not specific to a certain app, but shared among many apps, such as:
   ``Session`` (from the ``pyramid_basemodel`` package).
 * User model with email, password and other common fields.
 * Login, Logout, Password Reset forms, authentication via
-  :ref:`passlib <passlib:context-overview>`.
+  `passlib <passlib:context-overview>`_.
 * A number of events (user created, logged-in, etc.) that apps can
   subscribe to.
 * Extended request with ``request.user`` shortcut.
@@ -33,7 +33,7 @@ that is not specific to a certain app, but shared among many apps, such as:
 * Audit log for admins. Can be extended with per-app custom events.
 * Simple portlets.
 * Default layout using ``pyramid_layout``.
-* Static resources handled by :ref:`Fanstatic <fanstatic:packaged_libs>`.
+* Static resources handled by `Fanstatic <fanstatic:packaged_libs>`_.
 * Glyphicons and FontAwesome icon sets.
 * Various UI JavaScript helpers.
 

@@ -104,6 +104,15 @@ class TestClickbankAPI(unittest.TestCase):
         self.assertEqual(receipt, 'LPJ9VE42')
 
     @mock.patch('pyramid_bimt.clickbank.requests')
+    def test_get_user_latest_receipt_empty(self, requests):
+        requests.request.return_value.json.return_value = None
+
+        with self.assertRaises(KeyError) as cm:
+            self.client.get_user_latest_receipt('foo', 'bar')
+        self.assertEqual(
+            cm.exception.message, 'No receipt found for email foo.')
+
+    @mock.patch('pyramid_bimt.clickbank.requests')
     @mock.patch.object(ClickbankAPI, 'get_user_latest_receipt')
     def test_change_user_subscription_success(
             self, get_user_latest_receipt, requests):

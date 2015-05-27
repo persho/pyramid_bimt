@@ -23,13 +23,17 @@ setup(
     long_description=long_description,
     classifiers=[
         "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Framework :: Pyramid",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "License :: Other/Proprietary License",
     ],
+    url='http://www.bigimtoolbox.com/',
     author='NiteoWeb Ltd.',
     author_email='info@niteoweb.com',
     keywords='python pyramid sqlalchemy',
+    license='Proprietary',
     packages=find_packages('src', exclude=['ez_setup']),
     package_dir={'': 'src'},
     include_package_data=True,
@@ -89,7 +93,7 @@ setup(
             'Sphinx',
             'pyramid_debugtoolbar',
             'sadisplay',
-            'zest.releaser',
+            'zest.releaser[recommended]',
         ],
     },
     entry_points="""\
@@ -100,4 +104,5 @@ setup(
     [fanstatic.libraries]
     pyramid_bimt = pyramid_bimt.static:lib_bimt
     """,
+    test_suite='pyramid_bimt',
 )

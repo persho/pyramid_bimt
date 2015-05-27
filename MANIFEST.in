@@ -1,3 +1,10 @@
-include *.rst
-graft src
-recursive-include docs *.rst
+recursive-include buildout.d *
+recursive-include docs *
+recursive-include etc *
+recursive-include src *
+include *
+exclude .installed.cfg
+exclude .coverage
+exclude .mr.developer.cfg
+recursive-exclude docs/html *
+global-exclude *.pyc .DS_Store .Python

@@ -5,7 +5,11 @@ Changelog
 0.40.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Upgrade ``zest.releaser`` to 4.0.
+  [zupo]
+
+- Better handling when no CB receipt is found.
+  [zupo]
 
 
 0.40.1 (2015-05-23)
@@ -1402,3 +1406,4 @@ Changelog
 
 - Initial release.
   [offline, zupo]
+
