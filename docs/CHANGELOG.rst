@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.40.2 (unreleased)
+0.40.2 (2015-05-27)
 -------------------
 
 - Upgrade ``zest.releaser`` to 4.0.
