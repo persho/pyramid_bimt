@@ -39,18 +39,24 @@ class ClickbankAPI(object):
         return date
 
     def get_user_latest_receipt(self, email, product):
+        """Return user's latest ClickBank receipt."""
         response = self._request(
             'orders/list',
             params={'item': product, 'email': email}
-        )
-        orders = response.json()['orderData']
+        ).json()
+
+        if not response:
+            raise KeyError('No receipt found for email {}.'.format(email))
+
+        orders = response['orderData']
 
         latest_order = max(orders, key=self._get_date)
         return latest_order['receipt']
 
     def change_user_subscription(self, email, existing_product, new_product):
-        """Change user's subscription and return the number of changed
-        user's receipt.
+        """Change user's subscription.
+
+        Return the number of changed user's receipt.
         """
         receipt = self.get_user_latest_receipt(email, existing_product)
         response = self._request(
