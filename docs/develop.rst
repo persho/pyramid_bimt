@@ -235,14 +235,14 @@ Using docker and local pgsql:
 
 .. code-block:: bash
 
-    $ heroku pgbackups:capture --expire --app bimt-ebn
-    $ wget $(heroku pgbackups:url b214 --app bimt-ebn) -O latest.dump
-    $ docker run -d -P -e POSTGRES_PASSWORD=postgres -d postgres
+    $ heroku pg:backups capture $DBNAME --app bimt-ebn
+    $ curl -o latest.dump (heroku pg:backups public-url -a $DBNAME --app bimt-ebn)
+    $ docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
     $ pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres latest.dump
 
 Connection url: postgres://postgres:postgres@localhost:5432/postgres
 
-Bonus: Web UI https://github.com/sosedoff/pgweb
+Web UI https://github.com/sosedoff/pgweb
 
 
 Using a git checkout of pyramid_bimt on an app build on Travis
