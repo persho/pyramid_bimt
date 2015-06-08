@@ -189,13 +189,13 @@ so you have a temporary DB to work with. Follow these steps to prepare one:
 .. code-block:: bash
 
     # create a snapshot of the production DB
-    $ heroku pgbackups:capture --expire
+    $ heroku pg:backups capture
 
     # add a new empty DB
     $ heroku addons:add heroku-postgresql:dev
 
     # restore snapshot to the new DB
-    $ heroku pgbackups:restore NEW_HEROKU_DB_NAME
+    $ heroku pg:backups restore NEW_HEROKU_DB_NAME
 
     # get the new DB connection string
     $ heroku pg:credentials NEW_HEROKU_DB_NAME
