@@ -104,9 +104,13 @@ class UserView(object):
 
     @view_config(route_name='user_enable')
     def enable(self):
+        """Enable context user."""
         user = self.context
         if user.enable():
-            self.request.registry.notify(UserEnabled(self.request, user))
+            self.request.registry.notify(
+                UserEnabled(
+                    self.request, user, u'Manually enabled by {}.'.format(
+                        self.request.user.email)))
             self.request.session.flash('User "{}" enabled.'.format(user.email))
         else:
             self.request.session.flash(
@@ -117,9 +121,14 @@ class UserView(object):
 
     @view_config(route_name='user_disable')
     def disable(self):
+        """Disable context user."""
         user = self.context
         if user.disable():
-            self.request.registry.notify(UserDisabled(self.request, user))
+            self.request.registry.notify(
+                UserDisabled(
+                    self.request, user, u'Manually disabled by {}.'.format(
+                        self.request.user.email)))
+
             self.request.session.flash(
                 'User "{}" disabled.'.format(user.email))
         else:

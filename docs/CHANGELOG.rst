@@ -5,7 +5,14 @@ Changelog
 0.40.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add an Audit Log entry for manual user enable/disable actions.
+  [zupo]
+
+- Document how to configure the list of which IPN products to ignore.
+  [zupo]
+
+- Update alembic docs with new pgbackups commands.
+  [zupo]
 
 
 0.40.2 (2015-05-27)

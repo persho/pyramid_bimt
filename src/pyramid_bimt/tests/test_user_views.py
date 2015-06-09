@@ -238,7 +238,9 @@ class TestUserEnable(unittest.TestCase):
 
         from pyramid_bimt.views.user import UserView
         self.context = User.by_email('one@bar.com')
-        self.request = testing.DummyRequest(layout_manager=mock.Mock())
+        self.request = testing.DummyRequest(
+            layout_manager=mock.Mock(),
+            user=User.by_email('admin@bar.com'))
         self.view = UserView(self.context, self.request)
 
     def tearDown(self):
@@ -270,6 +272,13 @@ class TestUserEnable(unittest.TestCase):
             [u'User "one@bar.com" enabled.']
         )
 
+        entries = self.context.audit_log_entries
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].user.email, 'one@bar.com')
+        self.assertEqual(entries[0].event_type.name, 'UserEnabled')
+        self.assertEqual(
+            entries[0].comment, u'Manually enabled by admin@bar.com.')
+
     def test_disable_disabled(self):
         self.context.disable()
         self.assertFalse(self.context.enabled)
@@ -294,6 +303,13 @@ class TestUserEnable(unittest.TestCase):
             self.request.session.pop_flash(),
             [u'User "one@bar.com" disabled.']
         )
+
+        entries = self.context.audit_log_entries
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].user.email, 'one@bar.com')
+        self.assertEqual(entries[0].event_type.name, 'UserDisabled')
+        self.assertEqual(
+            entries[0].comment, u'Manually disabled by admin@bar.com.')
 
 
 class TestGroupsValidator(unittest.TestCase):
