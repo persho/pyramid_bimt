@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.40.3 (unreleased)
+0.40.3 (2015-06-09)
 -------------------
 
 - Add an Audit Log entry for manual user enable/disable actions.
