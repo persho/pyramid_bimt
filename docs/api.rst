@@ -8,6 +8,7 @@ BIMT API
     form.rst
     auditlog.rst
     user.rst
+    ipn.rst
     portlets.rst
     workflows.rst
     scripts.rst
