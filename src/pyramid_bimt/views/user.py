@@ -344,7 +344,7 @@ class UserEdit(UserAdd):
 
         # update/create properties present in appstruct
         for prop in appstruct['properties']:
-            if user.get_property(prop['key'], None) is not None:
+            if user.has_property(prop['key']):
                 user.set_property(key=prop['key'], value=prop.get('value'))
             else:
                 user.properties.append(

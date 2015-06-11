@@ -5,6 +5,9 @@ Changelog
 0.40.4 (unreleased)
 -------------------
 
+- Allow saving properties with empty values (None, '', etc.), refs #3384.
+  [zupo]
+
 - Don't create the ``clickbank_affiliate_id`` property if value is empty.
   Refs #3384.
   [zupo]

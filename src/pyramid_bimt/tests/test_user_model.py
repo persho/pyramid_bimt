@@ -426,3 +426,9 @@ class TestUserProperties(unittest.TestCase):
             repr(UserProperty(id=1, key=u'foo', value=u'bar')),
             '<UserProperty:1 (key=u\'foo\', value=u\'bar\')>',
         )
+
+    def test_has_property(self):
+        self.assertFalse(self.user.has_property('foo'))
+
+        self.user.set_property('foo', u'bar')
+        self.assertTrue(self.user.has_property('foo'))

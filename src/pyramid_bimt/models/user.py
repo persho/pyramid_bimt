@@ -159,6 +159,13 @@ class User(Base, BaseMixin, GetByIdMixin):
         return u'<{}:{} (email={})>'.format(
             self.__class__.__name__, self.id, repr(self.email))
 
+    def has_property(self, key):
+        """True if user has this property set."""
+        prop = UserProperty.query.filter_by(user_id=self.id, key=key).first()
+        if prop:
+            return True
+        return False
+
     def get_property(self, key, default=_marker, secure=False):
         """Get a User's property by key.
 
