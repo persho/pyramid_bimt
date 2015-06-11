@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.40.4 (unreleased)
+0.40.4 (2015-06-11)
 -------------------
 
 - Allow saving properties with empty values (None, '', etc.), refs #3384.
