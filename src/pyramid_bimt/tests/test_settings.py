@@ -100,6 +100,7 @@ class TestSettingsView(unittest.TestCase):
         settings_view.save_success(form_values)
         self.assertEqual(self.request.user.email, 'one@bar.com')
         self.assertEqual(self.request.user.fullname, 'John')
+        self.request.user.get_property.assert_not_called()
         self.assertEqual(
             settings_view.request.session['_f_'],
             [u'Your changes have been saved.'],

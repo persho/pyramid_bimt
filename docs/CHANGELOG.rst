@@ -5,7 +5,9 @@ Changelog
 0.40.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Don't create the ``clickbank_affiliate_id`` property if value is empty.
+  Refs #3384.
+  [zupo]
 
 
 0.40.3 (2015-06-09)

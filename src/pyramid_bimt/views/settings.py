@@ -170,10 +170,11 @@ class SettingsForm(FormView):
             user.email = email
             headers = remember(self.request, user.email)
         user.fullname = appstruct['account_info']['fullname']
-        self.request.user.set_property(
-            'clickbank_affiliate_id',
-            appstruct['affiliate_settings']['clickbank_affiliate_id'],
-        )
+        if appstruct['affiliate_settings']['clickbank_affiliate_id']:
+            self.request.user.set_property(
+                'clickbank_affiliate_id',
+                appstruct['affiliate_settings']['clickbank_affiliate_id'],
+            )
         self.request.session.flash(u'Your changes have been saved.')
         return HTTPFound(location=self.request.path_url, headers=headers)
 
