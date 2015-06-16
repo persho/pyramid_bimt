@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.40.5 (unreleased)
+0.40.5 (2015-06-16)
 -------------------
 
 - Fix parsing of ClickBank order data, when there is only one order and CB
