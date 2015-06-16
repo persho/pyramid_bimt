@@ -104,6 +104,16 @@ class TestClickbankAPI(unittest.TestCase):
         self.assertEqual(receipt, 'LPJ9VE42')
 
     @mock.patch('pyramid_bimt.clickbank.requests')
+    def test_get_user_latest_receipt_only_one_order(self, requests):
+        response = {}
+        response['orderData'] = RESPONSES['list_orders']['orderData'][0]
+        requests.request.return_value.json.return_value = response
+        receipt = self.client.get_user_latest_receipt(
+            'ipntest', 'john.smith@gmail.com')
+
+        self.assertEqual(receipt, 'XDWXQSLE')
+
+    @mock.patch('pyramid_bimt.clickbank.requests')
     def test_get_user_latest_receipt_empty(self, requests):
         requests.request.return_value.json.return_value = None
 

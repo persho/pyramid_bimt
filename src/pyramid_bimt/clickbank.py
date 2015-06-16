@@ -49,8 +49,13 @@ class ClickbankAPI(object):
             raise KeyError('No receipt found for email {}.'.format(email))
 
         orders = response['orderData']
-
-        latest_order = max(orders, key=self._get_date)
+        if isinstance(orders, list):
+            latest_order = max(orders, key=self._get_date)
+        elif isinstance(orders, dict):
+            latest_order = orders
+        else:  # pragma: no cover
+            raise ValueError('Unknown response type {}: {}'.format(
+                type(orders), orders))
         return latest_order['receipt']
 
     def change_user_subscription(self, email, existing_product, new_product):

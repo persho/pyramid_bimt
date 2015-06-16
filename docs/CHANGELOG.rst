@@ -5,7 +5,9 @@ Changelog
 0.40.5 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix parsing of ClickBank order data, when there is only one order and CB
+  returns dict instead of list, refs #3426.
+  [zupo]
 
 
 0.40.4 (2015-06-11)
