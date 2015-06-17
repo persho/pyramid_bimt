@@ -448,6 +448,117 @@ class TestIPNViewIntegration(unittest.TestCase):
         )
 
     @mock.patch('pyramid_bimt.views.ipn.date')
+    def test_existing_user_addon_subscription(self, mocked_date):
+        user = self._make_user(valid_to=date(2014, 1, 20))
+        self.ipn_group.name = 'foo'
+        self.ipn_group.addon = True
+        mocked_date.today.return_value = date(2013, 12, 30)
+
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'jvzoo'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'trans_type': 'SALE',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+
+        resp = view.ipn()
+        self.assertEqual(resp, 'Done.')
+
+        # nothing should change for user's main subscription
+        self.assertEqual(user.enabled, True)
+        self.assertEqual(user.trial, False)
+        self.assertEqual(user.valid_to, date(2014, 1, 20))
+        self.assertEqual(user.last_payment, None)
+
+        self.assertEqual(
+            user.get_property('addon_1_valid_to'), date(2014, 1, 6))
+        self.assertEqual(
+            user.get_property('addon_1_last_payment'), date(2013, 12, 30))
+
+        self.assertEqual(len(user.audit_log_entries), 1)
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserEnabled')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Addon "foo" enabled by jvzoo, transaction id: 123, type: SALE, '
+            u'note: trial until 2014-01-06',
+        )
+
+    @mock.patch('pyramid_bimt.views.ipn.date')
+    def test_existing_user_addon_subscription_new_payment(self, mocked_date):
+        user = self._make_user(valid_to=date(2014, 1, 20))
+        self.ipn_group.name = 'foo'
+        self.ipn_group.addon = True
+        mocked_date.today.return_value = date(2013, 12, 30)
+
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'jvzoo'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'trans_type': 'BILL',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+
+        resp = view.ipn()
+        self.assertEqual(resp, 'Done.')
+
+        # nothing should change for user's main subscription
+        self.assertEqual(user.enabled, True)
+        self.assertEqual(user.trial, False)
+        self.assertEqual(user.valid_to, date(2014, 1, 20))
+        self.assertEqual(user.last_payment, None)
+
+        self.assertEqual(
+            user.get_property('addon_1_valid_to'), date(2014, 1, 30))
+        self.assertEqual(
+            user.get_property('addon_1_last_payment'), date(2013, 12, 30))
+
+        self.assertEqual(len(user.audit_log_entries), 1)
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserEnabled')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Addon "foo" enabled by jvzoo, transaction id: 123, type: BILL, '
+            u'note: regular until 2014-01-30',
+        )
+
+    @mock.patch('pyramid_bimt.views.ipn.date')
+    def test_existing_user_addon_cancel(self, mocked_date):
+        user = self._make_user()
+        user.groups.append(self.ipn_group)
+        self.ipn_group.name = 'foo'
+        self.ipn_group.addon = True
+        mocked_date.today.return_value = date(2013, 12, 30)
+
+        view = IPNView(testing.DummyRequest())
+        view.provider = 'jvzoo'
+        view.params = AttrDict({
+            'email': 'foo@bar.com',
+            'trans_type': 'RFND',
+            'trans_id': 123,
+            'product_id': 1,
+        })
+
+        resp = view.ipn()
+        self.assertEqual(resp, 'Done.')
+
+        # nothing should change for user's main subscription
+        self.assertEqual(user.enabled, True)
+        self.assertEqual([g.name for g in user.groups], ['enabled', ])
+
+        self.assertEqual(len(user.audit_log_entries), 1)
+        self.assertEqual(
+            user.audit_log_entries[0].event_type.name, u'UserDisabled')
+        self.assertEqual(
+            user.audit_log_entries[0].comment,
+            u'Addon "foo" disabled by jvzoo, transaction id: 123, type: RFND, '
+            u'note: removed from groups: foo',
+        )
+
+    @mock.patch('pyramid_bimt.views.ipn.date')
     def test_new_user_no_trial(self, mocked_date):
         Group.by_name('monthly').trial_validity = None
         mocked_date.today.return_value = date(2013, 12, 30)

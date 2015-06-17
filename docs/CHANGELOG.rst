@@ -2,10 +2,11 @@ Changelog
 =========
 
 
-0.40.6 (unreleased)
--------------------
+0.41 (unreleased)
+-----------------
 
-- Nothing changed yet.
+- Add support for add-on groups, refs #2268.
+  [zupo]
 
 
 0.40.5 (2015-06-16)

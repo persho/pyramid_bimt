@@ -2,6 +2,7 @@
 """Integration with JVZoo & Clickbank Instant Payment Notification service."""
 
 from Crypto.Cipher import AES
+from copy import deepcopy
 from datetime import date
 from datetime import timedelta
 from flufl.enum import Enum
@@ -196,24 +197,36 @@ class IPNView(object):
         if group.trial_validity:
             trial = True
             validity = timedelta(days=group.trial_validity)
-            user.groups.append(Group.by_name('trial'))
         else:
             trial = False
             validity = timedelta(days=group.validity)
+        valid_to = date.today() + validity
 
-        user.valid_to = date.today() + validity
-        user.last_payment = date.today()
+        if trial and not group.addon:
+            user.groups.append(Group.by_name('trial'))
+
+        if group.addon:
+            user.set_property(
+                'addon_{}_valid_to'.format(group.product_id), valid_to)
+            user.set_property(
+                'addon_{}_last_payment'.format(group.product_id), date.today())
+            action = u'Addon "{}" enabled'.format(group.name)
+        else:
+            user.valid_to = valid_to
+            user.last_payment = date.today()
+            user.enable()
+            action = u'Enabled'
+
         if group not in user.groups:  # pragma: no branch
             user.groups.append(group)
-        user.enable()
 
         comment = COMMENT.format(
-            u'Enabled',
+            action,
             self.provider,
             self.params.trans_id,
             self.params.trans_type,
             '{} until {}'.format(
-                'trial' if trial else 'regular', user.valid_to))
+                'trial' if trial else 'regular', valid_to))
         logger.info(comment)
         self.request.registry.notify(
             UserEnabled(self.request, user, comment))
@@ -226,19 +239,33 @@ class IPNView(object):
         :param    group: Group that user belongs to
         :type     group: pyramid_bimt.models.Groups.Group
         """
-        user.valid_to = date.today() + timedelta(days=group.validity)
-        user.last_payment = date.today()
-        user.groups.append(group)
-        if Group.by_name('trial') in user.groups:
-            user.groups.remove(Group.by_name('trial'))
-        user.enable()
+        validity = timedelta(days=group.validity)
+        valid_to = date.today() + validity
+
+        if group.addon:
+            user.set_property(
+                'addon_{}_valid_to'.format(group.product_id), valid_to)
+            user.set_property(
+                'addon_{}_last_payment'.format(group.product_id), date.today())
+            action = u'Addon "{}" enabled'.format(group.name)
+        else:
+            user.valid_to = valid_to
+            user.last_payment = date.today()
+            user.enable()
+            action = u'Enabled'
+
+            if Group.by_name('trial') in user.groups:
+                user.groups.remove(Group.by_name('trial'))
+
+        if group not in user.groups:  # pragma: no branch
+            user.groups.append(group)
 
         comment = COMMENT.format(
-            u'Enabled',
+            action,
             self.provider,
             self.params.trans_id,
             self.params.trans_type,
-            'regular until {}'.format(user.valid_to),
+            'regular until {}'.format(valid_to),
         )
         logger.info(comment)
         self.request.registry.notify(
@@ -257,24 +284,34 @@ class IPNView(object):
         if user.get_property('upgrade_completed', False):
             user.set_property('upgrade_completed', False)
             return
-        groups_comment = 'removed from groups: {}'.format(
-            ', '.join([g.name for g in user.groups]))
-        user.valid_to = date.today()
-        user.groups = []
+
+        if group.addon:
+            user.groups.remove(group)
+            user.set_property(
+                'addon_{}_valid_to'.format(group.product_id), date.today())
+            action = u'Addon "{}" disabled'.format(group.name)
+            removed_groups = [group, ]
+        else:
+            user.valid_to = date.today()
+            removed_groups = deepcopy(user.groups)
+            user.groups = []
+            action = u'Disabled'
 
         comment = COMMENT.format(
-            u'Disabled',
+            action,
             self.provider,
             self.params.trans_id,
             self.params.trans_type,
-            groups_comment,
+            'removed from groups: {}'.format(
+                ', '.join([g.name for g in removed_groups])),
         )
         self.request.registry.notify(
             UserDisabled(self.request, user, comment))
 
     def _parse_request_jvzoo(self):
-        """Verify if received POST is a valid JVZoo POST request and save
-        values to self.params.
+        """Verify if received POST is a valid JVZoo POST request.
+
+        Save parsed values to self.params.
         """
         # concatenate POST parameters into a string
         strparams = u''

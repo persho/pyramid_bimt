@@ -9,6 +9,7 @@ from pyramid_basemodel import BaseMixin
 from pyramid_bimt.models import GetByIdMixin
 from pyramid_bimt.models import GetByNameMixin
 from pyramid_bimt.security import SymmetricEncryption
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -145,6 +146,17 @@ class Group(Base, BaseMixin, GetByIdMixin, GetByNameMixin):
             description='If greater than "0" then members of this group will '
             'first be put in the trial group and their valid_to will be set '
             'to this amount of days in the future.',
+        )},
+    )
+
+    addon = Column(
+        Boolean,
+        nullable=False,
+        default=False,
+        info={'colanderalchemy': dict(
+            title='Add On',
+            description='True if this is an add-on group. An add-on group '
+            'does not affect user\'s validity or status.',
         )},
     )
 
