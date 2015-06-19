@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-0.41 (unreleased)
+0.41 (2015-06-19)
 -----------------
 
 - Add support for add-on groups, refs #2268.
