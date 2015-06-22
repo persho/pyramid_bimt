@@ -9,6 +9,7 @@
           <th>Product ID</th>
           <th>Validity</th>
           <th>Trial</th>
+          <th>Addon</th>
           <th>Members</th>
           <th>
             <a class="btn btn-xs btn-success" href="${request.route_path('group_add')}">
@@ -26,6 +27,7 @@
           <td>
             <span tal:condition="group.trial_validity is not None">${group.trial_validity} days</span>
           </td>
+          <td>${'yes' if group.addon else 'no'}</td>
           <td>${len(group.users)}</td>
           <td>
             <a class="btn btn-xs btn-primary" href="${request.route_path('group_edit', group_id=group.id)}">

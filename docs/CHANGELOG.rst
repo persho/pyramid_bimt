@@ -5,7 +5,8 @@ Changelog
 0.42 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Show group.addon field on Group Edit form.
+  [zupo]
 
 
 0.41 (2015-06-19)

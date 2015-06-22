@@ -192,7 +192,7 @@ so you have a temporary DB to work with. Follow these steps to prepare one:
     $ heroku pg:backups capture
 
     # add a new empty DB
-    $ heroku addons:add heroku-postgresql:dev
+    $ heroku addons:create heroku-postgresql:dev
 
     # restore snapshot to the new DB
     $ heroku pg:backups restore NEW_HEROKU_DB_NAME
@@ -236,7 +236,7 @@ Using docker and local pgsql:
 .. code-block:: bash
 
     $ heroku pg:backups capture $DBNAME --app bimt-ebn
-    $ curl -o latest.dump (heroku pg:backups public-url -a $DBNAME --app bimt-ebn)
+    $ curl -o latest.dump `heroku pg:backups public-url $DBNAME --app bimt-ebn`
     $ docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
     $ pg_restore --verbose --clean --no-acl --no-owner -h localhost -U postgres -d postgres latest.dump
 

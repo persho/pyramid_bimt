@@ -20,6 +20,7 @@ def _make_group(
     product_id=13,
     validity=31,
     trial_validity=7,
+    addon=True,
     forward_ipn_to_url='http://example.com',
     properties=None,
 ):
@@ -30,6 +31,7 @@ def _make_group(
         product_id=product_id,
         validity=validity,
         trial_validity=trial_validity,
+        addon=addon,
         forward_ipn_to_url='http://example.com',
         properties=properties,
     )
@@ -90,6 +92,7 @@ class TestGroupAdd(unittest.TestCase):
         'product_id': 13,
         'validity': 30,
         'trial_validity': 7,
+        'addon': False,
         'forward_ipn_to_url': 'http://example.com',
         'users': [1, ],
         'upgrade_groups': [1, ],
@@ -133,6 +136,7 @@ class TestGroupAdd(unittest.TestCase):
         self.assertEqual(group.product_id, '13')
         self.assertEqual(group.validity, 30)
         self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.addon, False)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(1), ])
         self.assertEqual(group.upgrade_groups, [Group.by_id(1), ])
@@ -149,6 +153,7 @@ class TestGroupEdit(unittest.TestCase):
         'product_id': 13,
         'validity': 31,
         'trial_validity': 7,
+        'addon': True,
         'forward_ipn_to_url': 'http://example.com',
         'users': [2, ],
         'properties': [
@@ -183,6 +188,7 @@ class TestGroupEdit(unittest.TestCase):
             product_id=13,
             validity=31,
             trial_validity=7,
+            addon=True,
             forward_ipn_to_url='http://example.com')
         self.request.context.set_property('foo', u'bar')
         self.request.context.users = [User.by_email('one@bar.com'), ]
@@ -192,6 +198,7 @@ class TestGroupEdit(unittest.TestCase):
             'product_id': 13,
             'validity': 31,
             'trial_validity': 7,
+            'addon': True,
             'forward_ipn_to_url': 'http://example.com',
             'users': ['3', ],
             'upgrade_groups': ['8', ],
@@ -218,6 +225,7 @@ class TestGroupEdit(unittest.TestCase):
         self.assertEqual(group.product_id, 13)
         self.assertEqual(group.validity, 31)
         self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.addon, True)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(2), ])
         self.assertEqual(group.get_property('foo'), 'bar')
@@ -238,6 +246,7 @@ class TestGroupEdit(unittest.TestCase):
         self.assertEqual(group.product_id, 13)
         self.assertEqual(group.validity, 31)
         self.assertEqual(group.trial_validity, 7)
+        self.assertEqual(group.addon, True)
         self.assertEqual(group.forward_ipn_to_url, 'http://example.com')
         self.assertEqual(group.users, [User.by_id(2), ])
         self.assertIsNone(group.get_property('foo', None))

@@ -96,6 +96,7 @@ class GroupAdd(FormView):
         'validity',
         'trial_validity',
         'forward_ipn_to_url',
+        'addon',
         'properties',
     ]
 
@@ -141,6 +142,7 @@ class GroupAdd(FormView):
             product_id=appstruct.get('product_id'),
             validity=appstruct.get('validity'),
             trial_validity=appstruct.get('trial_validity'),
+            addon=appstruct.get('addon'),
             forward_ipn_to_url=appstruct.get('forward_ipn_to_url'),
             users=[User.by_id(user_id) for user_id in appstruct.get('users', [])],  # noqa
             upgrade_groups=[Group.by_id(group_id) for group_id in appstruct.get('upgrade_groups', [])],  # noqa
@@ -192,6 +194,7 @@ class GroupEdit(GroupAdd):
         group.product_id = appstruct.get('product_id')
         group.validity = appstruct.get('validity')
         group.trial_validity = appstruct.get('trial_validity')
+        group.addon = appstruct.get('addon')
         group.forward_ipn_to_url = appstruct.get('forward_ipn_to_url')
 
         group.users = [User.by_id(user_id) for user_id in appstruct.get('users', [])]  # noqa
