@@ -230,10 +230,14 @@ class User(Base, BaseMixin, GetByIdMixin):
 
     @property
     def product_group(self):
-        """Get the user's group that has product_id set. Can be only one."""
+        """Get the user's group that has product_id set. Can be only one.
+
+        Groups with group.addon set to True are ignored.
+        """
         try:
             return Group.query\
                 .filter(Group.users.contains(self))\
+                .filter(Group.addon == False)\
                 .filter(Group.product_id != None).one()  # noqa
         except NoResultFound:
                 return None

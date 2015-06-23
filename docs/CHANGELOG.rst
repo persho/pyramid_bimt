@@ -5,6 +5,9 @@ Changelog
 0.42 (unreleased)
 -----------------
 
+- Fix user.product_group to skip addon groups, refs #3458.
+  [zupo]
+
 - Show group.addon field on Group Edit form.
   [zupo]
 

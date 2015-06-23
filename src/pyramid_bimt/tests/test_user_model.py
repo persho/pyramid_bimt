@@ -297,6 +297,14 @@ class TestProductGroup(unittest.TestCase):
         with self.assertRaises(MultipleResultsFound):
             User.by_email('one@bar.com').product_group
 
+    def test_addon_group(self):
+        User.by_email('one@bar.com').groups = [
+            _make_group(name='foo', product_id='foo'),
+            _make_group(name='bar', product_id='bar', addon=True),
+        ]
+        self.assertEqual(
+            User.by_email('one@bar.com').product_group.name, 'foo')
+
 
 class TestTrial(unittest.TestCase):
 
