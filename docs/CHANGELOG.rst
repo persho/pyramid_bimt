@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.42 (unreleased)
------------------
+0.41.1 (2015-06-23)
+-------------------
 
 - Fix user.product_group to skip addon groups, refs #3458.
   [zupo]
