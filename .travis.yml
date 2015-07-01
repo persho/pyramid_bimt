@@ -47,12 +47,6 @@ deploy:
     all_branches: true
 
 notifications:
-  irc:
-    skip_join: true
-    channels:
-      - "irc.freenode.org#niteoweb"
-    template:
-      - "%{repository}/#%{build_number}/%{branch} (%{author}): %{message} %{build_url}"
   slack:
     secure: Wk/ysxO1T2HC4BRo/w9CnBlHHFEO3JfFQdUCM6BeU/WcuYwnPt88QYhrnI/13zA8SLaI82Lpg3cLSBzJzvpw35eQgHJ0QN9ObVyh6hVRXDBlNkUPJdDtXHNPmBHfC/qMRwDxn8FLg9ypX+MBXmey6jffWAJ/GNKArmpH0fjtm9g=
 
