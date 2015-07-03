@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-0.41.2 (unreleased)
--------------------
+0.42 (2015-07-03)
+-----------------
 
 - Allow forms to inject arbitrary HTML above the form tag in rendered result.
   Refs #3502.
