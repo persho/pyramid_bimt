@@ -5,7 +5,8 @@ Changelog
 0.41.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Allow views to have arbitrary meta tags, refs #3502.
+  [zupo]
 
 
 0.41.1 (2015-06-23)
