@@ -47,6 +47,7 @@ class FormView(BaseFormView):
             result['title'] = self.title
             self.request.layout_manager.layout.title = self.title
             result['description'] = getattr(self, 'description', None)
+            result['above_form'] = getattr(self, 'above_form', None)
         return result
 
 

@@ -5,6 +5,10 @@ Changelog
 0.41.2 (unreleased)
 -------------------
 
+- Allow forms to inject arbitrary HTML above the form tag in rendered result.
+  Refs #3502.
+  [zupo]
+
 - Allow views to have arbitrary meta tags, refs #3502.
   [zupo]
 

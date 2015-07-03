@@ -2,6 +2,8 @@
 
   <div metal:fill-slot="content" id="content">
 
+    <div tal:replace="structure above_form|nothing" />
+
     <h1>${title}</h1>
     <p tal:condition="description|nothing" class="help-block">${description}</p>
     <form tal:replace="structure form" />
